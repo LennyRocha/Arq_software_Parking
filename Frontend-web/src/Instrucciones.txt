@@ -1,0 +1,13 @@
+¿Qué hace cada carpeta?
+# assets -> Imagenes y svgs
+# navigation -> Stacks de navegación, eso me encargo yo
+# utils -> Tiene la instancia de axios, y aqui podemos hacer el hook para llamar a la api y el getAxiosError y SweetAlerts
+en resumen, varias cosas
+# context -> Aqui se crean contextos para usar ciertas variables y funciones en toda la app, como el modo oscuro
+# components -> Componentes que usaremos en toda la app
+# modules -> Dividí por módulos del DFR
+# App.jsx -> Aqui se llama a todo para que jale y aqui se colocan los contextos
+# routes -> Contiene el archivo de las rutas de la página, aunque pueden incluir ustedes subrutas
+
+Link de guía de componentes de MUI
+https://mui.com/material-ui/all-components/

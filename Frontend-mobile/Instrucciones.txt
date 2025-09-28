@@ -1,0 +1,16 @@
+¿Qué hace cada carpeta?
+#.expo -> No lo toquen
+# assets -> Imagenes y svgs
+# navigation -> Stacks de navegación, eso me encargo yo
+# utils -> Tiene la instancia de axios, y aqui podemos hacer el hook para llamar a la api y el getAxiosError
+en resumen, varias cosas
+# context -> Aqui se crean contextos para usar ciertas variables y funciones en toda la ap, como el modo oscuro
+# components -> Componentes que usaremos en toda la app
+# modules -> Dividí por módulos del DFR
+# App.js -> Aqui se llama a todo para que jale
+# hooks -> La hice para cosas como el controlador del bottomSheet
+
+Link de guía de componentes de React native paper
+https://callstack.github.io/react-native-paper/docs/components/ActivityIndicator
+Link de guía de uso de bottomSheet
+https://gorhom.dev/react-native-bottom-sheet/usage

@@ -1,0 +1,21 @@
+# aqui ponen los comandos de lo que vayan instalando
+
+#Sweet alert
+npm i sweetalert2
+
+#Router
+npm install react-router-dom
+
+#api
+npm i axios
+
+#formularios
+npm i react-hook-form
+npm i yup @hookform/resolvers
+
+#diseño y responsividad
+npm i bootstrap
+npm install @mui/material @emotion/react @emotion/styled
+
+#iconos
+npm install @mui/icons-material

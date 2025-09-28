@@ -1,0 +1,3 @@
+#Aqui crean componenetes que pueden reutilizar, utilicen los colores del index.css
+
+#Los componenetes globales estan en la carpeta Components

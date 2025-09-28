@@ -1,0 +1,211 @@
+:root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  background-color: #ffffff;
+  color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  --primary: #4b7c7b;
+  --secondary: #7ebebe;
+  --background: #f0f9f9;
+  --surface: #c5e4e7;
+  --other: #1e3a3e;
+  --gray: #808080;
+  --error: #ff5252;
+  --warning: #ff9800;
+  --success: #4caf50;
+  --info: #2196f3;
+  --dark: #1e1e1e;
+}
+
+body.dark {
+  color-scheme: dark light;
+  color: #ffffff;
+  background-color: #242424;
+  --primary: #397974;
+  --secondary: #5EB0A9;
+  --background: #E2F3F3;
+  --surface: #A2E6E5;
+  --other: #1F4D4C;
+  --gray: #B3B3B3;
+  --error: #BD0000;
+  --warning: #E65100;
+  --success: #0B6E00;
+  --info: #1976D2;
+  --dark: #424242;
+}
+
+.bukon {
+  background-color: var(--other);
+  color: white;
+}
+
+/* Clases para ponerle los colores de fondo */
+.primary-back {
+  background-color: var(--primary);
+}
+
+.secondary-back {
+  background-color: var(--secondary);
+}
+
+.surface-back {
+  background-color: var(--surface);
+}
+
+.other-back {
+  background-color: var(--other);
+}
+
+.background-back {
+  background-color: var(--background);
+}
+
+.gray-back {
+  background-color: var(--gray);
+}
+
+.error-back {
+  background-color: var(--error);
+}
+
+.warning-back {
+  background-color: var(--warning);
+}
+
+.success-back {
+  background-color: var(--success);
+}
+
+.info-back {
+  background-color: var(--info);
+}
+
+.darko-back {
+  background-color: var(--dark);
+}
+
+/* Clases para usar los colores de texto */
+
+.primary {
+  color: var(--primary);
+}
+
+.secondary {
+  color: var(--secondary);
+}
+
+.surface {
+  color: var(--surface);
+}
+
+.other {
+  color: var(--other);
+}
+
+.backgrounded {
+  color: var(--background);
+}
+
+.gray {
+  color: var(--gray);
+}
+
+.error {
+  color: var(--error);
+}
+
+.warning {
+  color: var(--warning);
+}
+
+.success {
+  color: var(--success);
+}
+
+.info {
+  color: var(--info);
+}
+
+.darko {
+  color: var(--dark);
+}
+
+/* Estilos globales */
+
+input{
+  color: #242424 ;
+}
+
+body.dark input{
+  color: #ffffff ;
+}
+
+a {
+  font-weight: 500;
+  color: #646cff;
+  text-decoration: inherit;
+}
+
+a:hover {
+  color: #535bf2;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+  position: fixed;
+  top: 0;
+  width: 100%;
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+
+button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: var(--dark);
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+
+button:hover {
+  border-color: #646cff;
+}
+
+button:focus,
+button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+
+  a:hover {
+    color: #747bff;
+  }
+
+  button {
+    background-color: #f9f9f9;
+  }
+}

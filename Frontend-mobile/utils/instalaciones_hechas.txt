@@ -1,0 +1,27 @@
+# aqui ponen los comandos de lo que vayan instalando
+
+# React Navigation core
+npm install @react-navigation/native
+npm install react-native-screens react-native-safe-area-context react-native-gesture-handler react-native-reanimated
+npx expo install react-native-reanimated react-native-gesture-handler
+
+#splash screens
+npx expo install expo-splash-screen
+
+# Stacks y tabs
+npm install @react-navigation/native-stack @react-navigation/bottom-tabs
+
+# Otras librerías
+npm install axios react-native-dotenv react-native-navigation-bar-color react-native-paper react-native-vector-icons
+
+#iconos
+npm install react-native-vector-icons
+
+#solucion de versiones
+npx expo install react react-dom react-native
+
+#bottomSheet
+npm install @gorhom/bottom-sheet
+
+#slider
+npm install react-native-swiper

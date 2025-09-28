@@ -1,0 +1,30 @@
+{
+  "expo": {
+    "name": "Frontend-mobile",
+    "slug": "Frontend-mobile",
+    "version": "1.0.0",
+    "orientation": "default",
+    "icon": "./img/logo_parking_sin_titulo.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./img/logo_parking.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#1E3A3E"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./img/logo_parking.png",
+        "backgroundColor": "#1E3A3E"
+      },
+      "edgeToEdgeEnabled": true,
+      "package": "com.anonymous.Frontendmobile"
+    },
+    "web": {
+      "favicon": "./img/logo_parking_sin_fondo.png"
+    }
+  }
+}
