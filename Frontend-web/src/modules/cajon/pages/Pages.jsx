@@ -51,6 +51,9 @@ export default function Pages() {
         <TextField id="filled-basic" label="Filled" variant="filled" />
         <TextField id="standard-basic" label="Standard" variant="standard" />
         <TextField id="standard-basic" label="Standard" variant="standard"  error helperText="Help"/>
+        <div className="my_card bx">
+          <h3>Hola card</h3>
+        </div>
       </div>
     </>
   );

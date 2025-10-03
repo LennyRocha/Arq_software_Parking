@@ -23,10 +23,10 @@ const CustomBottomSheet = forwardRef(
     return (
       <BottomSheet
         ref={bottomSheetRef}
-        index={1} // empieza cerrado
+        index={-1} // empieza cerrado
         snapPoints={snapPoints}
         enablePanDownToClose={true} // swipe hacia abajo para cerrar
-        backgroundStyle={{ backgroundColor: themes.colors.background }}
+        backgroundStyle={{ backgroundColor: themes.colors.surface }}
       >
         <BottomSheetView style={styles.content}>{children}</BottomSheetView>
       </BottomSheet>

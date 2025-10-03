@@ -7,14 +7,16 @@ import {
 import { useColorScheme } from "react-native";
 import { useCustomThemes } from "./useCustomColors";
 
-const UrbanOasisLightTheme = {
+export const UrbanOasisLightTheme = {
   ...MD3LightTheme,
   colors: {
     ...MD3LightTheme.colors,
     primary: "#4B7C7B",
     secondary: "#7EBEBE", 
     tertiary: "#A7D6D5", 
-    surface: "#C5E4E7",
+    surface: "#EDEAF0",  
+    cardSurface: "#C5E4E7",  
+    onSurface: "#1C1B1F", 
     other: "#1E3A3E", 
     gray: "#808080",
     error: "#FF5252",
@@ -25,18 +27,20 @@ const UrbanOasisLightTheme = {
     onPrimary: "#F0F9F9",
     onSecondary: "#1E3A3E",
     onTertiary: "#1E3A3E",
-    onSurface: "#4B7C7B",
+    onCardSurface: "#4B7C7B",
   },
 };
 
-const UrbanOasisDarkTheme = {
+export const UrbanOasisDarkTheme = {
   ...MD3DarkTheme,
   colors: {
     ...MD3DarkTheme.colors,
     primary: "#397974",
     secondary: "#5EB0A9", 
     tertiary: "#5EB0A9", 
-    surface: "#A2E6E5", 
+    surface: "#323035",   
+    cardSurface: "#A2E6E5", 
+    onSurface: "#E6E1E5", 
     other: "#1F4D4C", 
     gray: "#B3B3B3",
     error: "#BD0000",
@@ -47,7 +51,7 @@ const UrbanOasisDarkTheme = {
     onPrimary: "#E2F3F3",
     onSecondary: "#1F4D4C",
     onTertiary: "#E2F3F3",
-    onSurface: "#397974",
+    onCardSurface: "#397974",
   },
 };
 

@@ -25,3 +25,6 @@ npm install @gorhom/bottom-sheet
 
 #slider
 npm install react-native-swiper
+
+#multi-steps
+npm install react-native-progress-steps

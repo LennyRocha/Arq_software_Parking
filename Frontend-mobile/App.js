@@ -19,14 +19,17 @@ import useBottomSheetController from "./hooks/useBottomSheetController";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import * as SplashScreen from "expo-splash-screen";
 import ScrollRefreshingView from "./components/ScrollRefreshingView";
-import SwiperExample from "./components/Swiper";
 import SwiperView from "./components/Swiper";
+import CustomModal from "./components/CustomModal";
+import useModalController from "./hooks/useModalController";
+import CustomMultiSteps from "./components/CustomMultiSteps";
 
 const MyApp = () => {
   const { theme, toggleTheme } = useCustomThemes();
   const paperTheme = useTheme();
   const { visible, config, showAlert, hideAlert } = useCustomAlert();
   const { sheetRef, openSheet, closeSheet } = useBottomSheetController();
+  const { modalVisible, showModal, hideModal } = useModalController();
 
   //Probar el refresh control con una función sincrona
   function handlerRefresh() {
@@ -79,6 +82,20 @@ const MyApp = () => {
       ]}
     >
       <Text>Slide 3</Text>
+    </View>
+  );
+  const Vista4 = () => (
+    <View
+      style={[
+        {
+          backgroundColor: "yellow",
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+        },
+      ]}
+    >
+      <Text>Slide 4</Text>
     </View>
   );
 
@@ -141,12 +158,12 @@ const MyApp = () => {
           <Card
             style={[
               styles.card,
-              { backgroundColor: paperTheme.colors.surface },
+              { backgroundColor: paperTheme.colors.cardSurface },
             ]}
           >
             <Card.Content>
-              <Text style={{ color: paperTheme.colors.onSurface }}>
-                Surface (#C5E4E7)
+              <Text style={{ color: paperTheme.colors.onCardSurface }}>
+                Custom Surface (#C5E4E7)
               </Text>
             </Card.Content>
           </Card>
@@ -154,6 +171,17 @@ const MyApp = () => {
           <Card style={[styles.card, { backgroundColor: theme.other }]}>
             <Card.Content>
               <Text style={{ color: theme.background }}>Other (#1E3A3E)</Text>
+            </Card.Content>
+          </Card>
+
+          <Card
+            style={[styles.card, { backgroundColor: theme.surface }]}
+            elevation={5}
+          >
+            <Card.Content>
+              <Text style={{ color: paperTheme.colors.onSurface }}>
+                Card normal{" "}
+              </Text>
             </Card.Content>
           </Card>
 
@@ -199,6 +227,7 @@ const MyApp = () => {
             mode="contained"
             style={{ marginTop: 8 }}
             buttonColor={theme.info}
+            onPress={showModal}
           >
             Info (#2196F3)
           </Button>
@@ -209,14 +238,35 @@ const MyApp = () => {
           >
             Dark (#424242)
           </Button>
+          <CustomModal visible={modalVisible} onClose={hideModal}>
+            <Text variant="headlineSmall">Modal personalizado.</Text>
+            <Text>Example Modal. Click outside this area to dismiss.</Text>
+            <Button onPress={hideModal}>Cerrar</Button>
+          </CustomModal>
           <SwiperView
-            slides={[Vista1, Vista2, Vista3]}
+            slides={[Vista1, Vista2, Vista3, Vista4]}
             horizontal={true}
             showsPagination
             loop
           />
+          <CustomMultiSteps
+            stepProps={{
+            buttonNextText:"Siguiente",
+            buttonPreviousText:"Anterior",
+            buttonFinishText:"Completar", 
+            }}
+            steps={[
+              { label: "Paso 1", content: <Vista1 /> },
+              { label: "Paso 2", content: <Vista2 /> },
+              { label: "Paso 3", content: <Vista3 /> },
+              { label: "Paso 4", content: <Vista4 /> },
+            ]}
+          />
         </ScrollRefreshingView>
-        <CustomBottomSheet ref={sheetRef} snapPoints={["25%", "50%", "75%"]}>
+        <CustomBottomSheet
+          ref={sheetRef}
+          snapPoints={["25%", "50%", "75%", "100%"]}
+        >
           <Text>¡Hola desde el BottomSheet! 🎉</Text>
           <Button onPress={closeSheet}>Cerrar</Button>
         </CustomBottomSheet>

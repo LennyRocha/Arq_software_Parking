@@ -17,7 +17,7 @@ export function CustomAlert({ visible, hideAlert, config }) {
 
   return (
     <Portal>
-      <Dialog visible={visible} onDismiss={config.externalDismiss ? hideAlert : () => {}} style={{backgroundColor: theme.background}}>
+      <Dialog visible={visible} onDismiss={config.externalDismiss ? hideAlert : () => {}} style={{backgroundColor: theme.surface}}>
         {/* Icono dinámico */}
         {config.icon && (
           <Dialog.Icon
@@ -32,7 +32,7 @@ export function CustomAlert({ visible, hideAlert, config }) {
           <Dialog.Title
             style={[
               styles.title,
-              { color: theme.other },
+              { color: mode !== "dark" ? theme.other :themes.colors.secondary },
             ]}
           >
             {config.title}
@@ -44,7 +44,7 @@ export function CustomAlert({ visible, hideAlert, config }) {
           <Dialog.Content>
             <Text
               variant="bodyMedium"
-              style={[styles.title, { color: "#0000" }]}
+              style={[styles.title, { color: themes.colors.onSurface }]}
             >
               {config.message}
             </Text>
@@ -59,7 +59,7 @@ export function CustomAlert({ visible, hideAlert, config }) {
                 config.onCancel();
                 hideAlert();
               }}
-              textColor={themes.colors.primary}
+              textColor={mode === "dark" ? themes.colors.cardSurface :themes.colors.primary}
             >
               {config.cancelText || "Cancelar"}
             </Button>
@@ -70,7 +70,7 @@ export function CustomAlert({ visible, hideAlert, config }) {
                 config.onConfirm();
                 hideAlert();
               }}
-              textColor={themes.colors.primary}
+              textColor={mode === "dark" ? themes.colors.cardSurface :themes.colors.primary}
             >
               {config.confirmText || "Aceptar"}
             </Button>
