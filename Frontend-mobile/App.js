@@ -5,6 +5,7 @@ import {
   Card,
   Text,
   Provider as PaperProvider,
+  TouchableRipple,
 } from "react-native-paper";
 import { ThemeProvider } from "./context/useCustomColors";
 import PaperContext from "./context/paperContext";
@@ -23,6 +24,7 @@ import SwiperView from "./components/Swiper";
 import CustomModal from "./components/CustomModal";
 import useModalController from "./hooks/useModalController";
 import CustomMultiSteps from "./components/CustomMultiSteps";
+import { CreditCardView } from "react-native-credit-card-input";
 
 const MyApp = () => {
   const { theme, toggleTheme } = useCustomThemes();
@@ -48,6 +50,7 @@ const MyApp = () => {
         {
           backgroundColor: "red",
           flex: 1,
+          width: "100%",
           justifyContent: "center",
           alignItems: "center",
         },
@@ -62,6 +65,7 @@ const MyApp = () => {
         {
           backgroundColor: "green",
           flex: 1,
+          width: "100%",
           justifyContent: "center",
           alignItems: "center",
         },
@@ -76,6 +80,7 @@ const MyApp = () => {
         {
           backgroundColor: "blue",
           flex: 1,
+          width: "100%",
           justifyContent: "center",
           alignItems: "center",
         },
@@ -90,6 +95,7 @@ const MyApp = () => {
         {
           backgroundColor: "yellow",
           flex: 1,
+          width: "100%",
           justifyContent: "center",
           alignItems: "center",
         },
@@ -98,6 +104,8 @@ const MyApp = () => {
       <Text>Slide 4</Text>
     </View>
   );
+
+  const [itemFocused, setItemFocused] = React.useState("number");
 
   return (
     <>
@@ -251,9 +259,9 @@ const MyApp = () => {
           />
           <CustomMultiSteps
             stepProps={{
-            buttonNextText:"Siguiente",
-            buttonPreviousText:"Anterior",
-            buttonFinishText:"Completar", 
+              buttonNextText: "Siguiente",
+              buttonPreviousText: "Anterior",
+              buttonFinishText: "Completar",
             }}
             steps={[
               { label: "Paso 1", content: <Vista1 /> },
@@ -262,6 +270,27 @@ const MyApp = () => {
               { label: "Paso 4", content: <Vista4 /> },
             ]}
           />
+          <View
+            style={{
+              width: "100%",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <TouchableRipple style={{ borderRadius: 10, overflow: "hidden", width: 300 }} onPress={() => setItemFocused((item) => item === "number" ? "cvc" : "number")}>
+              <CreditCardView
+                name="Juan Peréz"
+                cvc="123"
+                expiry="09/28"
+                number="**** **** **** 4321"
+                type="visa"
+                imageFront={require("./img/cards/Card_back_3.png")}
+                imageBack={require("./img/cards/Card_back_3.png")}
+                style={{ flex: 1 }}
+                focusedField={itemFocused}
+              />
+            </TouchableRipple>
+          </View>
         </ScrollRefreshingView>
         <CustomBottomSheet
           ref={sheetRef}

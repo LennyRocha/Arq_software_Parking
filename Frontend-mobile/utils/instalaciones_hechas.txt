@@ -28,3 +28,7 @@ npm install react-native-swiper
 
 #multi-steps
 npm install react-native-progress-steps
+
+#credit card design
+npm i react-native-credit-card-input -> Tarjeta negra
+npm install react-native-credit-card-component
