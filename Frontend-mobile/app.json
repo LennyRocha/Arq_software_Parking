@@ -1,10 +1,11 @@
 {
   "expo": {
-    "name": "Frontend-mobile",
-    "slug": "Frontend-mobile",
+    "name": "ParKing",
+    "slug": "parKing",
     "version": "1.0.0",
     "orientation": "default",
     "icon": "./img/logo_parking_sin_titulo.png",
+    "resizeMode":"contain",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
@@ -17,8 +18,9 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./img/logo_parking.png",
-        "backgroundColor": "#1E3A3E"
+        "foregroundImage": "./img/logo_parking_sin_titulo.png",
+        "backgroundColor": "#1E3A3E",
+        "resizeMode":"contain"
       },
       "edgeToEdgeEnabled": true,
       "package": "com.anonymous.Frontendmobile"

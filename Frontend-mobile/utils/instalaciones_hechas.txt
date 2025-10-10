@@ -32,3 +32,7 @@ npm install react-native-progress-steps
 #credit card design
 npm i react-native-credit-card-input -> Tarjeta negra
 npm install react-native-credit-card-component
+
+#formularios
+npm i react-hook-form
+npm i yup @hookform/resolvers
