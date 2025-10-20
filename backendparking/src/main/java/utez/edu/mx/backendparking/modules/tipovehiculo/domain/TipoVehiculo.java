@@ -24,6 +24,9 @@ public class TipoVehiculo {
         this.nombre = nombre;
     }
 
+    public TipoVehiculo(String nombre) {
+        this.nombre = nombre;
+    }
 
     // GETTERS Y SETTERS
     public String getNombre() {
