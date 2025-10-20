@@ -23,7 +23,7 @@ public class Tarifa {
 
     // ATRIBUTOS DE RELACION
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "id_tipo_vehiculo", referencedColumnName = "id")
+    @JoinColumn(name = "id_tipo_vehiculo", referencedColumnName = "id", nullable = false)
     private TipoVehiculo tipoVehiculo;
 
 
