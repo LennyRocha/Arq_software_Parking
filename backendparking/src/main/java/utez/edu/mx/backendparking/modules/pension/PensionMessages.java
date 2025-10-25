@@ -1,8 +1,10 @@
-package utez.edu.mx.backendparking.modules.pension.constant;
+package utez.edu.mx.backendparking.modules.pension;
 
 public class PensionMessages {
 
-    public static final String ERROR_PENSION_DUPLICADA= "¡Pensión duplicada! Ya existe un tipo de pensión con esta duración y costo.";
+    public static final String ERROR_NOMBRE_PENSION_VACIO="El nombre de la pensión no puede estar vacío.";
+    public static final String ERROR_NOMBRE_PENSION_LONGITUD="El nombre de la pensión debe tener entre 3 y 50 caracteres.";
+    public static final String ERROR_PENSION_DUPLICADA= "Ya existe un tipo de pensión con esta duración y costo.";
     public static final String ERROR_PENSION_NOT_FOUND = "Pensión no encontrada.";
     public static final String ERROR_DURACION_MINIMA = "La duración mínima es de 7 días";
     public static final String ERROR_DURACION_MAXIMA = "La duración máxima es de 365 días";

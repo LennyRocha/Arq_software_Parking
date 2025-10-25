@@ -1,7 +1,7 @@
-package utez.edu.mx.backendparking.modules.tarifa.domain;
+package utez.edu.mx.backendparking.modules.tarifa;
 
 import jakarta.persistence.*;
-import utez.edu.mx.backendparking.modules.tipovehiculo.domain.TipoVehiculo;
+import utez.edu.mx.backendparking.modules.tipovehiculo.TipoVehiculo;
 
 @Entity
 @Table(name = "tarifa")
