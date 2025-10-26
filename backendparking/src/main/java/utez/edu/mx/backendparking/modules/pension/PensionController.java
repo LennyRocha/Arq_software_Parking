@@ -1,5 +1,8 @@
 package utez.edu.mx.backendparking.modules.pension;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +16,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/pension")
+@Tag(name="Tipos de pensión", description = "Endpoints para tipo de pensión")
 public class PensionController {
 
 
@@ -23,6 +27,7 @@ public class PensionController {
     }
 
     @PostMapping
+    @Operation(summary = "Crear tipo de pensión",description="Crear un nuevo tipo de pensión en el sistema")
     public ResponseEntity<ApiResponse<PensionResponseDto>> create(@RequestBody @Valid PensionRequestDto dto) {
         PensionResponseDto pension = pensionService.create(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(HttpStatus.CREATED, "Tipo de pensión agregado correctamente.", pension));

@@ -2,6 +2,7 @@ package utez.edu.mx.backendparking.shared.api;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -21,8 +22,9 @@ public class GlobalExceptionHandler {
      * Nosotros la lanzamos con:  throw new ResourceNotFoundException("mensaje")
      */
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ApiResponse<?> handleResourceNotFound(ResourceNotFoundException ex) {
-        return ApiResponse.error(HttpStatus.NOT_FOUND, ex.getMessage(), null);
+    public ResponseEntity<ApiResponse<?>> handleResourceNotFound(ResourceNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(ApiResponse.error(HttpStatus.NOT_FOUND, ex.getMessage(), null));
     }
 
     /**
@@ -31,8 +33,9 @@ public class GlobalExceptionHandler {
      * Nosotros la lanzamos con:  throw new ConflictException("mensaje")
      */
     @ExceptionHandler(ConflictException.class)
-    public ApiResponse<?> handleConflict(ConflictException ex) {
-        return ApiResponse.error(HttpStatus.CONFLICT, ex.getMessage(), null);
+    public ResponseEntity<ApiResponse<?>> handleConflict(ConflictException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(ApiResponse.error(HttpStatus.CONFLICT, ex.getMessage(), null));
     }
 
     /**
@@ -41,8 +44,9 @@ public class GlobalExceptionHandler {
      * La lanzamos con:  throw new BadRequestException("mensaje")
      */
     @ExceptionHandler(BadRequestException.class)
-    public ApiResponse<?> handleBadRequest(BadRequestException ex) {
-        return ApiResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage(), null);
+    public ResponseEntity<ApiResponse<?>> handleBadRequest(BadRequestException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage(), null));
     }
 
     /**
@@ -52,12 +56,13 @@ public class GlobalExceptionHandler {
      * Devuelve un mapa con los campos y sus mensajes de error
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ApiResponse<?> handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
+    public ResponseEntity<ApiResponse<?>> handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
         ex.getBindingResult().getFieldErrors().forEach(
                 err -> errors.put(err.getField(), err.getDefaultMessage())
         );
-        return ApiResponse.error(HttpStatus.BAD_REQUEST, Messages.ERROR_VALIDATION, errors);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(HttpStatus.BAD_REQUEST, Messages.ERROR_VALIDATION, errors));
     }
 
     /**
@@ -70,8 +75,9 @@ public class GlobalExceptionHandler {
      * - Violar una restricción NOT NULL
      */
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ApiResponse<?> handleDataIntegrityViolation(DataIntegrityViolationException ex){
-        return ApiResponse.error(HttpStatus.CONFLICT, Messages.ERROR_DATA_INTEGRITY, null);
+    public ResponseEntity<ApiResponse<?>> handleDataIntegrityViolation(DataIntegrityViolationException ex){
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(ApiResponse.error(HttpStatus.CONFLICT, Messages.ERROR_DATA_INTEGRITY, null));
     }
 
     /**
@@ -80,10 +86,10 @@ public class GlobalExceptionHandler {
      * Es el catch-all para errores inesperados del servidor
      */
     @ExceptionHandler(Exception.class)
-    public ApiResponse<?> handleGenericException(Exception ex) {
+    public ResponseEntity<ApiResponse<?>> handleGenericException(Exception ex) {
         // Log del error para debugging (importante en producción)
         // logger.error("Error interno del servidor: ", ex);
-        return ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR, Messages.ERROR_INTERNAL, null);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR, Messages.ERROR_INTERNAL, null));
     }
-
 }
