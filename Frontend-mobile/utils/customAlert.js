@@ -8,22 +8,26 @@ export function CustomAlert({ visible, hideAlert, config }) {
   const themes = useTheme();
   const { theme, mode } = useCustomThemes();
   const iconType = {
-    alert: "alert",
-    info: "information",
-    success: "check-circle",
-    error: "alert-circle",
-    warning: "alert",
+    success: "check-circle-outline",
+    info: "information-outline",
+    question: "help-circle-outline",
+    warning: "alert-circle-outline",
+    error: "close-circle-outline",
   };
 
   return (
     <Portal>
-      <Dialog visible={visible} onDismiss={config.externalDismiss ? hideAlert : () => {}} style={{backgroundColor: theme.surface}}>
+      <Dialog
+        visible={visible}
+        onDismiss={config.externalDismiss ? hideAlert : () => {}}
+        style={{ backgroundColor: theme.surface }}
+      >
         {/* Icono dinámico */}
         {config.icon && (
           <Dialog.Icon
             icon={iconType[config.icon]}
-            size={36}
-            color={theme[config.icon]}
+            size={56}
+            color={theme.primary}
           />
         )}
 
@@ -32,7 +36,7 @@ export function CustomAlert({ visible, hideAlert, config }) {
           <Dialog.Title
             style={[
               styles.title,
-              { color: mode !== "dark" ? theme.other :themes.colors.secondary },
+              { color: themes.colors.onBackground, fontFamily: "Exo2_700Bold" },
             ]}
           >
             {config.title}
@@ -59,7 +63,11 @@ export function CustomAlert({ visible, hideAlert, config }) {
                 config.onCancel();
                 hideAlert();
               }}
-              textColor={mode === "dark" ? themes.colors.cardSurface :themes.colors.primary}
+              textColor={
+                mode === "dark"
+                  ? themes.colors.cardSurface
+                  : themes.colors.primary
+              }
             >
               {config.cancelText || "Cancelar"}
             </Button>
@@ -70,7 +78,11 @@ export function CustomAlert({ visible, hideAlert, config }) {
                 config.onConfirm();
                 hideAlert();
               }}
-              textColor={mode === "dark" ? themes.colors.cardSurface :themes.colors.primary}
+              textColor={
+                mode === "dark"
+                  ? themes.colors.cardSurface
+                  : themes.colors.primary
+              }
             >
               {config.confirmText || "Aceptar"}
             </Button>

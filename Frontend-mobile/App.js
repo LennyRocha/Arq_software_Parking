@@ -13,6 +13,14 @@ import { useCustomThemes } from "./context/useCustomColors";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTheme } from "react-native-paper";
 import changeNavigationBarColor from "react-native-navigation-bar-color";
+import {
+  useFonts,
+  Exo2_400Regular,
+  Exo2_700Bold,
+  Exo2_300Light,
+  Exo2_800ExtraBold,
+  Exo2_900Black,
+} from "@expo-google-fonts/exo-2";
 import { CustomAlert } from "./utils/customAlert";
 import { useCustomAlert } from "./utils/useCustomAlert";
 import CustomBottomSheet from "./components/CustomBottomSheet";
@@ -25,7 +33,6 @@ import CustomModal from "./components/CustomModal";
 import useModalController from "./hooks/useModalController";
 import CustomMultiSteps from "./components/CustomMultiSteps";
 import { CreditCardView } from "react-native-credit-card-input";
-
 const MyApp = () => {
   const { theme, toggleTheme } = useCustomThemes();
   const paperTheme = useTheme();
@@ -277,7 +284,12 @@ const MyApp = () => {
               alignItems: "center",
             }}
           >
-            <TouchableRipple style={{ borderRadius: 10, overflow: "hidden", width: 300 }} onPress={() => setItemFocused((item) => item === "number" ? "cvc" : "number")}>
+            <TouchableRipple
+              style={{ borderRadius: 10, overflow: "hidden", width: 300 }}
+              onPress={() =>
+                setItemFocused((item) => (item === "number" ? "cvc" : "number"))
+              }
+            >
               <CreditCardView
                 name="Juan Peréz"
                 cvc="123"
@@ -298,6 +310,19 @@ const MyApp = () => {
         >
           <Text>¡Hola desde el BottomSheet! 🎉</Text>
           <Button onPress={closeSheet}>Cerrar</Button>
+          <View
+            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+          >
+            <Text style={{ fontFamily: "Exo2_300Light", fontSize: 18 }}>
+              Texto ligero 🪶
+            </Text>
+            <Text style={{ fontFamily: "Exo2_400Regular", fontSize: 20 }}>
+              Texto regular 😎
+            </Text>
+            <Text style={{ fontFamily: "Exo2_700Bold", fontSize: 22 }}>
+              Texto en negritas 💪
+            </Text>
+          </View>
         </CustomBottomSheet>
         <CustomAlert visible={visible} hideAlert={hideAlert} config={config} />
       </SafeAreaView>
@@ -308,13 +333,35 @@ const MyApp = () => {
 export default function App() {
   SplashScreen.preventAutoHideAsync();
   // Simulate resource loading
-  useEffect(() => {
-    async function prepare() {
-      await new Promise((resolve) => setTimeout(resolve, 2000)); // Simulate loading
-      SplashScreen.hideAsync();
-    }
-    prepare();
-  }, []);
+  const [fontsLoaded] = useFonts({
+    Exo2_300Light,
+    Exo2_400Regular,
+    Exo2_700Bold,
+    Exo2_800ExtraBold,
+    Exo2_900Black,
+  });
+
+  //Todos los pesos de la fuente Exo2
+  //  Exo2_100Thin
+  // Exo2_200ExtraLight
+  // Exo2_300Light
+  // Exo2_400Regular
+  // Exo2_500Medium
+  // Exo2_600SemiBold
+  // Exo2_700Bold
+  // Exo2_800ExtraBold
+  // Exo2_900Black
+
+  if (fontsLoaded) {
+    SplashScreen.hideAsync();
+  }
+  // useEffect(() => {
+  //   async function prepare() {
+  //     await new Promise((resolve) => setTimeout(resolve, 2000)); // Simulate loading
+  //     SplashScreen.hideAsync();
+  //   }
+  //   prepare();
+  // }, []);
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ThemeProvider>

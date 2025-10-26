@@ -36,3 +36,13 @@ npm install react-native-credit-card-component
 #formularios
 npm i react-hook-form
 npm i yup @hookform/resolvers
+
+#fuentes
+npm install --save @expo-google-fonts/exo-2 expo-font
+
+#Socket.io
+npm install socket.io-client (Por instalar)
+
+#linear gradient
+npm install react-native-linear-gradient
+npx expo install expo-linear-gradient
