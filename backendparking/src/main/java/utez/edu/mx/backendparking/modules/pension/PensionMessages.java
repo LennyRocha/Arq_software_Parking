@@ -11,4 +11,8 @@ public class PensionMessages {
     public static final String ERROR_DURACION_OBLIGATORIA = "La duración en días es obligatoria";
     public static final String ERROR_COSTO_OBLIGATORIO = "El costo es obligatorio";
     public static final String ERROR_COSTO_MAYOR_0 = "El costo debe ser mayor a 0";
+
+    public static final String ENDPOINT_TIPOPENSION_POST="Tipo de pensión agregado correctamente.";
+    public static final String ENDPOINT_TIPOPENSION_GET_ALL="Listado de pensiones obtenido correctamente.";
+    public static final String ENDPOINT_TIPOPENSION_PUT_CHANGE_STATUS="Estado de la pensión actualizado correctamente.";
 }
