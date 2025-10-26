@@ -1,4 +1,4 @@
-package utez.edu.mx.backendparking.modules.tipovehiculo.domain;
+package utez.edu.mx.backendparking.modules.tipovehiculo;
 
 import jakarta.persistence.*;
 

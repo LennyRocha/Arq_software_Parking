@@ -2,9 +2,9 @@ package utez.edu.mx.backendparking.config;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import utez.edu.mx.backendparking.modules.tarifa.domain.TarifaRepository;
-import utez.edu.mx.backendparking.modules.tipovehiculo.domain.TipoVehiculo;
-import utez.edu.mx.backendparking.modules.tipovehiculo.domain.TipoVehiculoRepository;
+import utez.edu.mx.backendparking.modules.tarifa.TarifaRepository;
+import utez.edu.mx.backendparking.modules.tipovehiculo.TipoVehiculo;
+import utez.edu.mx.backendparking.modules.tipovehiculo.TipoVehiculoRepository;
 
 @Service
 public class InitialDataService {

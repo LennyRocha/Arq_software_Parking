@@ -1,9 +1,9 @@
-package utez.edu.mx.backendparking.modules.entradasalida.domain;
+package utez.edu.mx.backendparking.modules.entradasalida;
 
 import jakarta.persistence.*;
-import utez.edu.mx.backendparking.modules.tipovehiculo.domain.TipoVehiculo;
-import utez.edu.mx.backendparking.modules.usuario.domain.Usuario;
-import utez.edu.mx.backendparking.modules.vehiculo.domain.Vehiculo;
+import utez.edu.mx.backendparking.modules.tipovehiculo.TipoVehiculo;
+import utez.edu.mx.backendparking.modules.usuario.Usuario;
+import utez.edu.mx.backendparking.modules.vehiculo.Vehiculo;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

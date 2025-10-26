@@ -1,6 +1,7 @@
-package utez.edu.mx.backendparking.modules.pension.domain;
+package utez.edu.mx.backendparking.modules.pension;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import utez.edu.mx.backendparking.modules.pension.Pension;
 
 import java.util.Optional;
 

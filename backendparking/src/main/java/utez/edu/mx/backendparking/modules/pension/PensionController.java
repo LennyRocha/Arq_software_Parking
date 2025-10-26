@@ -1,0 +1,48 @@
+package utez.edu.mx.backendparking.modules.pension;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import utez.edu.mx.backendparking.modules.pension.PensionService;
+import utez.edu.mx.backendparking.modules.pension.dto.PensionRequestDto;
+import utez.edu.mx.backendparking.modules.pension.dto.PensionResponseDto;
+import utez.edu.mx.backendparking.shared.api.ApiResponse;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/pension")
+@Tag(name="Tipos de pensión", description = "Endpoints para tipo de pensión")
+public class PensionController {
+
+
+    private final PensionService pensionService;
+
+    public PensionController(PensionService pensionService) {
+        this.pensionService = pensionService;
+    }
+
+    @PostMapping
+    @Operation(summary = "Crear tipo de pensión",description="Crear un nuevo tipo de pensión en el sistema")
+    public ResponseEntity<ApiResponse<PensionResponseDto>> create(@RequestBody @Valid PensionRequestDto dto) {
+        PensionResponseDto pension = pensionService.create(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(HttpStatus.CREATED, PensionMessages.ENDPOINT_TIPOPENSION_POST, pension));
+    }
+
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<PensionResponseDto>>> findAll() {
+        List<PensionResponseDto> pensiones = pensionService.findAll();
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(HttpStatus.OK, PensionMessages.ENDPOINT_TIPOPENSION_GET_ALL, pensiones));
+    }
+
+    @PutMapping("/{id}/status")
+    public ResponseEntity<ApiResponse<Void>> changeStatus(@PathVariable Long id) {
+        pensionService.changeStatus(id);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(HttpStatus.OK, PensionMessages.ENDPOINT_TIPOPENSION_PUT_CHANGE_STATUS, null));
+    }
+}
+

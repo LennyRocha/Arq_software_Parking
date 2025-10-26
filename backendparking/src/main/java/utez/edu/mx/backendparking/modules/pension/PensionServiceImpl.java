@@ -1,14 +1,13 @@
-package utez.edu.mx.backendparking.modules.pension.application;
+package utez.edu.mx.backendparking.modules.pension;
 
 
 import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Service;
-import utez.edu.mx.backendparking.modules.pension.constant.PensionMessages;
-import utez.edu.mx.backendparking.modules.pension.domain.Pension;
-import utez.edu.mx.backendparking.modules.pension.domain.PensionRepository;
-import utez.edu.mx.backendparking.modules.pension.mapper.PensionMapper;
-import utez.edu.mx.backendparking.modules.pension.presentation.dto.PensionRequestDto;
-import utez.edu.mx.backendparking.modules.pension.presentation.dto.PensionResponseDto;
+
+import utez.edu.mx.backendparking.modules.pension.Pension;
+import utez.edu.mx.backendparking.modules.pension.PensionRepository;
+import utez.edu.mx.backendparking.modules.pension.dto.PensionRequestDto;
+import utez.edu.mx.backendparking.modules.pension.dto.PensionResponseDto;
 import utez.edu.mx.backendparking.shared.exception.ConflictException;
 import utez.edu.mx.backendparking.shared.exception.ResourceNotFoundException;
 
@@ -28,6 +27,7 @@ public class PensionServiceImpl implements PensionService {
     @Override
     public PensionResponseDto create(PensionRequestDto dto) {
 
+        //No puede existir una pensión con la misma combinación de duración (días) y costo.
         if (pensionRepository.existsByDuracionDiasAndCosto(dto.getDuracionDias(), dto.getCosto())) {
             throw new ConflictException(PensionMessages.ERROR_PENSION_DUPLICADA);
         }
@@ -38,7 +38,6 @@ public class PensionServiceImpl implements PensionService {
         return PensionMapper.toResponseDto(pension);
     }
 
-    //este mego
     @Override
     public List<PensionResponseDto> findAll() {
         return pensionRepository.findAll()

@@ -1,4 +1,4 @@
-package utez.edu.mx.backendparking.modules.tipovehiculo.domain;
+package utez.edu.mx.backendparking.modules.tipovehiculo;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
