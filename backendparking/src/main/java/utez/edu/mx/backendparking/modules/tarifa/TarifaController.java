@@ -38,6 +38,13 @@ public class TarifaController {
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(HttpStatus.OK, TarifaMessages.ENDPOINT_TARIFA_GET_ALL, tarifas));
     }
 
+    @GetMapping("/active")
+    @Operation(summary = "Obtener tarifas activas ordenadas", description = "Obtener todas las tarifas activas ordenadas por tipo de vehículo y tiempo ascendente")
+    public ResponseEntity<ApiResponse<List<TarifaResponseDto>>> findAllActiveOrderByTipoVehiculoAndTiempo() {
+        List<TarifaResponseDto> tarifas = tarifaService.findAllActiveOrderByTipoVehiculoAndTiempo();
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(HttpStatus.OK, TarifaMessages.ENDPOINT_TARIFA_GET_ALL_ACTIVE, tarifas));
+    }
+
     @PostMapping
     @Operation(summary = "Crear tipo de tarifa",description="Crear un nuevo tipo de tarifa en el sistema")
     public ResponseEntity<ApiResponse<TarifaResponseDto>> create(@RequestBody @Valid TarifaRequestDto dto) {

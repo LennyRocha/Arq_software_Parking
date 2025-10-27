@@ -10,6 +10,7 @@ public interface TarifaService {
     TarifaResponseDto findById(Long id);
     TarifaResponseDto create(TarifaRequestDto dto);
     List<TarifaResponseDto> findAll();
+    List<TarifaResponseDto> findAllActiveOrderByTipoVehiculoAndTiempo();
     boolean changeStatus(Long id);
     TarifaResponseDto update(TarifaUpdateRequestDto dto);
 }

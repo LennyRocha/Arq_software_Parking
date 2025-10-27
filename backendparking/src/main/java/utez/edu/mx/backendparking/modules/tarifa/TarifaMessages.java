@@ -20,9 +20,10 @@ public class TarifaMessages {
     public static final String ERROR_TARIFA_NOT_FOUND = "Tarifa no encontrada.";
 
     // Mensajes de respuesta para endpoints
-    public static final String ENDPOINT_TARIFA_GET_BY_ID = "Tarifa encontrada.";
     public static final String ENDPOINT_TARIFA_POST = "Tarifa agregada correctamente.";
+    public static final String ENDPOINT_TARIFA_GET_BY_ID = "Tarifa obtenida correctamente.";
     public static final String ENDPOINT_TARIFA_GET_ALL = "Listado de tarifas obtenido correctamente.";
+    public static final String ENDPOINT_TARIFA_GET_ALL_ACTIVE = "Listado de tarifas activas obtenido correctamente.";
     public static final String ENDPOINT_TARIFA_CHANGE_STATUS_ON = "Ha cambiado el estatus de la tarifa de inactivo a activo";
     public static final String ENDPOINT_TARIFA_CHANGE_STATUS_OFF = "Ha cambiado el estatus de la tarifa de activo a inactivo";
     public static final String ENDPOINT_TARIFA_PUT_UPDATE = "Tarifa actualizada correctamente.";

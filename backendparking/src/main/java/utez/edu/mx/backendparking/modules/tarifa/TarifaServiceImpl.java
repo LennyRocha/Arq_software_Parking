@@ -20,7 +20,18 @@ public class TarifaServiceImpl implements TarifaService {
 
     @Override
     public List<TarifaResponseDto> findAll() {
-        return List.of();
+        return tarifaRepository.findAll()
+                .stream()
+                .map(TarifaMapper::toResponseDto)
+                .collect(java.util.stream.Collectors.toList());
+    }
+
+    @Override
+    public List<TarifaResponseDto> findAllActiveOrderByTipoVehiculoAndTiempo() {
+        return tarifaRepository.findByEstatusOrderByTipoVehiculoNombreAscTiempoAsc(true)
+                .stream()
+                .map(TarifaMapper::toResponseDto)
+                .collect(java.util.stream.Collectors.toList());
     }
 
     @Override
