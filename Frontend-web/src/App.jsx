@@ -5,6 +5,7 @@ import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import Rutas from "./routes/rutas";
 import getTheme from "./utils/getTheme";
+import AdminRouter from "./routes/AdminRouter";
 
 function App() {
   const { isDarkMode } = useDarkContext();
