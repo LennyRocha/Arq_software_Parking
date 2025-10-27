@@ -46,7 +46,7 @@ public class TarifaServiceImpl implements TarifaService {
         // Obtener tarifas filtradas
         List<Tarifa> tarifas = tarifaRepository.findByFilters(tiempo, costo);
 
-        // Determinar el comparador según el campo de ordenamiento
+        // Determinar el comparador según el campo de ordenamiento usando lambdas
         Comparator<Tarifa> comparator;
 
         if (sortBy == null || sortBy.isEmpty()) {
@@ -56,53 +56,36 @@ public class TarifaServiceImpl implements TarifaService {
         String sortByLower = sortBy.toLowerCase();
 
         if (sortByLower.equals("tipovehiculo")) {
-            comparator = new Comparator<Tarifa>() {
-                @Override
-                public int compare(Tarifa t1, Tarifa t2) {
-                    int comparacion = t1.getTipoVehiculo().getNombre().compareTo(t2.getTipoVehiculo().getNombre());
-                    if (comparacion == 0) {
-                        return t1.getTiempo().compareTo(t2.getTiempo());
-                    }
-                    return comparacion;
-                }
-            };
-        } else if (sortByLower.equals("tiempo")) {
-            comparator = new Comparator<Tarifa>() {
-                @Override
-                public int compare(Tarifa t1, Tarifa t2) {
+            // Lambda que compara por nombre de tipo de vehículo, y luego por tiempo
+            comparator = (t1, t2) -> {
+                int comparacion = t1.getTipoVehiculo().getNombre().compareTo(t2.getTipoVehiculo().getNombre());
+                if (comparacion == 0) {
                     return t1.getTiempo().compareTo(t2.getTiempo());
                 }
+                return comparacion;
             };
+        } else if (sortByLower.equals("tiempo")) {
+            // Lambda que compara solo por tiempo
+            comparator = (t1, t2) -> t1.getTiempo().compareTo(t2.getTiempo());
         } else if (sortByLower.equals("costo")) {
-            comparator = new Comparator<Tarifa>() {
-                @Override
-                public int compare(Tarifa t1, Tarifa t2) {
-                    return t1.getCosto().compareTo(t2.getCosto());
-                }
-            };
+            // Lambda que compara solo por costo
+            comparator = (t1, t2) -> t1.getCosto().compareTo(t2.getCosto());
         } else {
             // Por defecto: tipo de vehículo y tiempo
-            comparator = new Comparator<Tarifa>() {
-                @Override
-                public int compare(Tarifa t1, Tarifa t2) {
-                    int comparacion = t1.getTipoVehiculo().getNombre().compareTo(t2.getTipoVehiculo().getNombre());
-                    if (comparacion == 0) {
-                        return t1.getTiempo().compareTo(t2.getTiempo());
-                    }
-                    return comparacion;
+            comparator = (t1, t2) -> {
+                int comparacion = t1.getTipoVehiculo().getNombre().compareTo(t2.getTipoVehiculo().getNombre());
+                if (comparacion == 0) {
+                    return t1.getTiempo().compareTo(t2.getTiempo());
                 }
+                return comparacion;
             };
         }
 
         // Aplicar orden descendente si es necesario
         if ("desc".equalsIgnoreCase(sortOrder)) {
+            // Lambda que invierte el orden usando el comparador anterior
             Comparator<Tarifa> ascComparator = comparator;
-            comparator = new Comparator<Tarifa>() {
-                @Override
-                public int compare(Tarifa t1, Tarifa t2) {
-                    return ascComparator.compare(t2, t1); // Invertir el orden
-                }
-            };
+            comparator = (t1, t2) -> ascComparator.compare(t2, t1); // Invertir el orden
         }
 
         // Ordenar la lista
@@ -122,7 +105,7 @@ public class TarifaServiceImpl implements TarifaService {
         // Obtener sublista paginada
         List<Tarifa> tarifasPaginadas = tarifas.subList(fromIndex, toIndex);
 
-        // Convertir a DTOs
+        // Convertir a DTOs usando un bucle for-each
         List<TarifaResponseDto> resultado = new ArrayList<>();
         for (Tarifa tarifa : tarifasPaginadas) {
             resultado.add(TarifaMapper.toResponseDto(tarifa));
