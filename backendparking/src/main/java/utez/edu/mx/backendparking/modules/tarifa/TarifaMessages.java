@@ -1,0 +1,26 @@
+package utez.edu.mx.backendparking.modules.tarifa;
+
+public class TarifaMessages {
+
+    // Errores de validación basados en los atributos de la entidad Tarifa
+    public static final String ERROR_TIEMPO_OBLIGATORIO = "El tiempo (en minutos) es obligatorio.";
+    public static final String ERROR_TIEMPO_MAYOR_15 = "El tiempo debe ser mayor a 15 minutos.";
+    public static final String ERROR_TIEMPO_MENOR_1440 = "El tiempo debe ser menor a 1440 minutos (24 horas).";
+
+
+    public static final String ERROR_PRECIO_OBLIGATORIO = "El costo es obligatorio.";
+    public static final String ERROR_PRECIO_MAYOR_0 = "El costo debe ser mayor a 0.";
+
+    public static final String ERROR_TIPO_VEHICULO_OBLIGATORIO = "El tipo de vehículo es obligatorio.";
+
+    // Errores de negocio
+    public static final String ERROR_TARIFA_DUPLICADA = "Ya existe una tarifa para este tipo de vehículo y tiempo especificado.";
+    public static final String ERROR_TARIFA_NOT_FOUND = "Tarifa no encontrada.";
+
+    // Mensajes de respuesta para endpoints
+    public static final String ENDPOINT_TARIFA_POST = "Tarifa agregada correctamente.";
+    public static final String ENDPOINT_TARIFA_GET_ALL = "Listado de tarifas obtenido correctamente.";
+    public static final String ENDPOINT_TARIFA_PUT_CHANGE_STATUS = "Estado de la tarifa actualizado correctamente.";
+    public static final String ENDPOINT_TARIFA_PUT_UPDATE = "Tarifa actualizada correctamente.";
+    public static final String ENDPOINT_TARIFA_DELETE = "Tarifa eliminada correctamente.";
+}
