@@ -1,5 +1,9 @@
 package utez.edu.mx.backendparking.modules.tarifa;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import utez.edu.mx.backendparking.modules.tarifa.dto.TarifaRequestDto;
 import utez.edu.mx.backendparking.modules.tarifa.dto.TarifaResponseDto;
@@ -7,6 +11,8 @@ import utez.edu.mx.backendparking.modules.tarifa.dto.TarifaUpdateRequestDto;
 import utez.edu.mx.backendparking.shared.exception.ConflictException;
 import utez.edu.mx.backendparking.shared.exception.ResourceNotFoundException;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -32,6 +38,99 @@ public class TarifaServiceImpl implements TarifaService {
                 .stream()
                 .map(TarifaMapper::toResponseDto)
                 .collect(java.util.stream.Collectors.toList());
+    }
+
+
+    @Override
+    public Page<TarifaResponseDto> searchAndSortPaginated(Integer tiempo, Double costo, String sortBy, String sortOrder, int page, int size) {
+        // Obtener tarifas filtradas
+        List<Tarifa> tarifas = tarifaRepository.findByFilters(tiempo, costo);
+
+        // Determinar el comparador según el campo de ordenamiento
+        Comparator<Tarifa> comparator;
+
+        if (sortBy == null || sortBy.isEmpty()) {
+            sortBy = "tipoVehiculo"; // Por defecto
+        }
+
+        String sortByLower = sortBy.toLowerCase();
+
+        if (sortByLower.equals("tipovehiculo")) {
+            comparator = new Comparator<Tarifa>() {
+                @Override
+                public int compare(Tarifa t1, Tarifa t2) {
+                    int comparacion = t1.getTipoVehiculo().getNombre().compareTo(t2.getTipoVehiculo().getNombre());
+                    if (comparacion == 0) {
+                        return t1.getTiempo().compareTo(t2.getTiempo());
+                    }
+                    return comparacion;
+                }
+            };
+        } else if (sortByLower.equals("tiempo")) {
+            comparator = new Comparator<Tarifa>() {
+                @Override
+                public int compare(Tarifa t1, Tarifa t2) {
+                    return t1.getTiempo().compareTo(t2.getTiempo());
+                }
+            };
+        } else if (sortByLower.equals("costo")) {
+            comparator = new Comparator<Tarifa>() {
+                @Override
+                public int compare(Tarifa t1, Tarifa t2) {
+                    return t1.getCosto().compareTo(t2.getCosto());
+                }
+            };
+        } else {
+            // Por defecto: tipo de vehículo y tiempo
+            comparator = new Comparator<Tarifa>() {
+                @Override
+                public int compare(Tarifa t1, Tarifa t2) {
+                    int comparacion = t1.getTipoVehiculo().getNombre().compareTo(t2.getTipoVehiculo().getNombre());
+                    if (comparacion == 0) {
+                        return t1.getTiempo().compareTo(t2.getTiempo());
+                    }
+                    return comparacion;
+                }
+            };
+        }
+
+        // Aplicar orden descendente si es necesario
+        if ("desc".equalsIgnoreCase(sortOrder)) {
+            Comparator<Tarifa> ascComparator = comparator;
+            comparator = new Comparator<Tarifa>() {
+                @Override
+                public int compare(Tarifa t1, Tarifa t2) {
+                    return ascComparator.compare(t2, t1); // Invertir el orden
+                }
+            };
+        }
+
+        // Ordenar la lista
+        tarifas.sort(comparator);
+
+        // Calcular índices para la paginación
+        int totalElements = tarifas.size();
+        int fromIndex = page * size;
+        int toIndex = Math.min(fromIndex + size, totalElements);
+
+        // Validar que la página solicitada existe
+        if (fromIndex > totalElements) {
+            fromIndex = 0;
+            toIndex = 0;
+        }
+
+        // Obtener sublista paginada
+        List<Tarifa> tarifasPaginadas = tarifas.subList(fromIndex, toIndex);
+
+        // Convertir a DTOs
+        List<TarifaResponseDto> resultado = new ArrayList<>();
+        for (Tarifa tarifa : tarifasPaginadas) {
+            resultado.add(TarifaMapper.toResponseDto(tarifa));
+        }
+
+        // Crear objeto Pageable y Page
+        Pageable pageable = PageRequest.of(page, size);
+        return new PageImpl<>(resultado, pageable, totalElements);
     }
 
     @Override
