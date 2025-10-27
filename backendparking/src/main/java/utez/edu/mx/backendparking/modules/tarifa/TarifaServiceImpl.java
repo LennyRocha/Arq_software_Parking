@@ -19,6 +19,19 @@ public class TarifaServiceImpl implements TarifaService {
     }
 
     @Override
+    public List<TarifaResponseDto> findAll() {
+        return List.of();
+    }
+
+    @Override
+    public TarifaResponseDto findById(Long id) {
+        Tarifa tarifa = tarifaRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(TarifaMessages.ERROR_TARIFA_NOT_FOUND));
+
+        return  TarifaMapper.toResponseDto(tarifa);
+    }
+
+    @Override
     public TarifaResponseDto create(TarifaRequestDto dto) {
         // No puede existir una tarifa con la misma combinación de tiempo y tipo de vehículo
         if (tarifaRepository.existsByTiempoAndTipoVehiculo(dto.getTiempo(), dto.getTipoVehiculo())) {
@@ -31,10 +44,6 @@ public class TarifaServiceImpl implements TarifaService {
         return TarifaMapper.toResponseDto(tarifa);
     }
 
-    @Override
-    public List<TarifaResponseDto> findAll() {
-        return List.of();
-    }
 
     @Override
     public boolean changeStatus(Long id) {

@@ -24,11 +24,11 @@ public class TarifaController {
         this.tarifaService = tarifaService;
     }
 
-    @PostMapping
-    @Operation(summary = "Crear tipo de tarifa",description="Crear un nuevo tipo de tarifa en el sistema")
-    public ResponseEntity<ApiResponse<TarifaResponseDto>> create(@RequestBody @Valid TarifaRequestDto dto) {
-        TarifaResponseDto tarifa = tarifaService.create(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(HttpStatus.CREATED, TarifaMessages.ENDPOINT_TARIFA_POST, tarifa));
+    @GetMapping("/{id}")
+    @Operation(summary = "Obtener tarifa por id",description="Obtener una tarifa buscandola por su id")
+    public ResponseEntity<ApiResponse<TarifaResponseDto>> findById(@PathVariable Long id) {
+        TarifaResponseDto tarifa = tarifaService.findById(id);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(HttpStatus.OK, TarifaMessages.ENDPOINT_TARIFA_GET_BY_ID, tarifa));
     }
 
     @GetMapping
@@ -36,6 +36,13 @@ public class TarifaController {
     public ResponseEntity<ApiResponse<List<TarifaResponseDto>>> findAll() {
         List<TarifaResponseDto> tarifas = tarifaService.findAll();
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(HttpStatus.OK, TarifaMessages.ENDPOINT_TARIFA_GET_ALL, tarifas));
+    }
+
+    @PostMapping
+    @Operation(summary = "Crear tipo de tarifa",description="Crear un nuevo tipo de tarifa en el sistema")
+    public ResponseEntity<ApiResponse<TarifaResponseDto>> create(@RequestBody @Valid TarifaRequestDto dto) {
+        TarifaResponseDto tarifa = tarifaService.create(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(HttpStatus.CREATED, TarifaMessages.ENDPOINT_TARIFA_POST, tarifa));
     }
 
     @PutMapping("/{id}/status")

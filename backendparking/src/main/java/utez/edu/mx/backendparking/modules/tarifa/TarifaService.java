@@ -7,6 +7,7 @@ import utez.edu.mx.backendparking.modules.tarifa.dto.TarifaUpdateRequestDto;
 import java.util.List;
 
 public interface TarifaService {
+    TarifaResponseDto findById(Long id);
     TarifaResponseDto create(TarifaRequestDto dto);
     List<TarifaResponseDto> findAll();
     boolean changeStatus(Long id);
