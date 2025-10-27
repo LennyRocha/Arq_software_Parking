@@ -6,11 +6,9 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import utez.edu.mx.backendparking.modules.pension.PensionMessages;
-import utez.edu.mx.backendparking.modules.pension.dto.PensionRequestDto;
-import utez.edu.mx.backendparking.modules.pension.dto.PensionResponseDto;
 import utez.edu.mx.backendparking.modules.tarifa.dto.TarifaRequestDto;
 import utez.edu.mx.backendparking.modules.tarifa.dto.TarifaResponseDto;
+import utez.edu.mx.backendparking.modules.tarifa.dto.TarifaUpdateRequestDto;
 import utez.edu.mx.backendparking.shared.api.ApiResponse;
 
 import java.util.List;
@@ -41,10 +39,18 @@ public class TarifaController {
     }
 
     @PutMapping("/{id}/status")
+    @Operation(summary = "Cambiar estado de tarifa", description = "Cambiar el estado (activo/inactivo) de una tarifa")
     public ResponseEntity<ApiResponse<Void>> changeStatus(@PathVariable Long id) {
 
         boolean estado = tarifaService.changeStatus(id);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(HttpStatus.OK,
                 estado ? TarifaMessages.ENDPOINT_TARIFA_CHANGE_STATUS_ON : TarifaMessages.ENDPOINT_TARIFA_CHANGE_STATUS_OFF, null));
+    }
+
+    @PutMapping("")
+    @Operation(summary = "Actualizar tarifa", description = "Actualizar los datos de una tarifa existente")
+    public ResponseEntity<ApiResponse<TarifaResponseDto>> update(@RequestBody @Valid TarifaUpdateRequestDto dto) {
+        TarifaResponseDto tarifa = tarifaService.update(dto);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(HttpStatus.OK, TarifaMessages.ENDPOINT_TARIFA_PUT_UPDATE, tarifa));
     }
 }

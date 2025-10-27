@@ -2,6 +2,8 @@ package utez.edu.mx.backendparking.modules.tarifa;
 
 public class TarifaMessages {
 
+    public static final String ERROR_ID_OBLIGATORIO = "El id es obligatorio es obligatorio.";
+
     // Errores de validación basados en los atributos de la entidad Tarifa
     public static final String ERROR_TIEMPO_OBLIGATORIO = "El tiempo (en minutos) es obligatorio.";
     public static final String ERROR_TIEMPO_MAYOR_15 = "El tiempo debe ser mayor a 15 minutos.";

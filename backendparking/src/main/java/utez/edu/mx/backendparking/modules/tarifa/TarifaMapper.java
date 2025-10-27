@@ -2,6 +2,7 @@ package utez.edu.mx.backendparking.modules.tarifa;
 
 import utez.edu.mx.backendparking.modules.tarifa.dto.TarifaRequestDto;
 import utez.edu.mx.backendparking.modules.tarifa.dto.TarifaResponseDto;
+import utez.edu.mx.backendparking.modules.tarifa.dto.TarifaUpdateRequestDto;
 
 public class TarifaMapper {
 
@@ -14,6 +15,18 @@ public class TarifaMapper {
         return tarifa;
     }
 
+    public static void toUpdateEntity(Tarifa tarifa, TarifaUpdateRequestDto dto) {
+        if (dto.getTiempo() != null) {
+            tarifa.setTiempo(dto.getTiempo());
+        }
+        if (dto.getCosto() != null) {
+            tarifa.setCosto(dto.getCosto());
+        }
+        if (dto.getTipoVehiculo() != null) {
+            tarifa.setTipoVehiculo(dto.getTipoVehiculo());
+        }
+    }
+
     public static TarifaResponseDto toResponseDto(Tarifa entity) {
         TarifaResponseDto tarifaResponseDto = new TarifaResponseDto();
         tarifaResponseDto.setId(entity.getId());
@@ -24,4 +37,3 @@ public class TarifaMapper {
         return tarifaResponseDto;
     }
 }
-

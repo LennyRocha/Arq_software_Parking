@@ -3,6 +3,7 @@ package utez.edu.mx.backendparking.modules.tarifa;
 import org.springframework.stereotype.Service;
 import utez.edu.mx.backendparking.modules.tarifa.dto.TarifaRequestDto;
 import utez.edu.mx.backendparking.modules.tarifa.dto.TarifaResponseDto;
+import utez.edu.mx.backendparking.modules.tarifa.dto.TarifaUpdateRequestDto;
 import utez.edu.mx.backendparking.shared.exception.ConflictException;
 import utez.edu.mx.backendparking.shared.exception.ResourceNotFoundException;
 
@@ -42,7 +43,28 @@ public class TarifaServiceImpl implements TarifaService {
 
         tarifa.setEstatus(!tarifa.getEstatus());
         tarifaRepository.save(tarifa);
-
         return tarifa.getEstatus();
+    }
+
+    @Override
+    public TarifaResponseDto update(TarifaUpdateRequestDto dto) {
+        // Buscar la tarifa existente
+        Tarifa tarifa = tarifaRepository.findById(dto.getId())
+                .orElseThrow(() -> new ResourceNotFoundException(TarifaMessages.ERROR_TARIFA_NOT_FOUND));
+
+        // Validar que no exista otra tarifa con la misma combinación (si se están cambiando estos valores)
+        if (dto.getTiempo() != null && dto.getTipoVehiculo() != null) {
+            boolean exists = tarifaRepository.existsByTiempoAndTipoVehiculo(dto.getTiempo(), dto.getTipoVehiculo());
+            // Solo lanzar error si existe y no es la misma tarifa que estamos actualizando
+            if (exists && (!tarifa.getTiempo().equals(dto.getTiempo()) || !tarifa.getTipoVehiculo().equals(dto.getTipoVehiculo()))) {
+                throw new ConflictException(TarifaMessages.ERROR_TARIFA_DUPLICADA);
+            }
+        }
+
+        // Actualizar los campos
+        TarifaMapper.toUpdateEntity(tarifa, dto);
+        tarifaRepository.save(tarifa);
+
+        return TarifaMapper.toResponseDto(tarifa);
     }
 }
