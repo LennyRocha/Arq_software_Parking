@@ -1,0 +1,35 @@
+package utez.edu.mx.backendparking.modules.entradasalida;
+
+public class EntradaSalidaMessages {
+
+    public static final String ERROR_ID_OBLIGATORIO = "El id es obligatorio.";
+
+    // Errores de validación basados en los atributos de la entidad EntradaSalida
+    public static final String ERROR_FOLIO_TICKET_OBLIGATORIO = "El folio del ticket es obligatorio.";
+    public static final String ERROR_FOLIO_TICKET_MAYOR_0 = "El folio del ticket debe ser mayor a 0.";
+
+    public static final String ERROR_HORA_ENTRADA_OBLIGATORIA = "La hora de entrada es obligatoria.";
+    public static final String ERROR_HORA_SALIDA_INVALIDA = "La hora de salida no puede ser anterior a la hora de entrada.";
+
+    public static final String ERROR_CANTIDAD_PAGO_MAYOR_0 = "La cantidad de pago debe ser mayor a 0.";
+
+    public static final String ERROR_FECHA_OBLIGATORIA = "La fecha es obligatoria.";
+
+    public static final String ERROR_USUARIO_OBLIGATORIO = "El usuario es obligatorio.";
+    public static final String ERROR_VEHICULO_OBLIGATORIO = "El vehículo es obligatorio.";
+    public static final String ERROR_TIPO_VEHICULO_OBLIGATORIO = "El tipo de vehículo es obligatorio.";
+
+    // Errores de negocio
+    public static final String ERROR_ENTRADA_SALIDA_DUPLICADA = "Ya existe un registro con este folio de ticket.";
+    public static final String ERROR_ENTRADA_SALIDA_NOT_FOUND = "Registro de entrada/salida no encontrado.";
+    public static final String ERROR_VEHICULO_YA_EN_ESTACIONAMIENTO = "El vehículo ya se encuentra en el estacionamiento.";
+    public static final String ERROR_VEHICULO_NO_EN_ESTACIONAMIENTO = "El vehículo no se encuentra registrado en el estacionamiento.";
+
+    // Mensajes de respuesta para endpoints
+    public static final String ENDPOINT_ENTRADA_SALIDA_POST = "Registro de entrada creado correctamente.";
+    public static final String ENDPOINT_ENTRADA_SALIDA_GET_BY_ID = "Registro de entrada/salida obtenido correctamente.";
+    public static final String ENDPOINT_ENTRADA_SALIDA_GET_ALL = "Listado de registros de entrada/salida obtenido correctamente.";
+    public static final String ENDPOINT_ENTRADA_SALIDA_REGISTRAR_SALIDA = "Salida registrada correctamente.";
+    public static final String ENDPOINT_ENTRADA_SALIDA_PUT_UPDATE = "Registro de entrada/salida actualizado correctamente.";
+    public static final String ENDPOINT_ENTRADA_SALIDA_DELETE = "Registro de entrada/salida eliminado correctamente.";
+}

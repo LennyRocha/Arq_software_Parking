@@ -62,6 +62,12 @@ public class EntradaSalida {
         this.tipoVehiculo = tipoVehiculo;
     }
 
+    @PrePersist
+    private void prePersist() {
+        if (this.fecha == null) {
+            this.fecha = LocalDate.now();
+        }
+    }
 
     // GETTERS Y SETTERS
     public Long getId() {
