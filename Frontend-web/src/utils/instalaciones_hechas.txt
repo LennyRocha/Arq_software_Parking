@@ -19,3 +19,5 @@ npm install @mui/material @emotion/react @emotion/styled
 
 #iconos
 npm install @mui/icons-material
+npm install react-icons
+npm install @mdi/react @mdi/js

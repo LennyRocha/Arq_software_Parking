@@ -25,6 +25,9 @@
   --success: #4caf50;
   --info: #2196f3;
   --dark: #1e1e1e;
+  --side-icon: #808080;
+  --text: #242424;
+  --main-background: #ffffff;
 }
 
 body.dark {
@@ -44,6 +47,9 @@ body.dark {
   --success: #0B6E00;
   --info: #1976D2;
   --dark: #424242;
+  --side-icon: #c5e4e7;
+  --text: #ffffff;
+  --main-background: #242424;
 }
 
 .bukon {
@@ -142,6 +148,18 @@ body.dark {
   color: var(--dark);
 }
 
+.selected-icon-color {
+  color: var(--text);
+}
+
+.bg-white{
+  background-color: #ffffff;
+}
+
+.color-white{
+  color: #ffffff;
+}
+
 /* Estilos globales */
 
 input {
@@ -158,7 +176,7 @@ body.dark input {
 }
 
 /*Quitar*/
-.bx{
+.bx {
   width: 100px;
   height: 100px;
   aspect-ratio: 1/1;
@@ -224,4 +242,14 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
+}
+
+/*Clase para quitar el scrollbar*/
+.no_scroll {
+  scrollbar-width: none;
+  overflow-x: auto;
+}
+
+.no_scroll::-webkit-scrollbar {
+  display: none;
 }
