@@ -6,9 +6,13 @@ import org.springframework.transaction.annotation.Transactional;
 import utez.edu.mx.backendparking.modules.entradasalida.dto.EntradaSalidaCreatePensionadoRequestDto;
 import utez.edu.mx.backendparking.modules.entradasalida.dto.EntradaSalidaCreateVisitanteRequestDto;
 import utez.edu.mx.backendparking.modules.entradasalida.dto.EntradaSalidaResponseDto;
+import utez.edu.mx.backendparking.modules.usuario.Usuario;
+import utez.edu.mx.backendparking.shared.exception.BadRequestException;
 
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 @Service
@@ -72,11 +76,27 @@ public class EntradaSalidaServiceImpl implements EntradaSalidaService {
     @Override
     @Transactional(rollbackFor = {SQLException.class, ConstraintViolationException.class})
     public EntradaSalidaResponseDto createVisitante(EntradaSalidaCreateVisitanteRequestDto dto) {
+        /*
+        // 1. Convertir DTO a entidad usando el mapper
+        // El mapper ya maneja la lógica: si hay vehículo, toma su tipo; si no, usa el tipo especificado
+        EntradaSalida entradaSalida = EntradaSalidaMapper.toEntityFromVisitante(dto);
+
+        // 2. Generar folio automático único
+        entradaSalida.setFolioTicket(generarFolioUnico());
+
+        // 3. Los demás atributos quedan nulos o se ponen por defecto automáticamente
+        // (fecha y horaEntrada se ponen automáticamente por @PrePersist en la entidad)
+
+        // Guardar la entidad
+        EntradaSalida savedEntradaSalida = entradaSalidaRepository.save(entradaSalida);
+
+        // Convertir a DTO de respuesta usando el mapper
+        return EntradaSalidaMapper.toResponseDto(savedEntradaSalida);
+        */
         return null;
     }
 
-
-/*
+    /*
     // Método privado para generar folio único
     private Integer generarFolioUnico() {
         Random random = new Random();
@@ -105,7 +125,6 @@ public class EntradaSalidaServiceImpl implements EntradaSalidaService {
         }
         return false;
     }
-
     */
 
 }

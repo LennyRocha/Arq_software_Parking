@@ -25,8 +25,15 @@ public class EntradaSalidaMapper {
     public static EntradaSalida toEntityFromVisitante(EntradaSalidaCreateVisitanteRequestDto dto) {
         EntradaSalida entradaSalida = new EntradaSalida();
         entradaSalida.setVehiculo(dto.getVehiculo());
-        entradaSalida.setTipoVehiculo(dto.getTipoVehiculo());
-        entradaSalida.setHoraEntrada(LocalTime.now());
+
+        // Si el vehículo está especificado, tomar su tipo de vehículo
+        // Si no, usar el tipo de vehículo especificado directamente en el DTO
+        if (dto.getVehiculo() != null) {
+            entradaSalida.setTipoVehiculo(dto.getVehiculo().getTipoVehiculo());
+        } else {
+            entradaSalida.setTipoVehiculo(dto.getTipoVehiculo());
+        }
+
         return entradaSalida;
     }
 
@@ -45,4 +52,3 @@ public class EntradaSalidaMapper {
         return responseDto;
     }
 }
-

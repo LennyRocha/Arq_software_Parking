@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import utez.edu.mx.backendparking.modules.entradasalida.dto.EntradaSalidaCreatePensionadoRequestDto;
+import utez.edu.mx.backendparking.modules.entradasalida.dto.EntradaSalidaCreateVisitanteRequestDto;
 import utez.edu.mx.backendparking.modules.entradasalida.dto.EntradaSalidaResponseDto;
 import utez.edu.mx.backendparking.shared.api.ApiResponse;
 
@@ -30,5 +31,16 @@ public class EntradaSalidaController {
         EntradaSalidaResponseDto entradaSalida = entradaSalidaService.createPensionado(dto);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success(HttpStatus.CREATED, EntradaSalidaMessages.ENDPOINT_ENTRADA_SALIDA_POST_PENSIONADO, entradaSalida));
+    }
+
+    @PostMapping("/visitante")
+    @Operation(summary = "Registrar entrada de visitante",
+               description = "Registra la entrada de un vehículo visitante al estacionamiento. " +
+                             "Si se especifica un vehículo, toma su tipo de vehículo; si no, usa el tipo de vehículo especificado directamente. " +
+                             "Genera automáticamente un folio único, fecha y hora de entrada.")
+    public ResponseEntity<ApiResponse<EntradaSalidaResponseDto>> createVisitante(@RequestBody @Valid EntradaSalidaCreateVisitanteRequestDto dto) {
+        EntradaSalidaResponseDto entradaSalida = entradaSalidaService.createVisitante(dto);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.success(HttpStatus.CREATED, EntradaSalidaMessages.ENDPOINT_ENTRADA_SALIDA_POST, entradaSalida));
     }
 }
