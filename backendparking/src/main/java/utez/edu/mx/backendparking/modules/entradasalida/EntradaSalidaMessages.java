@@ -24,9 +24,11 @@ public class EntradaSalidaMessages {
     public static final String ERROR_ENTRADA_SALIDA_NOT_FOUND = "Registro de entrada/salida no encontrado.";
     public static final String ERROR_VEHICULO_YA_EN_ESTACIONAMIENTO = "El vehículo ya se encuentra en el estacionamiento.";
     public static final String ERROR_VEHICULO_NO_EN_ESTACIONAMIENTO = "El vehículo no se encuentra registrado en el estacionamiento.";
+    public static final String ERROR_VEHICULO_NO_PERTENECE_USUARIO = "El vehículo no pertenece al usuario especificado.";
 
     // Mensajes de respuesta para endpoints
     public static final String ENDPOINT_ENTRADA_SALIDA_POST = "Registro de entrada creado correctamente.";
+    public static final String ENDPOINT_ENTRADA_SALIDA_POST_PENSIONADO = "Registro de entrada para pensionado creado correctamente.";
     public static final String ENDPOINT_ENTRADA_SALIDA_GET_BY_ID = "Registro de entrada/salida obtenido correctamente.";
     public static final String ENDPOINT_ENTRADA_SALIDA_GET_ALL = "Listado de registros de entrada/salida obtenido correctamente.";
     public static final String ENDPOINT_ENTRADA_SALIDA_REGISTRAR_SALIDA = "Salida registrada correctamente.";

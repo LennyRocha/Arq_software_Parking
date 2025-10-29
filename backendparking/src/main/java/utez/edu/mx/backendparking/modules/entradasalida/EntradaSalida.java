@@ -17,7 +17,7 @@ public class EntradaSalida {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name= "folio_ticket", nullable = false)
+    @Column(name= "folio_ticket", nullable = false, unique = true)
     private Integer folioTicket;
 
     @Column(name= "hora_entrada", nullable = false)

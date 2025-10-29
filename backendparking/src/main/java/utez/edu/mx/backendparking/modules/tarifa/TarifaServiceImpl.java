@@ -1,16 +1,19 @@
 package utez.edu.mx.backendparking.modules.tarifa;
 
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import utez.edu.mx.backendparking.modules.tarifa.dto.TarifaRequestDto;
 import utez.edu.mx.backendparking.modules.tarifa.dto.TarifaResponseDto;
 import utez.edu.mx.backendparking.modules.tarifa.dto.TarifaUpdateRequestDto;
 import utez.edu.mx.backendparking.shared.exception.ConflictException;
 import utez.edu.mx.backendparking.shared.exception.ResourceNotFoundException;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -25,6 +28,7 @@ public class TarifaServiceImpl implements TarifaService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<TarifaResponseDto> findAll() {
         return tarifaRepository.findAll()
                 .stream()
@@ -33,6 +37,7 @@ public class TarifaServiceImpl implements TarifaService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<TarifaResponseDto> findAllActiveOrderByTipoVehiculoAndTiempo() {
         return tarifaRepository.findByEstatusOrderByTipoVehiculoNombreAscTiempoAsc(true)
                 .stream()
@@ -42,6 +47,7 @@ public class TarifaServiceImpl implements TarifaService {
 
 
     @Override
+    @Transactional(readOnly = true)
     public Page<TarifaResponseDto> searchAndSortPaginated(Integer tiempo, Double costo, String sortBy, String sortOrder, int page, int size) {
         // Obtener tarifas filtradas
         List<Tarifa> tarifas = tarifaRepository.findByFilters(tiempo, costo);
@@ -117,6 +123,7 @@ public class TarifaServiceImpl implements TarifaService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public TarifaResponseDto findById(Long id) {
         Tarifa tarifa = tarifaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(TarifaMessages.ERROR_TARIFA_NOT_FOUND));
@@ -125,6 +132,7 @@ public class TarifaServiceImpl implements TarifaService {
     }
 
     @Override
+    @Transactional(rollbackFor = {SQLException.class, ConstraintViolationException.class})
     public TarifaResponseDto create(TarifaRequestDto dto) {
         // No puede existir una tarifa con la misma combinación de tiempo y tipo de vehículo
         if (tarifaRepository.existsByTiempoAndTipoVehiculo(dto.getTiempo(), dto.getTipoVehiculo())) {
@@ -139,6 +147,7 @@ public class TarifaServiceImpl implements TarifaService {
 
 
     @Override
+    @Transactional(rollbackFor = {SQLException.class, ConstraintViolationException.class})
     public boolean changeStatus(Long id) {
         Tarifa tarifa = tarifaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(TarifaMessages.ERROR_TARIFA_NOT_FOUND));
@@ -149,6 +158,7 @@ public class TarifaServiceImpl implements TarifaService {
     }
 
     @Override
+    @Transactional(rollbackFor = {SQLException.class, ConstraintViolationException.class})
     public TarifaResponseDto update(TarifaUpdateRequestDto dto) {
         // Buscar la tarifa existente
         Tarifa tarifa = tarifaRepository.findById(dto.getId())

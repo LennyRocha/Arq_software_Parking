@@ -5,4 +5,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface EntradaSalidaRepository extends JpaRepository<EntradaSalida, Long> {
+    boolean existsByFolioTicket(Integer folioTicket);
 }
