@@ -6,22 +6,27 @@ import org.springframework.transaction.annotation.Transactional;
 import utez.edu.mx.backendparking.modules.entradasalida.dto.EntradaSalidaCreatePensionadoRequestDto;
 import utez.edu.mx.backendparking.modules.entradasalida.dto.EntradaSalidaCreateVisitanteRequestDto;
 import utez.edu.mx.backendparking.modules.entradasalida.dto.EntradaSalidaResponseDto;
-import utez.edu.mx.backendparking.modules.usuario.Usuario;
+import utez.edu.mx.backendparking.modules.tarifa.Tarifa;
+import utez.edu.mx.backendparking.modules.tarifa.TarifaMessages;
+import utez.edu.mx.backendparking.modules.tarifa.TarifaRepository;
 import utez.edu.mx.backendparking.shared.exception.BadRequestException;
+import utez.edu.mx.backendparking.shared.exception.ResourceNotFoundException;
 
 import java.sql.SQLException;
-import java.time.LocalDate;
+import java.time.Duration;
+import java.time.LocalTime;
 import java.util.List;
-import java.util.Random;
 import java.util.stream.Collectors;
 
 @Service
 public class EntradaSalidaServiceImpl implements EntradaSalidaService {
 
     private final EntradaSalidaRepository entradaSalidaRepository;
+    private final TarifaRepository tarifaRepository;
 
-    public EntradaSalidaServiceImpl(EntradaSalidaRepository entradaSalidaRepository) {
+    public EntradaSalidaServiceImpl(EntradaSalidaRepository entradaSalidaRepository, TarifaRepository tarifaRepository) {
         this.entradaSalidaRepository = entradaSalidaRepository;
+        this.tarifaRepository = tarifaRepository;
     }
 
     // COSAS QUE FALTAN POR HACER
@@ -53,14 +58,9 @@ public class EntradaSalidaServiceImpl implements EntradaSalidaService {
         // 3. Generar folio automático único
         entradaSalida.setFolioTicket(generarFolioUnico());
 
-        // 4. Buscar el monto a pagar basado en el tipo de pensión del usuario
-        Double montoPago = obtenerMontoPorTipoPension(dto.getUsuario());
-        entradaSalida.setCantidadPago(montoPago);
-
-        // 5. Verificar si la pensión va a caducar en el día en curso
+        // 4. Verificar si la pensión va a caducar en el día en curso
         boolean vencimientoHoy = verificarVencimientoPension(dto.getUsuario());
         entradaSalida.setVencimientoPension(vencimientoHoy);
-
 
         // Guardar la entidad
         EntradaSalida savedEntradaSalida = entradaSalidaRepository.save(entradaSalida);
@@ -96,6 +96,84 @@ public class EntradaSalidaServiceImpl implements EntradaSalidaService {
         return null;
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public EntradaSalidaResponseDto marcarSalidaVisitante(Integer folioTicket) {
+        // 1. Buscar el registro por folio
+        EntradaSalida entradaSalida = entradaSalidaRepository.findByFolioTicket(folioTicket)
+                .orElseThrow(() -> new ResourceNotFoundException(EntradaSalidaMessages.ERROR_ENTRADA_SALIDA_NOT_FOUND));
+
+        // 2. Validar que sea un visitante (no tiene usuario asociado)
+        if (entradaSalida.getUsuario() != null) {
+            throw new BadRequestException(EntradaSalidaMessages.ERROR_FOLIO_ES_PENSIONADO);
+        }
+
+        // 3. Validar que no tenga ya una salida registrada
+        if (entradaSalida.getHoraSalida() != null) {
+            throw new BadRequestException(EntradaSalidaMessages.ERROR_SALIDA_YA_REGISTRADA);
+        }
+
+        // 4. Establecer hora de salida actual
+        LocalTime horaSalida = LocalTime.now();
+
+        // 5. Calcular tiempo transcurrido en minutos
+        long minutosTranscurridos = Duration.between(entradaSalida.getHoraEntrada(), horaSalida).toMinutes();
+
+        // 6. Obtener tarifas activas para el tipo de vehículo, ordenadas por tiempo ascendente
+        List<Tarifa> tarifas = tarifaRepository.findByTipoVehiculoAndEstatusOrderByTiempoAsc(
+                entradaSalida.getTipoVehiculo(), true);
+
+        if (tarifas.isEmpty()) {
+            throw new ResourceNotFoundException(TarifaMessages.ERROR_TARIFA_NOT_FOUND +
+                    ": " + entradaSalida.getTipoVehiculo().getNombre());
+        }
+
+        // 7. Calcular el monto a pagar según las tarifas
+        double montoPagar = calcularMontoPago(minutosTranscurridos, tarifas);
+
+        // 8. Crear el DTO de respuesta con los datos calculados
+        EntradaSalidaResponseDto responseDto = EntradaSalidaMapper.toResponseDto(entradaSalida);
+        responseDto.setHoraSalida(horaSalida);
+        responseDto.setCantidadPago(montoPagar);
+
+        return responseDto;
+    }
+
+    /**
+     * Calcula el monto a pagar basado en el tiempo transcurrido y las tarifas disponibles.
+     * Se cobra por cada fracción de tiempo definida en las tarifas.
+     */
+    private double calcularMontoPago(long minutosTranscurridos, List<Tarifa> tarifas) {
+        double montoTotal = 0.0;
+        long minutosRestantes = minutosTranscurridos;
+
+        // Si no hay minutos transcurridos, no se cobra
+        if (minutosTranscurridos <= 0) {
+            return 0.0;
+        }
+
+        // Iterar sobre las tarifas de menor a mayor tiempo
+        for (Tarifa tarifa : tarifas) {
+            if (minutosRestantes <= 0) {
+                break;
+            }
+
+            // Calcular cuántas fracciones de tiempo se consumen
+            long fracciones = (long) Math.ceil((double) minutosRestantes / tarifa.getTiempo());
+
+            // Si hay más de una tarifa, solo se cobra una fracción de la tarifa actual
+            // y se pasa a la siguiente tarifa para el tiempo restante
+            if (tarifas.size() > 1 && minutosRestantes > tarifa.getTiempo()) {
+                fracciones = 1;
+            }
+
+            montoTotal += fracciones * tarifa.getCosto();
+            minutosRestantes -= fracciones * tarifa.getTiempo();
+        }
+
+        return montoTotal;
+    }
+
     /*
     // Método privado para generar folio único
     private Integer generarFolioUnico() {
@@ -105,15 +183,6 @@ public class EntradaSalidaServiceImpl implements EntradaSalidaService {
             folio = 100000 + random.nextInt(900000); // Genera número de 6 dígitos
         } while (entradaSalidaRepository.existsByFolioTicket(folio));
         return folio;
-    }
-
-    // Método privado para obtener el monto según el tipo de pensión del usuario
-    private Double obtenerMontoPorTipoPension(Usuario usuario) {
-        // Asumiendo que existe un método en el usuario para obtener su pensión activa
-        if (usuario.getPensionActiva() != null) {
-            return usuario.getPensionActiva().getCosto();
-        }
-        return 0.0;
     }
 
     // Método privado para verificar si la pensión vence hoy

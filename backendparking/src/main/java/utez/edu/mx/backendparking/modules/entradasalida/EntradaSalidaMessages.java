@@ -25,6 +25,9 @@ public class EntradaSalidaMessages {
     public static final String ERROR_VEHICULO_YA_EN_ESTACIONAMIENTO = "El vehículo ya se encuentra en el estacionamiento.";
     public static final String ERROR_VEHICULO_NO_EN_ESTACIONAMIENTO = "El vehículo no se encuentra registrado en el estacionamiento.";
     public static final String ERROR_VEHICULO_NO_PERTENECE_USUARIO = "El vehículo no pertenece al usuario especificado.";
+    public static final String ERROR_FOLIO_ES_PENSIONADO = "Este folio corresponde a un pensionado, no a un visitante.";
+    public static final String ERROR_SALIDA_YA_REGISTRADA = "Este folio ya tiene una salida registrada.";
+    public static final String ERROR_TARIFA_NO_ENCONTRADA = "No se encontraron tarifas activas para el tipo de vehículo.";
 
     // Mensajes de respuesta para endpoints
     public static final String ENDPOINT_ENTRADA_SALIDA_POST = "Registro de entrada creado correctamente.";

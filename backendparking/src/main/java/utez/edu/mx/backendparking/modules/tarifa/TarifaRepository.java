@@ -18,4 +18,6 @@ public interface TarifaRepository extends JpaRepository<Tarifa, Long> {
            "(:tiempo IS NULL OR t.tiempo = :tiempo) AND " +
            "(:costo IS NULL OR t.costo = :costo)")
     List<Tarifa> findByFilters(@Param("tiempo") Integer tiempo, @Param("costo") Double costo);
+
+    List<Tarifa> findByTipoVehiculoAndEstatusOrderByTiempoAsc(TipoVehiculo tipoVehiculo, Boolean estatus);
 }
