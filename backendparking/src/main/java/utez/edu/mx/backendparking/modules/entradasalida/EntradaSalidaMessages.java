@@ -35,6 +35,7 @@ public class EntradaSalidaMessages {
     public static final String ENDPOINT_ENTRADA_SALIDA_GET_BY_ID = "Registro de entrada/salida obtenido correctamente.";
     public static final String ENDPOINT_ENTRADA_SALIDA_GET_ALL = "Listado de registros de entrada/salida obtenido correctamente.";
     public static final String ENDPOINT_ENTRADA_SALIDA_REGISTRAR_SALIDA = "Salida registrada correctamente.";
+    public static final String ENDPOINT_ENTRADA_SALIDA_SALIDA_DATOS= "Datos de salida obtenidos correctamente.";
     public static final String ENDPOINT_ENTRADA_SALIDA_PUT_UPDATE = "Registro de entrada/salida actualizado correctamente.";
     public static final String ENDPOINT_ENTRADA_SALIDA_DELETE = "Registro de entrada/salida eliminado correctamente.";
 }

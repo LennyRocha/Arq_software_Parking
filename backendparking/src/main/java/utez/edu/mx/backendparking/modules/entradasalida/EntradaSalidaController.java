@@ -44,12 +44,22 @@ public class EntradaSalidaController {
                 .body(ApiResponse.success(HttpStatus.CREATED, EntradaSalidaMessages.ENDPOINT_ENTRADA_SALIDA_POST, entradaSalida));
     }
 
-    @GetMapping("/visitante/salida/{folioTicket}")
-    @Operation(summary = "Marcar salida de visitante",
+    @GetMapping("/visitante/salida-datos/{folioTicket}")
+    @Operation(summary = "Obtener datos de salida de visitante",
                description = "Obtiene los datos de salida de un visitante incluyendo la hora de salida actual y el monto a pagar " +
                              "calculado según las tarifas configuradas para el tipo de vehículo. " +
                              "Este endpoint NO guarda los datos en la base de datos, solo los retorna para su visualización.")
     public ResponseEntity<ApiResponse<EntradaSalidaResponseDto>> solicitarDatosSalidaVisitante(@PathVariable Integer folioTicket) {
+        EntradaSalidaResponseDto entradaSalida = entradaSalidaService.solicitarDatosSalidaVisitante(folioTicket);
+        return ResponseEntity.ok()
+                .body(ApiResponse.success(HttpStatus.OK, EntradaSalidaMessages.ENDPOINT_ENTRADA_SALIDA_SALIDA_DATOS, entradaSalida));
+    }
+
+    @PutMapping("/visitante/salida/{folioTicket}")
+    @Operation(summary = "marcar salida de visitante",
+            description = "Marca la salida de un vehículo visitante del estacionamiento. " +
+                    "Calcula y guarda la hora de salida y el monto a pagar en la base de datos según las tarifas configuradas para el tipo de vehículo.")
+    public ResponseEntity<ApiResponse<EntradaSalidaResponseDto>> marcarSalidaVisitante(@PathVariable Integer folioTicket) {
         EntradaSalidaResponseDto entradaSalida = entradaSalidaService.solicitarDatosSalidaVisitante(folioTicket);
         return ResponseEntity.ok()
                 .body(ApiResponse.success(HttpStatus.OK, EntradaSalidaMessages.ENDPOINT_ENTRADA_SALIDA_REGISTRAR_SALIDA, entradaSalida));

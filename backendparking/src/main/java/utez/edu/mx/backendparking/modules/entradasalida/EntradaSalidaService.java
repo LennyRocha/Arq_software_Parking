@@ -11,4 +11,5 @@ public interface EntradaSalidaService {
     EntradaSalidaResponseDto createVisitante(EntradaSalidaCreateVisitanteRequestDto dto);
     List<EntradaSalidaResponseDto> findAll();
     EntradaSalidaResponseDto solicitarDatosSalidaVisitante(Integer folioTicket);
+    EntradaSalidaResponseDto marcarSalidaVisitante(Integer folioTicket);
 }

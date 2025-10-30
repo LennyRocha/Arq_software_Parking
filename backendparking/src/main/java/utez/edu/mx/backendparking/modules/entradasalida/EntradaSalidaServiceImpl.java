@@ -102,6 +102,12 @@ public class EntradaSalidaServiceImpl implements EntradaSalidaService {
         return salidaVisitante(folioTicket, false);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public EntradaSalidaResponseDto marcarSalidaVisitante(Integer folioTicket) {
+        return salidaVisitante(folioTicket, true);
+    }
+
     /**
      * Lógica compartida para obtener los datos de salida de un visitante.
      * Si guardarDatosBD es true, también guarda la hora de salida y el monto a pagar en la base de datos.
