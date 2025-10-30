@@ -99,6 +99,15 @@ public class EntradaSalidaServiceImpl implements EntradaSalidaService {
     @Override
     @Transactional(readOnly = true)
     public EntradaSalidaResponseDto solicitarDatosSalidaVisitante(Integer folioTicket) {
+        return salidaVisitante(folioTicket, false);
+    }
+
+    /**
+     * Lógica compartida para obtener los datos de salida de un visitante.
+     * Si guardarDatosBD es true, también guarda la hora de salida y el monto a pagar en la base de datos.
+     */
+
+    private EntradaSalidaResponseDto salidaVisitante(Integer folioTicket, boolean guardarDatosBD){
         // 1. Buscar el registro por folio
         EntradaSalida entradaSalida = entradaSalidaRepository.findByFolioTicket(folioTicket)
                 .orElseThrow(() -> new ResourceNotFoundException(EntradaSalidaMessages.ERROR_ENTRADA_SALIDA_NOT_FOUND));
@@ -131,7 +140,16 @@ public class EntradaSalidaServiceImpl implements EntradaSalidaService {
         // 7. Calcular el monto a pagar según las tarifas
         double montoPagar = calcularMontoPago(minutosTranscurridos, tarifas);
 
-        // 8. Crear el DTO de respuesta con los datos calculados
+        // 8. Actualizar la entidad con hora de salida y monto a pagar
+        entradaSalida.setHoraSalida(horaSalida);
+        entradaSalida.setCantidadPago(montoPagar);
+
+        // 9. Si es marcado, se guardan los datos en la base de datos
+        if(guardarDatosBD){
+            entradaSalidaRepository.save(entradaSalida); // Guardar el registro con hora de salida y monto a pagar
+        }
+
+        // 10. Crear el DTO de respuesta con los datos calculados
         EntradaSalidaResponseDto responseDto = EntradaSalidaMapper.toResponseDto(entradaSalida);
         responseDto.setHoraSalida(horaSalida);
         responseDto.setCantidadPago(montoPagar);
