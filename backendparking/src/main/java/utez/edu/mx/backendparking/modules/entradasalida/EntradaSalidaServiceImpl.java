@@ -98,7 +98,7 @@ public class EntradaSalidaServiceImpl implements EntradaSalidaService {
 
     @Override
     @Transactional(readOnly = true)
-    public EntradaSalidaResponseDto marcarSalidaVisitante(Integer folioTicket) {
+    public EntradaSalidaResponseDto solicitarDatosSalidaVisitante(Integer folioTicket) {
         // 1. Buscar el registro por folio
         EntradaSalida entradaSalida = entradaSalidaRepository.findByFolioTicket(folioTicket)
                 .orElseThrow(() -> new ResourceNotFoundException(EntradaSalidaMessages.ERROR_ENTRADA_SALIDA_NOT_FOUND));

@@ -10,5 +10,5 @@ public interface EntradaSalidaService {
     EntradaSalidaResponseDto createPensionado(EntradaSalidaCreatePensionadoRequestDto dto);
     EntradaSalidaResponseDto createVisitante(EntradaSalidaCreateVisitanteRequestDto dto);
     List<EntradaSalidaResponseDto> findAll();
-    EntradaSalidaResponseDto marcarSalidaVisitante(Integer folioTicket);
+    EntradaSalidaResponseDto solicitarDatosSalidaVisitante(Integer folioTicket);
 }
