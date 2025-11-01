@@ -4,7 +4,9 @@ import org.springframework.data.domain.Page;
 import utez.edu.mx.backendparking.modules.entradasalida.dto.EntradaSalidaCreatePensionadoRequestDto;
 import utez.edu.mx.backendparking.modules.entradasalida.dto.EntradaSalidaCreateVisitanteRequestDto;
 import utez.edu.mx.backendparking.modules.entradasalida.dto.EntradaSalidaResponseDto;
+import utez.edu.mx.backendparking.modules.entradasalida.dto.ReporteGananciasResponseDto;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface EntradaSalidaService {
@@ -15,4 +17,5 @@ public interface EntradaSalidaService {
     EntradaSalidaResponseDto solicitarDatosSalidaVisitante(Integer folioTicket);
     EntradaSalidaResponseDto marcarSalidaVisitante(Integer folioTicket);
     Page<EntradaSalidaResponseDto> searchAndSortPaginated(String search, String sortBy, String sortOrder, int page, int size);
+    Page<ReporteGananciasResponseDto> generarReporteGananciasPorHora(LocalDate fechaInicial, LocalDate fechaFinal, String sortOrder, int page, int size);
 }

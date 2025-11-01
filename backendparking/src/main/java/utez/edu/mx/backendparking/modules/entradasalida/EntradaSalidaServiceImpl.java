@@ -2,6 +2,7 @@ package utez.edu.mx.backendparking.modules.entradasalida;
 
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -10,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import utez.edu.mx.backendparking.modules.entradasalida.dto.EntradaSalidaCreatePensionadoRequestDto;
 import utez.edu.mx.backendparking.modules.entradasalida.dto.EntradaSalidaCreateVisitanteRequestDto;
 import utez.edu.mx.backendparking.modules.entradasalida.dto.EntradaSalidaResponseDto;
+import utez.edu.mx.backendparking.modules.entradasalida.dto.ReporteGananciasResponseDto;
 import utez.edu.mx.backendparking.modules.tarifa.Tarifa;
 import utez.edu.mx.backendparking.modules.tarifa.TarifaMessages;
 import utez.edu.mx.backendparking.modules.tarifa.TarifaRepository;
@@ -18,7 +20,9 @@ import utez.edu.mx.backendparking.shared.exception.ResourceNotFoundException;
 
 import java.sql.SQLException;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -240,6 +244,75 @@ public class EntradaSalidaServiceImpl implements EntradaSalidaService {
         // 4. Convertir a DTOs usando map
         return entradasSalidasPage.map(EntradaSalidaMapper::toResponseDto); */
         return null;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<ReporteGananciasResponseDto> generarReporteGananciasPorHora(LocalDate fechaInicial, LocalDate fechaFinal, String sortOrder, int page, int size) {
+        // 1. Determinar el rango de fechas
+        LocalDate fechaInicialFinal = fechaInicial;
+        LocalDate fechaFinalFinal = fechaFinal;
+
+        // Si no se especifican fechas, obtener todas las fechas disponibles en la BD
+        if (fechaInicialFinal == null && fechaFinalFinal == null) {
+            fechaInicialFinal = entradaSalidaRepository.findMinFecha();
+            fechaFinalFinal = entradaSalidaRepository.findMaxFecha();
+
+            // Si no hay registros en la BD, retornar página vacía
+            if (fechaInicialFinal == null || fechaFinalFinal == null) {
+                Pageable pageable = PageRequest.of(page, size);
+                return new PageImpl<>(new ArrayList<>(), pageable, 0);
+            }
+        } else if (fechaInicialFinal == null) {
+            fechaInicialFinal = fechaFinalFinal;
+        } else if (fechaFinalFinal == null) {
+            fechaFinalFinal = fechaInicialFinal;
+        }
+
+        // 2. Crear el objeto Pageable para la paginación en BD
+        Pageable pageable = PageRequest.of(page, size);
+
+        // 3. Obtener resultados paginados directamente de la base de datos según el orden
+        Page<Object[]> resultados;
+        if ("asc".equalsIgnoreCase(sortOrder)) {
+            resultados = entradaSalidaRepository.findReporteGananciasPorHoraAsc(
+                fechaInicialFinal, fechaFinalFinal, pageable
+            );
+        } else {
+            resultados = entradaSalidaRepository.findReporteGananciasPorHoraDesc(
+                fechaInicialFinal, fechaFinalFinal, pageable
+            );
+        }
+
+        // Capturar el rango de fechas para usar en todos los DTOs
+        final LocalDate rangoInicial = fechaInicialFinal;
+        final LocalDate rangoFinal = fechaFinalFinal;
+
+        // 4. Convertir los resultados a DTOs
+        List<ReporteGananciasResponseDto> reporteDtos = resultados.getContent().stream()
+            .map(row -> {
+                // Ahora obtenemos fecha y hora individual de cada registro
+                LocalDate fechaRegistro = ((java.sql.Date) row[0]).toLocalDate();
+                Integer hora = ((Number) row[1]).intValue();
+                Double gananciasVisitantes = ((Number) row[2]).doubleValue();
+                Double gananciasPensionados = ((Number) row[3]).doubleValue();
+
+                ReporteGananciasResponseDto dto = new ReporteGananciasResponseDto();
+                // El rango completo solicitado
+                dto.setFechaInicial(rangoInicial);
+                dto.setFechaFinal(rangoFinal);
+                // La hora de esta fecha específica (si hay 3 fechas, habrá 3 registros para cada hora)
+                dto.setHora(LocalTime.of(hora, 0));
+                dto.setGananciasVisitantes(gananciasVisitantes);
+                dto.setGananciasPensionados(gananciasPensionados);
+                dto.setGananciasTotales(gananciasVisitantes + gananciasPensionados);
+
+                return dto;
+            })
+            .collect(Collectors.toList());
+
+        // 5. Retornar el Page con los DTOs
+        return new PageImpl<>(reporteDtos, pageable, resultados.getTotalElements());
     }
 
     /*

@@ -4,13 +4,17 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import utez.edu.mx.backendparking.modules.entradasalida.dto.EntradaSalidaCreatePensionadoRequestDto;
 import utez.edu.mx.backendparking.modules.entradasalida.dto.EntradaSalidaCreateVisitanteRequestDto;
 import utez.edu.mx.backendparking.modules.entradasalida.dto.EntradaSalidaResponseDto;
+import utez.edu.mx.backendparking.modules.entradasalida.dto.ReporteGananciasResponseDto;
 import utez.edu.mx.backendparking.shared.api.ApiResponse;
+
+import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api/entrada-salida")
@@ -90,5 +94,26 @@ public class EntradaSalidaController {
         EntradaSalidaResponseDto entradaSalida = entradaSalidaService.solicitarDatosSalidaVisitante(folioTicket);
         return ResponseEntity.ok()
                 .body(ApiResponse.success(HttpStatus.OK, EntradaSalidaMessages.ENDPOINT_ENTRADA_SALIDA_REGISTRAR_SALIDA, entradaSalida));
+    }
+
+    @GetMapping("/reportes/ganancias-por-hora")
+    @Operation(summary = "Generar reporte de ganancias por hora",
+            description = "Genera un reporte de ganancias desglosado por hora para una o varias fechas. " +
+                    "Si no se especifican fechas, genera el reporte para TODAS las fechas con registros en la base de datos. " +
+                    "Si se especifica solo fechaInicial, genera el reporte solo para esa fecha. " +
+                    "Si se especifican ambas fechas, genera el reporte para el rango de fechas. " +
+                    "Calcula las ganancias de visitantes (basado en cantidadPago de EntradaSalida) y " +
+                    "pensionados (basado en HistorialPagos). Retorna una lista con 24 registros por cada fecha (0-23 horas) " +
+                    "con las ganancias totales por hora. Soporta paginación y ordenamiento ascendente/descendente.")
+    public ResponseEntity<ApiResponse<Page<ReporteGananciasResponseDto>>> generarReporteGananciasPorHora(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicial,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFinal,
+            @RequestParam(required = false, defaultValue = "desc") String sortOrder,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Page<ReporteGananciasResponseDto> reporte = entradaSalidaService.generarReporteGananciasPorHora(fechaInicial, fechaFinal, sortOrder, page, size);
+        return ResponseEntity.ok()
+                .body(ApiResponse.success(HttpStatus.OK, EntradaSalidaMessages.ENDPOINT_REPORTE_GANANCIAS_POR_HORA, reporte));
     }
 }
