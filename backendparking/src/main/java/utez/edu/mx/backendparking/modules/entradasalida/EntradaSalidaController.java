@@ -3,6 +3,7 @@ package utez.edu.mx.backendparking.modules.entradasalida;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +21,23 @@ public class EntradaSalidaController {
 
     public EntradaSalidaController(EntradaSalidaService entradaSalidaService) {
         this.entradaSalidaService = entradaSalidaService;
+    }
+
+    @GetMapping("/search/paginated")
+    @Operation(summary = "Buscar y paginar entradas y salidas",
+            description = "Busca entradas y salidas por folio o nombre completo del usuario (nombre + apellidos). " +
+                    "Permite ordenar por fecha y hora de entrada (descendente por defecto) o por tipo de vehículo. " +
+                    "Soporta paginación con parámetros de página y tamaño.")
+    public ResponseEntity<ApiResponse<Page<EntradaSalidaResponseDto>>> searchAndSortPaginated(
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false, defaultValue = "fecha") String sortBy,
+            @RequestParam(required = false, defaultValue = "desc") String sortOrder,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Page<EntradaSalidaResponseDto> resultado = entradaSalidaService.searchAndSortPaginated(search, sortBy, sortOrder, page, size);
+        return ResponseEntity.ok()
+                .body(ApiResponse.success(HttpStatus.OK, EntradaSalidaMessages.ENDPOINT_ENTRADA_SALIDA_GET_ALL, resultado));
     }
 
     @PostMapping("/pensionado")

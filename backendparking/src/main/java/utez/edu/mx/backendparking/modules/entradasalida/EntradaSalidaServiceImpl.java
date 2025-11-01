@@ -1,6 +1,10 @@
 package utez.edu.mx.backendparking.modules.entradasalida;
 
 import jakarta.validation.ConstraintViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import utez.edu.mx.backendparking.modules.entradasalida.dto.EntradaSalidaCreatePensionadoRequestDto;
@@ -196,6 +200,37 @@ public class EntradaSalidaServiceImpl implements EntradaSalidaService {
         }
 
         return montoTotal;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<EntradaSalidaResponseDto> searchAndSortPaginated(String search, String sortBy, String sortOrder, int page, int size) {
+        /*
+        // 1. Crear el objeto Sort según los parámetros
+        Sort sort;
+
+        if (sortBy == null || sortBy.isEmpty() || sortBy.equalsIgnoreCase("fecha")) {
+            // Por defecto: ordenar por fecha y hora de entrada descendente
+            Sort.Direction direction = "asc".equalsIgnoreCase(sortOrder) ? Sort.Direction.ASC : Sort.Direction.DESC;
+            sort = Sort.by(direction, "fecha").and(Sort.by(direction, "horaEntrada"));
+        } else if (sortBy.equalsIgnoreCase("tipovehiculo")) {
+            // Ordenar por tipo de vehículo
+            Sort.Direction direction = "desc".equalsIgnoreCase(sortOrder) ? Sort.Direction.DESC : Sort.Direction.ASC;
+            sort = Sort.by(direction, "tipoVehiculo.nombre");
+        } else {
+            // Por defecto si el sortBy no es reconocido
+            sort = Sort.by(Sort.Direction.DESC, "fecha").and(Sort.by(Sort.Direction.DESC, "horaEntrada"));
+        }
+
+        // 2. Crear el objeto Pageable con paginación y ordenamiento
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        // 3. Obtener resultados paginados directamente de la base de datos
+        Page<EntradaSalida> entradasSalidasPage = entradaSalidaRepository.findByFolioOrUsuarioNombre(search, pageable);
+
+        // 4. Convertir a DTOs usando map
+        return entradasSalidasPage.map(EntradaSalidaMapper::toResponseDto); */
+        return null;
     }
 
     /*

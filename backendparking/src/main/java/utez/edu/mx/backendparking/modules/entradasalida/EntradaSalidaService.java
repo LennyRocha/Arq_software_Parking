@@ -1,5 +1,6 @@
 package utez.edu.mx.backendparking.modules.entradasalida;
 
+import org.springframework.data.domain.Page;
 import utez.edu.mx.backendparking.modules.entradasalida.dto.EntradaSalidaCreatePensionadoRequestDto;
 import utez.edu.mx.backendparking.modules.entradasalida.dto.EntradaSalidaCreateVisitanteRequestDto;
 import utez.edu.mx.backendparking.modules.entradasalida.dto.EntradaSalidaResponseDto;
@@ -12,4 +13,5 @@ public interface EntradaSalidaService {
     List<EntradaSalidaResponseDto> findAll();
     EntradaSalidaResponseDto solicitarDatosSalidaVisitante(Integer folioTicket);
     EntradaSalidaResponseDto marcarSalidaVisitante(Integer folioTicket);
+    Page<EntradaSalidaResponseDto> searchAndSortPaginated(String search, String sortBy, String sortOrder, int page, int size);
 }
