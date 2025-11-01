@@ -40,6 +40,15 @@ public class EntradaSalidaController {
                 .body(ApiResponse.success(HttpStatus.OK, EntradaSalidaMessages.ENDPOINT_ENTRADA_SALIDA_GET_ALL, resultado));
     }
 
+    @GetMapping("/{id}")
+    @Operation(summary = "Obtener entrada/salida por ID",
+            description = "Obtiene los detalles completos de un registro de entrada/salida específico mediante su ID.")
+    public ResponseEntity<ApiResponse<EntradaSalidaResponseDto>> findById(@PathVariable Long id) {
+        EntradaSalidaResponseDto entradaSalida = entradaSalidaService.findById(id);
+        return ResponseEntity.ok()
+                .body(ApiResponse.success(HttpStatus.OK, EntradaSalidaMessages.ENDPOINT_ENTRADA_SALIDA_GET_BY_ID, entradaSalida));
+    }
+
     @PostMapping("/pensionado")
     @Operation(summary = "Registrar entrada de pensionado",
                description = "Registra la entrada de un vehículo de un usuario pensionado al estacionamiento. " +

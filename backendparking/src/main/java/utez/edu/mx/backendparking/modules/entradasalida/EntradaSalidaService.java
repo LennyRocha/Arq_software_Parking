@@ -11,6 +11,7 @@ public interface EntradaSalidaService {
     EntradaSalidaResponseDto createPensionado(EntradaSalidaCreatePensionadoRequestDto dto);
     EntradaSalidaResponseDto createVisitante(EntradaSalidaCreateVisitanteRequestDto dto);
     List<EntradaSalidaResponseDto> findAll();
+    EntradaSalidaResponseDto findById(Long id);
     EntradaSalidaResponseDto solicitarDatosSalidaVisitante(Integer folioTicket);
     EntradaSalidaResponseDto marcarSalidaVisitante(Integer folioTicket);
     Page<EntradaSalidaResponseDto> searchAndSortPaginated(String search, String sortBy, String sortOrder, int page, int size);

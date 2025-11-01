@@ -48,6 +48,15 @@ public class EntradaSalidaServiceImpl implements EntradaSalidaService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public EntradaSalidaResponseDto findById(Long id) {
+        EntradaSalida entradaSalida = entradaSalidaRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(EntradaSalidaMessages.ERROR_ENTRADA_SALIDA_NOT_FOUND));
+
+        return EntradaSalidaMapper.toResponseDto(entradaSalida);
+    }
+
+    @Override
     @Transactional(rollbackFor = {SQLException.class, ConstraintViolationException.class})
     public EntradaSalidaResponseDto createPensionado(EntradaSalidaCreatePensionadoRequestDto dto) {
         /*
