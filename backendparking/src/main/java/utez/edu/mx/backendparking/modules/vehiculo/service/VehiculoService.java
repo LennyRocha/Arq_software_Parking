@@ -44,7 +44,7 @@ public class VehiculoService  {
         return ApiResponse.success(HttpStatus.OK,"Vehículos disponibles", dtos);
     }
 
-    @Transactional(readOnly = true, rollbackFor = Exception.class)
+    @Transactional(readOnly = true, rollbackFor = {Exception.class, BadRequestException.class, ResourceNotFoundException.class})
     public ApiResponse<List<VehiculoDto>> getAllVehiculosPerUser(
             Long user_id,
             Integer vehiculo_id,
@@ -118,7 +118,7 @@ public class VehiculoService  {
         );
     }
 
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = {Exception.class, BadRequestException.class, ResourceNotFoundException.class})
     public ApiResponse<Vehiculo> createVehiculo(VehiculoDto vDto) {
         try{
             vDto.setEstatus(true);
@@ -140,7 +140,7 @@ public class VehiculoService  {
             vehiculo.setUsuario(user);
             vehiculo.setTipoVehiculo(tipoVehiculo);
             vehiculo = vehiculoRepository.save(vehiculo);
-            return ApiResponse.success(HttpStatus.CREATED,"¡Vehículo registrado correctamente!", vehiculo);
+            return ApiResponse.success(HttpStatus.CREATED,"Vehículo registrado exitosamente", vehiculo);
         }
         catch (ResourceNotFoundException ex) {
             return ApiResponse.error(HttpStatus.NOT_FOUND, ex.getMessage(), null);
@@ -161,7 +161,7 @@ public class VehiculoService  {
             vehiculo.setDescripcion(vDto.getDescripcion());
             vehiculo.setPlaca(vDto.getPlaca());
             vehiculo = vehiculoRepository.save(vehiculo);
-            return ApiResponse.success(HttpStatus.OK,"Vehículo registrado correctamente", vehiculo);
+            return ApiResponse.success(HttpStatus.OK,"Vehículo actualizado exitosamente", vehiculo);
         }
         catch (Exception e){
             return ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR,e.getMessage(), null);
@@ -172,9 +172,10 @@ public class VehiculoService  {
     public ApiResponse<Void> deleteVehiculo(Long id) {
         try{
             Vehiculo vehiculo = vehiculoRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("El vehículo que deseas cambiar su estatua no existe"));
+            boolean oldState = vehiculo.getEstatus();
             vehiculo.setEstatus(!vehiculo.getEstatus());
             vehiculo = vehiculoRepository.save(vehiculo);
-            return ApiResponse.success(HttpStatus.OK,"Ha cambiado el estatus del vehículo a "+vehiculo.getEstatus(), null);
+            return ApiResponse.success(HttpStatus.OK,"Ha cambiado el estatus del vehículo de "+ oldState +" a "+vehiculo.getEstatus(), null);
         } catch (Exception e){
             return ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR,e.getMessage(), null);
         }

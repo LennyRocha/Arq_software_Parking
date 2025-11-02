@@ -1,5 +1,6 @@
 package utez.edu.mx.backendparking.modules.vehiculo.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import utez.edu.mx.backendparking.modules.vehiculo.model.Vehiculo;
@@ -44,12 +45,12 @@ public class VehiculoController {
     }
 
     @PostMapping
-    public ApiResponse<Vehiculo> createVehiculo(@RequestBody VehiculoDto vehiculoDto) {
+    public ApiResponse<Vehiculo> createVehiculo(@Valid @RequestBody VehiculoDto vehiculoDto) {
         return vehiculoService.createVehiculo(vehiculoDto);
     }
 
     @PutMapping("/{id}")
-    public ApiResponse<Vehiculo> updateVehiculo(@RequestBody VehiculoDto vehiculoDto, @PathVariable Long id) {
+    public ApiResponse<Vehiculo> updateVehiculo(@Valid @RequestBody VehiculoDto vehiculoDto, @PathVariable Long id) {
         return vehiculoService.updateVehiculo(id, vehiculoDto);
     }
 

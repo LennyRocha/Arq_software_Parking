@@ -1,12 +1,14 @@
 package utez.edu.mx.backendparking.modules.vehiculo.model;
 
 import jakarta.validation.constraints.*;
+import utez.edu.mx.backendparking.modules.vehiculo.validation.UniquePlaca;
 
+@UniquePlaca(placaField = "placa", idField = "id")
 public class VehiculoDto {
 
     private Long id;
 
-    @NotBlank(message = "La descripción no puede estar vacía")
+    @NotBlank(message = "El campo descripción no puede estar vacío")
     @Size(max = 250, message = "La descripción no debe tener más de 250 caracteres")
     private String descripcion;
 
@@ -14,7 +16,7 @@ public class VehiculoDto {
     @Pattern(regexp = "^$|^[A-Za-z0-9-]+$", message = "La placa solo puede contener letras, números y guiones")
     private String placa;
 
-    @NotBlank(message = "El modelo es obligatorio")
+    @NotBlank(message = "El campo modelo no puede estar vacío")
     @Size(max = 50, message = "El modelo del vehículo no debe tener más de 50 caracteres")
     private String modelo;
 

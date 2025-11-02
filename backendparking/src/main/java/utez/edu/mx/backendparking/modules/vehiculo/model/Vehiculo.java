@@ -19,7 +19,6 @@ public class Vehiculo {
     private TipoVehiculo tipoVehiculo;
 
     @Column(unique = true, nullable = true)
-    @Nullable
     private String placa;
 
     @ManyToOne(fetch = FetchType.EAGER)
