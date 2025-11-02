@@ -4,8 +4,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import utez.edu.mx.backendparking.modules.tarifa.Tarifa;
 import utez.edu.mx.backendparking.modules.tarifa.TarifaRepository;
-import utez.edu.mx.backendparking.modules.tipovehiculo.TipoVehiculo;
-import utez.edu.mx.backendparking.modules.tipovehiculo.TipoVehiculoRepository;
+import utez.edu.mx.backendparking.modules.tipovehiculo.model.TipoVehiculo;
+import utez.edu.mx.backendparking.modules.tipovehiculo.repository.TipoVehiculoRepository;
 
 import java.util.List;
 

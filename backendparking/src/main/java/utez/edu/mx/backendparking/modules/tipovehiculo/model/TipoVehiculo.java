@@ -1,4 +1,4 @@
-package utez.edu.mx.backendparking.modules.tipovehiculo;
+package utez.edu.mx.backendparking.modules.tipovehiculo.model;
 
 import jakarta.persistence.*;
 
