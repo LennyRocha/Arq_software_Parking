@@ -22,6 +22,13 @@ public interface VehiculoRepository  extends JpaRepository<Vehiculo, Long>{
     //No importa el estado pero si tienen placa o no
     List<Vehiculo> findAllByUsuario_IdAndPlacaIsNull(Long userId);
     List<Vehiculo> findAllByUsuario_IdAndPlacaIsNotNull(Long userId);
+    //Si tienen placa o no, pero si están activos y por tipo de vehículo
+    List<Vehiculo> findAllByUsuario_IdAndEstatusTrueAndPlacaIsNotNullAndTipoVehiculoId(Long usuario_id, Integer tipoVehiculo_id);
+    List<Vehiculo> findAllByUsuario_IdAndEstatusTrueAndPlacaIsNullAndTipoVehiculoId(Long usuario_id, Integer tipoVehiculo_id);
+    //No importa el estado pero si tienen placa o no y por tipo de vehiculo
+    List<Vehiculo> findAllByUsuario_IdAndPlacaIsNullAndTipoVehiculoId(Long usuario_id, Integer tipoVehiculo_id);
+    List<Vehiculo> findAllByUsuario_IdAndPlacaIsNotNullAndTipoVehiculoId(Long usuario_id, Integer tipoVehiculo_id);
+
 
 
 }

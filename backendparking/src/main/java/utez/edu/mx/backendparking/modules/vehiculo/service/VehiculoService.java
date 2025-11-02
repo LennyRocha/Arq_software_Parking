@@ -39,9 +39,76 @@ public class VehiculoService  {
                 .map(VehiculoDto::fromEntity)
                 .toList();
         if (vehiculos.isEmpty()) {
-            return ApiResponse.success(HttpStatus.NO_CONTENT,"No tienes vehículos registrados todavía", dtos);
+            return ApiResponse.success(HttpStatus.NO_CONTENT,"No hay vehículos disponibles", dtos);
         }
         return ApiResponse.success(HttpStatus.OK,"Vehículos disponibles", dtos);
+    }
+
+    @Transactional(readOnly = true, rollbackFor = Exception.class)
+    public ApiResponse<List<VehiculoDto>> getAllVehiculosPerUser(
+            Long user_id,
+            Integer vehiculo_id,
+            String query,
+            Boolean getActive,
+            Boolean getWithPlaca
+    ) {
+        try {
+            // Validar que el usuario exista
+            Usuario user = webClientConfig.createClient(userEndpoint).get()
+                    .uri("/{id}", user_id)
+                    .retrieve()
+                    .onStatus(HttpStatusCode::is4xxClientError,
+                            resp -> Mono.error(new ResourceNotFoundException("Usuario no encontrado")))
+                    .onStatus(HttpStatusCode::is5xxServerError,
+                            resp -> Mono.error(new BadRequestException("Error en servicio de usuarios")))
+                    .bodyToMono(Usuario.class)
+                    .block();
+
+            // Validar tipo de vehículo si se proporciona
+            TipoVehiculo tipoVehiculo = null;
+            if (vehiculo_id != null) {
+                tipoVehiculo = webClientConfig.createClient(typesEndpoint).get()
+                        .uri("/{id}", vehiculo_id)
+                        .retrieve()
+                        .onStatus(HttpStatusCode::is4xxClientError,
+                                resp -> Mono.error(new ResourceNotFoundException("Tipo de vehículo no encontrado")))
+                        .onStatus(HttpStatusCode::is5xxServerError,
+                                resp -> Mono.error(new BadRequestException("Error en servicio de vehículos")))
+                        .bodyToMono(TipoVehiculo.class)
+                        .block();
+            }
+
+            // Normalizar parámetros
+            query = (query != null) ? query.trim() : "";
+            boolean filterActive = (getActive != null) ? getActive : false;
+            boolean filterWithPlaca = (getWithPlaca != null) ? getWithPlaca : false;
+
+            // Obtener todos los vehículos y aplicar filtros
+            String finalQuery = query;
+            List<VehiculoDto> dtos = vehiculoRepository.findAll().stream()
+                    .filter(v -> v.getUsuario().getId().equals(user_id))
+                    .filter(v -> vehiculo_id == null || v.getTipoVehiculo().getId().equals(vehiculo_id))
+                    .filter(v -> finalQuery.isEmpty() ||
+                            v.getModelo().toLowerCase().contains(finalQuery.toLowerCase()) ||
+                            (v.getDescripcion() != null && v.getDescripcion().toLowerCase().contains(finalQuery.toLowerCase())))
+                    .filter(v -> v.getEstatus() == filterActive)
+                    .filter(v -> !filterWithPlaca || v.getPlaca() != null)
+                    .map(VehiculoDto::fromEntity)
+                    .toList();
+
+            if (dtos.isEmpty()) {
+                return ApiResponse.success(HttpStatus.NO_CONTENT, "No tienes vehículos registrados todavía", dtos);
+            }
+
+            return ApiResponse.success(HttpStatus.OK, "Vehículos disponibles", dtos);
+
+        } catch (ResourceNotFoundException ex) {
+            return ApiResponse.error(HttpStatus.NOT_FOUND, ex.getMessage(), null);
+        } catch (BadRequestException ex) {
+            return ApiResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage(), null);
+        } catch (Exception e) {
+            return ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), null);
+        }
     }
 
     @Transactional(readOnly = true, rollbackFor = ResourceNotFoundException.class)
@@ -60,7 +127,8 @@ public class VehiculoService  {
                     .retrieve()
                     .onStatus(HttpStatusCode::is4xxClientError, resp -> Mono.error(new ResourceNotFoundException("Usuario no encontrado")))
                     .onStatus(HttpStatusCode::is5xxServerError, resp -> Mono.error(new BadRequestException("Error en servicio de usuarios")))
-                    .bodyToMono(Usuario.class).block();
+                    .bodyToMono(Usuario.class)
+                    .block();
             TipoVehiculo tipoVehiculo = webClientConfig.createClient(typesEndpoint).get()
                     .uri("/{id}",vDto.getIdTipoVehiculo())
                     .retrieve()
@@ -74,7 +142,11 @@ public class VehiculoService  {
             vehiculo = vehiculoRepository.save(vehiculo);
             return ApiResponse.success(HttpStatus.CREATED,"¡Vehículo registrado correctamente!", vehiculo);
         }
-        catch (Exception e){
+        catch (ResourceNotFoundException ex) {
+            return ApiResponse.error(HttpStatus.NOT_FOUND, ex.getMessage(), null);
+        } catch (BadRequestException ex) {
+            return ApiResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage(), null);
+        } catch (Exception e){
             return ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR,e.getMessage(), null);
         }
     }
@@ -97,12 +169,12 @@ public class VehiculoService  {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public ApiResponse<Vehiculo> deleteVehiculo(Long id) {
+    public ApiResponse<Void> deleteVehiculo(Long id) {
         try{
             Vehiculo vehiculo = vehiculoRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("El vehículo que deseas cambiar su estatua no existe"));
             vehiculo.setEstatus(!vehiculo.getEstatus());
             vehiculo = vehiculoRepository.save(vehiculo);
-            return ApiResponse.success(HttpStatus.OK,"Ha cambiado el estatus del vehículo a "+vehiculo.getEstatus(), vehiculo);
+            return ApiResponse.success(HttpStatus.OK,"Ha cambiado el estatus del vehículo a "+vehiculo.getEstatus(), null);
         } catch (Exception e){
             return ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR,e.getMessage(), null);
         }
