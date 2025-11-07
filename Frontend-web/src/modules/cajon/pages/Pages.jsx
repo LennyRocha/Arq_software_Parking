@@ -1,8 +1,10 @@
 import React from "react";
 import sweetAlert from "../../../utils/sweetAlert";
 import { useDarkContext } from "../../../context/DarkContext";
-import { TextField } from "@mui/material";
+import { Button, TextField, Typography } from "@mui/material";
 import MainHeader from "../../../components/MainHeader";
+import useDialogController from "../../../hooks/useDialogController";
+import CustomDialog from "../../../components/CustomDialog";
 
 const links = [
   { nombre: "Inicio", ruta: "/admin", disabled: false },
@@ -11,13 +13,14 @@ const links = [
 ];
 
 export default function Pages() {
-  const { isDarkMode, toggleDarkMode } = useDarkContext();
+  const { open, openDialog, closeDialog } = useDialogController();
+  const { toggleDarkMode } = useDarkContext();
   return (
     <>
-      <MainHeader titulo="Panel de administración"  breads={links}/>
+      <MainHeader titulo="Panel de administración" breads={links} />
       <h1 className="custom-font">Vite + React + Exo 2</h1>
       <div className="card">
-        <button
+        <Button
           onClick={() =>
             sweetAlert({
               title: "Hello!",
@@ -30,39 +33,125 @@ export default function Pages() {
             })
           }
           style={{ marginLeft: "10px" }}
-          className="error"
+          color="error"
+          variant="contained"
         >
-          show sweet alert
-        </button>
-        <button
-          className="surface bukon"
+          Error
+        </Button>
+        <Button
+          color="success"
+          variant="contained"
           onClick={() => toggleDarkMode()}
           style={{ marginLeft: "10px" }}
         >
-          Cambiar a {isDarkMode ? "modo claro" : "modo oscuro"}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
+          Success
+        </Button>
+        <Button
+          color="info"
+          variant="contained"
+          style={{ marginLeft: "10px" }}
+          onClick={() => openDialog()}
+        >
+          Info
+        </Button>
+        <Button
+          color="warning"
+          variant="contained"
+          style={{ marginLeft: "10px" }}
+        >
+          Warning
+        </Button>
+        <Button
+          color="inherit"
+          variant="contained"
+          style={{ marginLeft: "10px" }}
+        >
+          Inerhit
+        </Button>
+        <Button
+          color="black"
+          variant="contained"
+          style={{ marginLeft: "10px" }}
+        >
+          Black
+        </Button>
+        <Button color="gray" variant="contained" style={{ marginLeft: "10px" }}>
+          Gray
+        </Button>
+        <br />
+        <Button
+          color="primary"
+          variant="contained"
+          style={{ marginLeft: "10px" }}
+        >
+          MUI Primario
+        </Button>
+        <Button color="secondary" variant="contained">
+          MUI Secundario
+        </Button>
+        <Button color="tertiary" variant="contained">
+          MUI Terciario
+        </Button>
+        <br />
+        <Button color="primary" variant="outlined">
+          MUI Primario
+        </Button>
+        <Button color="secondary" variant="outlined">
+          MUI Secundario
+        </Button>
+        <Button color="tertiary" variant="outlined">
+          MUI Terciario
+        </Button>
+        <br />
+        <Button color="primary" variant="text">
+          MUI Primario
+        </Button>
+        <Button color="secondary" variant="text">
+          MUI Secundario
+        </Button>
+        <Button color="tertiary" variant="text">
+          MUI Terciario
+        </Button>
+        <br />
         <TextField
           id="outlined-basic"
           label="Outlined"
           variant="outlined"
           helperText="puto"
+          placeholder="Placeholder"
         />
-        <TextField id="filled-basic" label="Filled" variant="filled" />
-        <TextField id="standard-basic" label="Standard" variant="standard" />
+        <TextField
+          id="filled-basic"
+          label="Filled"
+          variant="filled"
+          placeholder="Placeholder"
+        />
+        <TextField
+          id="standard-basic"
+          label="Standard"
+          variant="standard"
+          placeholder="Placeholder"
+        />
         <TextField
           id="standard-basic"
           label="Standard"
           variant="standard"
           error
           helperText="Help"
+          placeholder="Placeholder"
         />
         <div className="my_card bx">
           <h3>Hola card</h3>
         </div>
       </div>
+      <CustomDialog
+        titulo={"Hola desde un dialog"}
+        isOpen={open}
+        handleClose={closeDialog}
+        maxWidth="md"
+      >
+        <Typography gutterBottom>contenido perron del dialog</Typography>
+      </CustomDialog>
     </>
   );
 }

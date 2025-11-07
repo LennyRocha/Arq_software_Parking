@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
 import AdminRouter from "./AdminRouter";
 import LandingPage from "../modules/cajon/pages/LandingPage";
 import EmpleadoRouter from "./EmpleadoRouter";
@@ -26,7 +26,7 @@ export default function Rutas() {
           <Route index element={<Pages />} />
           <Route path="reportes" element={<Pages />} />
           <Route path="tipos_de_pension" element={<Pages />} />
-          <Route path="ver_pensiones" element={<Pages />} />
+          <Route path="pensiones_de_usuarios" element={<Pages />} />
           <Route path="tarifas" element={<Pages />} />
           <Route path="cajones" element={<Pages />} />
           <Route path="gestion_empleados" element={<Pages />} />

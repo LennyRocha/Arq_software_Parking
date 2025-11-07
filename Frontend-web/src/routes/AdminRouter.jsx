@@ -13,16 +13,13 @@ import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import ViewCarouselIcon from "@mui/icons-material/ViewCarousel";
 import ConfirmationNumberIcon from "@mui/icons-material/ConfirmationNumber";
-import PaymentsIcon from "@mui/icons-material/Payments";
 import LocalParkingIcon from "@mui/icons-material/LocalParking";
 import PeopleIcon from "@mui/icons-material/People";
 import DirectionsCar from "@mui/icons-material/DirectionsCar";
-import Settings from "@mui/icons-material/Settings";
-import AssessmentIcon from "@mui/icons-material/Assessment";
-import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 import FolderSharedIcon from "@mui/icons-material/FolderShared";
 import PersonIcon from "@mui/icons-material/Person";
-import AutoAwesomeMotionIcon from "@mui/icons-material/AutoAwesomeMotion";
+import LightModeIcon from "@mui/icons-material/LightMode";
+import DarkModeIcon from "@mui/icons-material/DarkMode";
 
 //Material Design Icons Js
 import Icon from "@mdi/react";
@@ -54,6 +51,10 @@ import MenuIcon from "@mui/icons-material/Menu";
 
 //Router
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { useDarkContext } from "../context/DarkContext";
+
+//Use themes
+import { useTheme } from "@mui/material/styles";
 
 export default function AdminRouter() {
   const location = useLocation();
@@ -64,6 +65,8 @@ export default function AdminRouter() {
   const [openReports, setOpenReports] = React.useState(true);
 
   const [selectedIndex, setSelectedIndex] = React.useState(0);
+
+  const { isDarkMode, toggleDarkMode } = useDarkContext();
 
   React.useEffect(() => {
     switch (true) {
@@ -170,14 +173,22 @@ export default function AdminRouter() {
             <ListItemText
               primary="parKing"
               primaryTypographyProps={{
-                fontFamily: "Exo 2, sans-serif", // tu fuente personalizada
+                fontFamily: "Exo 2, sans-serif",
                 fontWeight: "bold",
                 fontSize: 20,
-                color: "var(--other)",
+                color: isDarkMode ? "var(--secondary)" : "var(--other)",
               }}
-              secondary="Administrador"
+              secondary="Admin"
             />
           </ListItem>
+          <Tooltip title="Cambiar modo" cursor="pointer">
+            <IconButton
+              color={isDarkMode ? "primary" : "tertiary"}
+              onClick={toggleDarkMode}
+            >
+              {isDarkMode ? <DarkModeIcon /> : <LightModeIcon />}
+            </IconButton>
+          </Tooltip>
           <Tooltip title="Ir a mi perfil" cursor="pointer">
             <Avatar
               sx={{
@@ -186,6 +197,7 @@ export default function AdminRouter() {
                   cursor: "pointer",
                   bgcolor: "var(--primary)",
                 },
+                color: "#fff",
               }}
               onClick={() => goTo(`/private/perfil/${24}`)}
             >
@@ -296,7 +308,7 @@ export default function AdminRouter() {
                   color: "#ffffff",
                 },
               }}
-              onClick={() => goTo("/admin/ver_pensiones")}
+              onClick={() => goTo("/admin/pensiones_de_usuarios")}
               selected={selectedIndex === 3}
               className="side-item"
             >
@@ -440,6 +452,9 @@ export default function AdminRouter() {
     );
   };
 
+  const theme = useTheme();
+  const bg = theme.palette.background.default;
+
   return (
     <Box
       sx={{ flexGrow: 1, height: "100vh", padding: 0 }}
@@ -447,7 +462,14 @@ export default function AdminRouter() {
     >
       <Menu clase="side-bar-layout" />
       <Box sx={{ flex: 1, overflowY: "auto", height: "100vh" }}>
-        <AppBar position="static" sx={{ display: { md: "none", xs: "flex" } }}>
+        <AppBar
+          position="sticky"
+          sx={{
+            bgcolor: bg,
+            color: "var(--text)",
+          }}
+          className="appbar"
+        >
           <Toolbar>
             <IconButton
               size="large"
@@ -462,8 +484,17 @@ export default function AdminRouter() {
             >
               <MenuIcon />
             </IconButton>
-            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-              News
+            <Typography
+              variant="h6"
+              component="div"
+              sx={{
+                flexGrow: 1,
+                textAlign: "left",
+                fontWeight: "bold",
+              }}
+              className="custom-font"
+            >
+              Panel de administración
             </Typography>
           </Toolbar>
         </AppBar>
