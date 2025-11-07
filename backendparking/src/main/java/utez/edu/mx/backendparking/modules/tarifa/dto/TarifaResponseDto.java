@@ -1,7 +1,6 @@
 package utez.edu.mx.backendparking.modules.tarifa.dto;
 
-import jakarta.persistence.*;
-import utez.edu.mx.backendparking.modules.tipovehiculo.TipoVehiculo;
+import utez.edu.mx.backendparking.modules.tipovehiculo.model.TipoVehiculo;
 
 public class TarifaResponseDto {
 

@@ -70,6 +70,18 @@
 			<version>2.8.13</version>
 		</dependency>
 
+		<!-- Para webClient -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-webflux</artifactId>
+		</dependency>
+
+		<!-- Para webSocket -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-websocket</artifactId>
+		</dependency>
+
 	</dependencies>
 
 	<build>

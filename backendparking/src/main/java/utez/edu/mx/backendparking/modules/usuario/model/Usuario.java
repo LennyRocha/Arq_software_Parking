@@ -1,5 +1,4 @@
-package utez.edu.mx.backendparking.modules.usuario;
-
+package utez.edu.mx.backendparking.modules.usuario.model;
 
 import jakarta.persistence.*;
 
@@ -11,5 +10,9 @@ public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    public Long getId() {
+        return id;
+    }
 
 }

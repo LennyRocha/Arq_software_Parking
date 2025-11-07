@@ -2,7 +2,7 @@ package utez.edu.mx.backendparking.modules.tarifa.dto;
 
 import jakarta.validation.constraints.*;
 import utez.edu.mx.backendparking.modules.tarifa.TarifaMessages;
-import utez.edu.mx.backendparking.modules.tipovehiculo.TipoVehiculo;
+import utez.edu.mx.backendparking.modules.tipovehiculo.model.TipoVehiculo;
 
 public class TarifaRequestDto {
 

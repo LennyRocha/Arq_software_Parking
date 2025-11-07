@@ -1,11 +1,13 @@
-import { Box, Breadcrumbs, Typography } from "@mui/material";
-import { Link } from "react-router-dom";
+import { Box, Breadcrumbs, Typography, Link } from "@mui/material";
 import logo from "../img/logo_parking_hd_no_titulo.png";
 import React from "react";
 
 export default function MainHeader({ titulo, breads }) {
   const BreadCrumbs = (
-    <Breadcrumbs aria-label="breadcrumb">
+    <Breadcrumbs
+      aria-label="breadcrumb"
+      sx={{ "& .MuiBreadcrumbs-separator": { color: "var(--other)" } }}
+    >
       {breads.map((bread, index) => (
         <Link
           key={index}
@@ -39,7 +41,6 @@ export default function MainHeader({ titulo, breads }) {
     >
       {BreadCrumbs}
       <Box
-        display={"flex"}
         sx={{
           flexDirection: { xs: "column", md: "row" },
           alignItems: "center",
@@ -48,6 +49,7 @@ export default function MainHeader({ titulo, breads }) {
           width: "100%",
           paddingTop: 1,
         }}
+        className="bread_head"
       >
         <Box
           component="img"

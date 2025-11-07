@@ -11,6 +11,8 @@ import Divider from "@mui/material/Divider";
 import PersonAddICon from "@mui/icons-material/PersonAdd";
 import ConfirmationNumberIcon from "@mui/icons-material/ConfirmationNumber";
 import LocalParkingIcon from "@mui/icons-material/LocalParking";
+import LightModeIcon from "@mui/icons-material/LightMode";
+import DarkModeIcon from "@mui/icons-material/DarkMode";
 
 //Material Design Icons Js
 import Icon from "@mdi/react";
@@ -38,6 +40,10 @@ import MenuIcon from "@mui/icons-material/Menu";
 
 //Router
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { useDarkContext } from "../context/DarkContext";
+
+//Use themes
+import { useTheme } from "@mui/material/styles";
 
 export default function EmpleadoRouter() {
   const location = useLocation();
@@ -45,6 +51,8 @@ export default function EmpleadoRouter() {
   const goTo = useNavigate();
 
   const [selectedIndex, setSelectedIndex] = React.useState(0);
+
+  const { isDarkMode, toggleDarkMode } = useDarkContext();
 
   React.useEffect(() => {
     switch (true) {
@@ -120,14 +128,22 @@ export default function EmpleadoRouter() {
             <ListItemText
               primary="parKing"
               primaryTypographyProps={{
-                fontFamily: "Exo 2, sans-serif", // tu fuente personalizada
+                fontFamily: "Exo 2, sans-serif",
                 fontWeight: "bold",
                 fontSize: 20,
-                color: "var(--other)",
+                color: isDarkMode ? "var(--secondary)" : "var(--other)",
               }}
               secondary="Empleado"
             />
           </ListItem>
+          <Tooltip title="Cambiar modo" cursor="pointer">
+            <IconButton
+              color={isDarkMode ? "primary" : "tertiary"}
+              onClick={toggleDarkMode}
+            >
+              {isDarkMode ? <DarkModeIcon /> : <LightModeIcon />}
+            </IconButton>
+          </Tooltip>
           <Tooltip title="Ir a mi perfil" cursor="pointer">
             <Avatar
               sx={{
@@ -136,6 +152,7 @@ export default function EmpleadoRouter() {
                   cursor: "pointer",
                   bgcolor: "var(--primary)",
                 },
+                color: "#fff",
               }}
               onClick={() => goTo(`/private/perfil/${24}`)}
             >
@@ -236,6 +253,9 @@ export default function EmpleadoRouter() {
     );
   };
 
+  const theme = useTheme();
+  const bg = theme.palette.background.default;
+
   return (
     <Box
       sx={{ flexGrow: 1, height: "100vh", padding: 0 }}
@@ -243,7 +263,14 @@ export default function EmpleadoRouter() {
     >
       <Menu clase="side-bar-layout" />
       <Box sx={{ flex: 1, overflowY: "auto", height: "100vh" }}>
-        <AppBar position="static" sx={{ display: { md: "none", xs: "flex" } }}>
+        <AppBar
+          position="sticky"
+          sx={{
+            bgcolor: bg,
+            color: "var(--text)",
+          }}
+          className="appbar"
+        >
           <Toolbar>
             <IconButton
               size="large"
@@ -258,8 +285,17 @@ export default function EmpleadoRouter() {
             >
               <MenuIcon />
             </IconButton>
-            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-              News
+            <Typography
+              variant="h6"
+              component="div"
+              sx={{
+                flexGrow: 1,
+                textAlign: "left",
+                fontWeight: "bold",
+              }}
+              className="custom-font"
+            >
+              Panel de empleados
             </Typography>
           </Toolbar>
         </AppBar>

@@ -2,8 +2,8 @@ package utez.edu.mx.backendparking.modules.entradasalida.dto;
 
 import jakarta.validation.constraints.NotNull;
 import utez.edu.mx.backendparking.modules.entradasalida.EntradaSalidaMessages;
-import utez.edu.mx.backendparking.modules.tipovehiculo.TipoVehiculo;
-import utez.edu.mx.backendparking.modules.vehiculo.Vehiculo;
+import utez.edu.mx.backendparking.modules.tipovehiculo.model.TipoVehiculo;
+import utez.edu.mx.backendparking.modules.vehiculo.model.Vehiculo;
 
 public class EntradaSalidaCreateVisitanteRequestDto {
 
