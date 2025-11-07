@@ -5,6 +5,7 @@ import { Button, TextField, Typography } from "@mui/material";
 import MainHeader from "../../../components/MainHeader";
 import useDialogController from "../../../hooks/useDialogController";
 import CustomDialog from "../../../components/CustomDialog";
+import LoadingBackdrop from "../../../components/LoadingBackdrop";
 
 const links = [
   { nombre: "Inicio", ruta: "/admin", disabled: false },
@@ -15,8 +16,10 @@ const links = [
 export default function Pages() {
   const { open, openDialog, closeDialog } = useDialogController();
   const { toggleDarkMode } = useDarkContext();
+  const [show, setShow] = React.useState(false);
   return (
     <>
+      <LoadingBackdrop isOpen={show} onClose={() => setShow(false)} />
       <MainHeader titulo="Panel de administración" breads={links} />
       <h1 className="custom-font">Vite + React + Exo 2</h1>
       <div className="card">
@@ -58,6 +61,7 @@ export default function Pages() {
           color="warning"
           variant="contained"
           style={{ marginLeft: "10px" }}
+          onClick={() => setShow(true)}
         >
           Warning
         </Button>
