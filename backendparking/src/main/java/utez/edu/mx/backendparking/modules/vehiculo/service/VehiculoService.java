@@ -97,7 +97,7 @@ public class VehiculoService  {
                     .toList();
 
             if (dtos.isEmpty()) {
-                return ApiResponse.success(HttpStatus.NO_CONTENT, "No tienes vehículos registrados todavía", dtos);
+                return ApiResponse.success(HttpStatus.NO_CONTENT, "No tienes vehículos registrados todavía o no coinciden con los filtros aplicados", dtos);
             }
 
             return ApiResponse.success(HttpStatus.OK, "Vehículos disponibles", dtos);
@@ -140,7 +140,7 @@ public class VehiculoService  {
             vehiculo.setUsuario(user);
             vehiculo.setTipoVehiculo(tipoVehiculo);
             vehiculo = vehiculoRepository.save(vehiculo);
-            return ApiResponse.success(HttpStatus.CREATED,"Vehículo registrado exitosamente", vehiculo);
+            return ApiResponse.success(HttpStatus.CREATED,"Vehículo registrado correctamente", vehiculo);
         }
         catch (ResourceNotFoundException ex) {
             return ApiResponse.error(HttpStatus.NOT_FOUND, ex.getMessage(), null);
@@ -161,7 +161,7 @@ public class VehiculoService  {
             vehiculo.setDescripcion(vDto.getDescripcion());
             vehiculo.setPlaca(vDto.getPlaca());
             vehiculo = vehiculoRepository.save(vehiculo);
-            return ApiResponse.success(HttpStatus.OK,"Vehículo actualizado exitosamente", vehiculo);
+            return ApiResponse.success(HttpStatus.OK,"Vehículo actualizado correctamente", vehiculo);
         }
         catch (Exception e){
             return ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR,e.getMessage(), null);
@@ -175,7 +175,7 @@ public class VehiculoService  {
             boolean oldState = vehiculo.getEstatus();
             vehiculo.setEstatus(!vehiculo.getEstatus());
             vehiculo = vehiculoRepository.save(vehiculo);
-            return ApiResponse.success(HttpStatus.OK,"Ha cambiado el estatus del vehículo de "+ oldState +" a "+vehiculo.getEstatus(), null);
+            return ApiResponse.success(HttpStatus.OK,"Ha cambiado el estatus de" + vehiculo.getModelo() + " de "+ oldState +" a "+vehiculo.getEstatus(), null);
         } catch (Exception e){
             return ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR,e.getMessage(), null);
         }

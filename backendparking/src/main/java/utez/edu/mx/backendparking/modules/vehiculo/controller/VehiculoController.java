@@ -1,5 +1,6 @@
 package utez.edu.mx.backendparking.modules.vehiculo.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/vehiculos")
+@Tag(name="Vehículos", description = "Endpoints para vehículos")
 public class VehiculoController {
 
     @Autowired

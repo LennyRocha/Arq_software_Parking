@@ -1,5 +1,6 @@
 package utez.edu.mx.backendparking.modules.cajon.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import utez.edu.mx.backendparking.modules.tipovehiculo.model.TipoVehiculo;
 
@@ -14,7 +15,7 @@ public class Cajon
     @Column(unique = true, nullable = false, name = "identificador")
     private String name;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_tipo_vehiculo", referencedColumnName = "id", nullable = false)
     private TipoVehiculo tipoVehiculo;
 
