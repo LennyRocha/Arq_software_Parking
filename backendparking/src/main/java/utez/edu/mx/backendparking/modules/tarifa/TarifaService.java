@@ -12,7 +12,7 @@ public interface TarifaService {
     TarifaResponseDto create(TarifaRequestDto dto);
     List<TarifaResponseDto> findAll();
     List<TarifaResponseDto> findAllActiveOrderByTipoVehiculoAndTiempo();
-    Page<TarifaResponseDto> searchAndSortPaginated(Integer tiempo, Double costo, String sortBy, String sortOrder, int page, int size);
+    Page<TarifaResponseDto> searchAndSortPaginated(Double search, String sortBy, String sortOrder, int page, int size);
     boolean changeStatus(Long id);
     TarifaResponseDto update(TarifaUpdateRequestDto dto);
 }

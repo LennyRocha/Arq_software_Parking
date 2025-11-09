@@ -24,8 +24,8 @@ import EditIcon from '@mui/icons-material/Edit';
 import MainHeader from "../../../../components/MainHeader";
 import LoadingBackdrop from "../../../../components/LoadingBackdrop";
 import HeadingDescription from "../../../../components/HeadingDescription";
-import { searchTarifasPaginated } from "../api/TarifasApi";
 import { getAxiosErrorMessage } from "../../../../utils/getAxiosMessage";
+import { useTarifas } from "../hooks/useTarifas";
 
 const links = [
   { nombre: "Inicio", ruta: "/admin", disabled: false },
@@ -33,52 +33,28 @@ const links = [
 ];
 
 export default function AdminGestionTarifas() {
-  const [tarifas, setTarifas] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [totalElements, setTotalElements] = useState(0);
-  const [ordenarPor, setOrdenarPor] = useState("tipoVehiculo");
-  const [ordenDireccion, setOrdenDireccion] = useState("asc");
-  const [buscarTexto, setBuscarTexto] = useState("");
-  const [tipoBusqueda, setTipoBusqueda] = useState("tiempo"); // "tiempo" o "costo"
+  
+  const { 
+    tarifas, setTarifas,
+    loading, setLoading,
+    error, setError,
+    retry, setRetry,
+    vacio, setVacio,
+    page, setPage,
+    rowsPerPage, setRowsPerPage,
+    totalElements, setTotalElements,
+    ordenarPor, setOrdenarPor,
+    ordenDireccion, setOrdenDireccion,
+    buscarTexto, setBuscarTexto,
+    cargarTarifas, cargarTarifasPaginado
+   } = useTarifas();
 
-  // Cargar tarifas con paginación
-  const cargarTarifas = async () => {
-    setLoading(true);
-    setError("");
-    try {
-      // Determinar si es búsqueda por tiempo o costo
-      const valorBusqueda = buscarTexto.trim();
-      const tiempo = tipoBusqueda === "tiempo" && valorBusqueda ? Number(valorBusqueda) : null;
-      const costo = tipoBusqueda === "costo" && valorBusqueda ? Number(valorBusqueda) : null;
-
-      const response = await searchTarifasPaginated({
-        tiempo: tiempo,
-        costo: costo,
-        sortBy: ordenarPor,
-        sortOrder: ordenDireccion,
-        page: page,
-        size: rowsPerPage
-      });
-      
-      const data = response.data.data;
-      setTarifas(data.content || []);
-      setTotalElements(data.totalElements || 0);
-    } catch (err) {
-      setError(getAxiosErrorMessage(err));
-      setTarifas([]);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   // Cargar tarifas al montar el componente o cambiar parámetros de paginación
   useEffect(() => {
     // Se le pone un pequeño delay para que no se haga tan rapido
     setTimeout(() => {
-      cargarTarifas();
+      cargarTarifasPaginado();
     }, 500); // Espera 500ms antes de hacer la petición
   }, [page, rowsPerPage]); // Solo recarga cuando cambia página o tamaño de página
 
@@ -95,13 +71,12 @@ export default function AdminGestionTarifas() {
     setPage(0);
     // Se le pone un pequeño delay para que no se haga tan rapido
     setTimeout(() => {
-      cargarTarifas();
+      cargarTarifasPaginado();
     }, 500); // Espera 500ms antes de hacer la petición
   };
 
   const handleLimpiarFiltros = () => {
     setBuscarTexto("");
-    setTipoBusqueda("tiempo");
     setOrdenarPor("tipoVehiculo");
     setOrdenDireccion("asc");
     setPage(0);
@@ -169,28 +144,17 @@ export default function AdminGestionTarifas() {
               </Select>
             </FormControl>
 
-            {/* Tipo de búsqueda */}
-            <FormControl size="small" sx={{ minWidth: 120 }}>
-              <InputLabel>Buscar por</InputLabel>
-              <Select
-                value={tipoBusqueda}
-                label="Buscar por"
-                onChange={(e) => setTipoBusqueda(e.target.value)}
-              >
-                <MenuItem value="tiempo">Tiempo</MenuItem>
-                <MenuItem value="costo">Costo</MenuItem>
-              </Select>
-            </FormControl>
-
             {/* Campo de texto para buscar */}
-            <OutlinedInput
-              size="small"
-              placeholder={tipoBusqueda === "tiempo" ? "Ej: 30" : "Ej: 40"}
-              value={buscarTexto}
-              onChange={(e) => setBuscarTexto(e.target.value)}
-              type="number"
-              sx={{ minWidth: 150 }}
-            />
+            <FormControl size="small" sx={{ minWidth: 150 }}>
+              <InputLabel>Buscar por</InputLabel>
+              <OutlinedInput
+                label="Buscar por"
+                placeholder={"Tiempo, costo"}
+                value={buscarTexto}
+                onChange={(e) => setBuscarTexto(e.target.value)}
+                type="number"
+              />
+            </FormControl>
 
             {/* Botones de acción */}
             <Button variant="outlined" color="primary" onClick={handleBuscar}>

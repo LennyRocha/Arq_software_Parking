@@ -21,27 +21,19 @@ export const toggleTarifaStatus = (id) =>
 
 // Buscar tarifas con filtros, ordenamiento y paginación
 export const searchTarifasPaginated = ({
-  tiempo = null,
-  costo = null,
+  search = null,
   sortBy = "tipoVehiculo",
   sortOrder = "asc",
   page = 0,
   size = 10
 }) => {
   const params = {
+    search,
     sortBy,
     sortOrder,
     page,
     size
   };
-
-  // Solo agregar parámetros opcionales si tienen valor
-  if (tiempo !== null && tiempo !== undefined) {
-    params.tiempo = tiempo;
-  }
-  if (costo !== null && costo !== undefined) {
-    params.costo = costo;
-  }
 
   return apiToken.get("/api/tarifa/search/paginated", { params });
 };
