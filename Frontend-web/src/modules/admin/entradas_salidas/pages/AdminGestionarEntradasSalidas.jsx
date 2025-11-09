@@ -125,7 +125,7 @@ export default function AdminGestionarEntradasSalidas() {
               <InputLabel>Buscar por</InputLabel>
               <OutlinedInput
                 label="Buscar por"
-                placeholder="Buscar..."
+                placeholder="Folio"
                 value={buscarTexto}
                 onChange={(e) => setBuscarTexto(e.target.value)}
               />
@@ -135,15 +135,15 @@ export default function AdminGestionarEntradasSalidas() {
             <Button variant="outlined" color="primary">
               BUSCAR
             </Button>
-            <Button variant="outlined" color="secondary">
+            <Button variant="outlined" color="primary">
               LIMPIAR FILTROS
             </Button>
           </Box>
 
           {/* Botón agregar nueva */}
           <Button 
-            variant="contained" 
-            color="success"
+            color="primary"
+            variant="contained"
             sx={{ minWidth: 150 }}
           >
             + AGREGAR NUEVA
