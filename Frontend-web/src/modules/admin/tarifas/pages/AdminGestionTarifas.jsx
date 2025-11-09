@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { 
+import {
   Box,
-  Button, 
-  TextField, 
+  Button,
+  TextField,
   Typography,
   Table,
   TableBody,
@@ -24,7 +24,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import MainHeader from "../../../../components/MainHeader";
 import LoadingBackdrop from "../../../../components/LoadingBackdrop";
 import HeadingDescription from "../../../../components/HeadingDescription";
-import { getAxiosErrorMessage } from "../../../../utils/getAxiosMessage";
+import sweetAlert from "../../../../utils/sweetAlert";
 import { useTarifas } from "../hooks/useTarifas";
 
 const links = [
@@ -33,8 +33,8 @@ const links = [
 ];
 
 export default function AdminGestionTarifas() {
-  
-  const { 
+
+  const {
     tarifas, setTarifas,
     loading, setLoading,
     error, setError,
@@ -46,8 +46,8 @@ export default function AdminGestionTarifas() {
     ordenarPor, setOrdenarPor,
     ordenDireccion, setOrdenDireccion,
     buscarTexto, setBuscarTexto,
-    cargarTarifas, cargarTarifasPaginado
-   } = useTarifas();
+    cargarTarifas, cargarTarifasPaginado, actualizarEstadoTarifa
+  } = useTarifas();
 
 
   // Cargar tarifas al montar el componente o cambiar parámetros de paginación
@@ -88,25 +88,62 @@ export default function AdminGestionTarifas() {
     // No resetea página ni hace búsqueda automática
   };
 
+  const handleChangeEstatus = (idTarifa, estatus) => {
+    sweetAlert({
+      title: `${estatus ? "Desactivar" : "Activar"} tarifa`,
+      text: `¿Está seguro que desea ${estatus ? "desactivar" : "activar"} esta tarifa?`,
+      icon: "warning",
+      denyButtonText: "Cancelar",
+      showDenyButton: true,
+      showCloseButton: true,
+      reverseButtons: true,
+    })
+    .then(async (result) => {
+      // result.isConfirmed = true si hizo clic en confirmar
+      if (result.isConfirmed) {
+        // Ejecutar la función de actualización
+        const resultado = await actualizarEstadoTarifa(idTarifa);
+        
+        if (resultado.success) {
+          // Mostrar mensaje de éxito
+          sweetAlert({
+            title: "¡Éxito!",
+            text: `La tarifa se ha ${estatus ? "desactivado" : "activado"} correctamente`,
+            icon: "success",
+            timer: 2000,
+            showConfirmButton: false
+          });
+        } else {
+          // Mostrar mensaje de error
+          sweetAlert({
+            title: "Error",
+            text: resultado.error || "No se pudo actualizar el estado de la tarifa",
+            icon: "error"
+          });
+        }
+      }
+    });
+  }
+
   return (
     <>
-      <LoadingBackdrop isOpen={loading} onClose={() => {}} />
+      <LoadingBackdrop isOpen={loading} onClose={() => { }} />
       <MainHeader titulo="Tarifas" breads={links} />
-      
+
       <Box sx={{ padding: { xs: 2, sm: 3, md: 4 }, paddingTop: { xs: 3, sm: 4, md: 6 }, maxWidth: "1200px", margin: "0 auto" }}>
 
         {/* Título y descripción */}
-        <HeadingDescription 
+        <HeadingDescription
           title="TARIFAS DE VISITANTES"
           description="Costos establecidos que deben pagar las clientes que utilizan
            temporalmente el estacionamiento, determinados según el tiempo de estancia y el tipo de vehículo."
         />
 
         {/* Controles de búsqueda y filtros */}
-        <Box 
-          sx={{ 
-            display: "flex", 
-            gap: 2, 
+        <Box
+          sx={{
+            display: "flex",
+            gap: 2,
             mb: 3,
             flexWrap: "wrap",
             alignItems: "center",
@@ -166,7 +203,7 @@ export default function AdminGestionTarifas() {
           </Box>
 
           {/* Botón agregar nueva */}
-          <Button 
+          <Button
             color="primary"
             variant="contained"
             sx={{ minWidth: 150 }}
@@ -209,7 +246,7 @@ export default function AdminGestionTarifas() {
                 tarifas.map((row, index) => (
                   <TableRow
                     key={row.id || index}
-                    sx={{ 
+                    sx={{
                       '&:last-child td, &:last-child th': { border: 0 },
                       '&:hover': { backgroundColor: 'var(--background)' }
                     }}
@@ -218,14 +255,15 @@ export default function AdminGestionTarifas() {
                     <TableCell>{row.tiempo ? `${row.tiempo} min` : '-'}</TableCell>
                     <TableCell>${row.costo || '-'}</TableCell>
                     <TableCell align="center">
-                      <IconButton 
-                        color="secondary" 
+                      <IconButton
+                        color="secondary"
                         size="small"
                         aria-label="editar"
                       >
                         <EditIcon />
                       </IconButton>
-                      <Switch 
+                      <Switch
+                        onClick={() => handleChangeEstatus(row.id, row.estatus)}
                         checked={row.estatus || false}
                         color="primary"
                         sx={{ ml: 1 }}
@@ -236,7 +274,7 @@ export default function AdminGestionTarifas() {
               )}
             </TableBody>
           </Table>
-          
+
           {/* Paginación */}
           <TablePagination
             component="div"
@@ -247,7 +285,7 @@ export default function AdminGestionTarifas() {
             onRowsPerPageChange={handleChangeRowsPerPage}
             rowsPerPageOptions={[5, 10, 25]}
             labelRowsPerPage="Resultados por página:"
-            labelDisplayedRows={({ from, to, count }) => 
+            labelDisplayedRows={({ from, to, count }) =>
               `${from}-${to} de ${count !== -1 ? count : `más de ${to}`}`
             }
           />

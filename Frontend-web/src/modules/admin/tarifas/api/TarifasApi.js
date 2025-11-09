@@ -17,7 +17,7 @@ export const updateTarifa = (tarifa) => apiToken.put(`/api/tarifa`, tarifa);
 
 // Cambiar estado de una tarifa (activar/desactivar)
 export const toggleTarifaStatus = (id) => 
-  apiToken.patch(`/api/tarifa/${id}/status`);
+  apiToken.put(`/api/tarifa/${id}/status`);
 
 // Buscar tarifas con filtros, ordenamiento y paginación
 export const searchTarifasPaginated = ({

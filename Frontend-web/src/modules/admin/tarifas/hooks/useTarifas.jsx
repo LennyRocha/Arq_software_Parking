@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
-import { fetchTarifas } from "../api/TarifasApi";
+import { fetchTarifas, searchTarifasPaginated, toggleTarifaStatus } from "../api/TarifasApi";
 import { getAxiosErrorMessage } from "../../../../utils/getAxiosMessage";
-import { searchTarifasPaginated } from "../api/TarifasApi";
 
 export const useTarifas = () => {
   const [tarifas, setTarifas] = useState(null);
@@ -64,6 +63,25 @@ export const useTarifas = () => {
     }
   };
 
+  // Actualizar el estado de la tarifa
+  const actualizarEstadoTarifa = async (idTarifa) => {
+    setLoading(true);
+    setError("");
+    try {
+      await toggleTarifaStatus(idTarifa);
+      
+      // Recargar las tarifas después de actualizar
+      await cargarTarifasPaginado();
+      
+      return { success: true };
+    } catch (err) {
+      setError(getAxiosErrorMessage(err));
+      return { success: false, error: getAxiosErrorMessage(err) };
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     cargarTarifasPaginado();
   }, [retry]);
@@ -80,6 +98,6 @@ export const useTarifas = () => {
     ordenarPor, setOrdenarPor,
     ordenDireccion, setOrdenDireccion,
     buscarTexto, setBuscarTexto,
-    cargarTarifas, cargarTarifasPaginado
+    cargarTarifas, cargarTarifasPaginado, actualizarEstadoTarifa
   };
 };
