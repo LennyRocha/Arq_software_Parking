@@ -51,6 +51,7 @@ export default function GestionTiposPension() {
     setOrdenarPor,
     setOrdenDireccion,
     setBuscarTexto,
+    setLoading,
     cargarTiposPensionPaginados,
     crearTipoPension,
     actualizarTipoPension,
@@ -75,6 +76,9 @@ export default function GestionTiposPension() {
     onSubmit: async (values) => {
       const esEdicion = !!tipoPensionSeleccionado;
       
+      // Primero cerramos el modal
+      closeDialog();
+      
       // Mostrar diálogo de confirmación
       const confirmResult = await CustomSweetAlert.confirm({
         title: `¿Desea ${esEdicion ? "modificar" : "registrar"} el tipo de pensión?`,
@@ -83,22 +87,26 @@ export default function GestionTiposPension() {
       });
 
       if (confirmResult.isConfirmed) {
+        setLoading(true); // Mostrar loading
         const resultado = esEdicion
           ? await actualizarTipoPension(tipoPensionSeleccionado.id, values)
           : await crearTipoPension(values);
+        setLoading(false); // Ocultar loading
 
         if (resultado.success) {
-          CustomSweetAlert.success({
+          await CustomSweetAlert.success({
             title: "¡Éxito!",
             text: `El tipo de pensión se ha ${esEdicion ? "modificado" : "registrado"} correctamente`
           });
-          closeDialog();
           cargarTiposPensionPaginados();
         } else {
-          CustomSweetAlert.error({
+          await CustomSweetAlert.error({
             text: resultado.error
           });
         }
+      } else {
+        // Si cancela, volvemos a abrir el modal con los datos
+        openDialog();
       }
     }
   });
@@ -149,15 +157,17 @@ export default function GestionTiposPension() {
     });
 
     if (confirmResult.isConfirmed) {
+      setLoading(true); // Mostrar loading
       const resultado = await actualizarEstadoTipoPension(id);
+      setLoading(false); // Ocultar loading
       
       if (resultado.success) {
-        CustomSweetAlert.success({
+        await CustomSweetAlert.success({
           title: "¡Éxito!",
           text: `El tipo de pensión se ha ${estatus ? "desactivado" : "activado"} correctamente`
         });
       } else {
-        CustomSweetAlert.error({
+        await CustomSweetAlert.error({
           text: resultado.error
         });
       }
@@ -176,6 +186,11 @@ export default function GestionTiposPension() {
       field: "costo", 
       label: "Costo",
       render: (row) => `$${row.costo}`
+    },
+    {
+      field: "status",
+      label: "Estatus",
+      render: (row) => row.status ? "Activa" : "Inactiva"
     },
     {
       field: "opciones",
@@ -303,6 +318,8 @@ export default function GestionTiposPension() {
         }}
         isForm={true}
         onSubmit={formik.handleSubmit}
+        textSubmit={tipoPensionSeleccionado ? "Modificar" : "Agregar"}
+        textCancel="Cancelar"
         maxWidth="sm"
         fullWidth
       >

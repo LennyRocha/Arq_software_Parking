@@ -52,7 +52,12 @@ export default function useTiposPension() {
   // Crear nuevo tipo de pensión
   const crearTipoPension = async (tipoPension) => {
     try {
-      const response = await createTipoPension(tipoPension);
+      const pensionData = {
+        nombre: tipoPension.nombre,
+        duracionDias: parseInt(tipoPension.duracionDias),
+        costo: parseFloat(tipoPension.costo)
+      };
+      const response = await createTipoPension(pensionData);
       return { success: true, data: response.data.data };
     } catch (error) {
       return { 
@@ -65,7 +70,12 @@ export default function useTiposPension() {
   // Actualizar tipo de pensión
   const actualizarTipoPension = async (id, tipoPension) => {
     try {
-      const response = await updateTipoPension(id, tipoPension);
+      const pensionData = {
+        nombre: tipoPension.nombre,
+        duracionDias: parseInt(tipoPension.duracionDias),
+        costo: parseFloat(tipoPension.costo)
+      };
+      const response = await updateTipoPension(id, pensionData);
       return { success: true, data: response.data.data };
     } catch (error) {
       return { 
