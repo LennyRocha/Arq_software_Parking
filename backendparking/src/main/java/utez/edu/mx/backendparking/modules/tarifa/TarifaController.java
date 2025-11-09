@@ -54,14 +54,13 @@ public class TarifaController {
                              "Parámetros: tiempo (opcional), costo (opcional), sortBy (tipoVehiculo|tiempo|costo), " +
                              "sortOrder (asc|desc), page (número de página, inicia en 0), size (tamaño de página)")
     public ResponseEntity<ApiResponse<org.springframework.data.domain.Page<TarifaResponseDto>>> searchAndSortPaginated(
-            @RequestParam(required = false) Integer tiempo,
-            @RequestParam(required = false) Double costo,
+            @RequestParam(required = false) Double search,
             @RequestParam(required = false, defaultValue = "tipoVehiculo") String sortBy,
             @RequestParam(required = false, defaultValue = "asc") String sortOrder,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
-        Page<TarifaResponseDto> tarifas = tarifaService.searchAndSortPaginated(tiempo, costo, sortBy, sortOrder, page, size);
+        Page<TarifaResponseDto> tarifas = tarifaService.searchAndSortPaginated(search, sortBy, sortOrder, page, size);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(HttpStatus.OK, TarifaMessages.ENDPOINT_TARIFA_SEARCH, tarifas));
     }
 
