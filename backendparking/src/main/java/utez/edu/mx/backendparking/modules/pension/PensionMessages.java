@@ -12,7 +12,10 @@ public class PensionMessages {
     public static final String ERROR_COSTO_OBLIGATORIO = "El costo es obligatorio";
     public static final String ERROR_COSTO_MAYOR_0 = "El costo debe ser mayor a 0";
 
+    //RESPUESTAS DE EXITO ENDPOINTS DE TIPOS DE PENSION
     public static final String ENDPOINT_TIPOPENSION_POST="Tipo de pensión agregado correctamente.";
     public static final String ENDPOINT_TIPOPENSION_GET_ALL="Listado de pensiones obtenido correctamente.";
     public static final String ENDPOINT_TIPOPENSION_PUT_CHANGE_STATUS="Estado de la pensión actualizado correctamente.";
+    public static final String ENDPOINT_TIPOPENSION_PUT = "Tipo de pensión modificado correctamente";
+
 }
