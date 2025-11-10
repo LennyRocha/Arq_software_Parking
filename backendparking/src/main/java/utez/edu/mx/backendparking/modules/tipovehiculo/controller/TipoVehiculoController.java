@@ -15,7 +15,7 @@ import utez.edu.mx.backendparking.shared.api.ApiResponse;
 import java.util.List;
 
 @RestController
-@RequestMapping("/vehiculos/tipos")
+@RequestMapping("/api/vehiculos/tipos")
 @Tag(name="Tipos de vehículos", description = "Endpoints para tipos de vehículos")
 public class TipoVehiculoController {
 

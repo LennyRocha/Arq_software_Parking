@@ -77,14 +77,7 @@ export default function CustomDialog({
   textConfirm = "Confirm",
   fullWidth = true, // changed default to true
   maxWidth = "sm",  // changed default to "sm"
-  containerStyle = {
-    m: "auto",
-    // removed width: "fit-content" so maxWidth can apply
-    height: "fit-content",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-  },
+  containerStyle = {},
   handleClose,
   keyForClose = true,
   allowOutsideClick = true
@@ -124,49 +117,60 @@ export default function CustomDialog({
       }} 
       aria-labelledby={titleId}
       disableEscapeKeyDown={keyForClose}
+      PaperProps={{
+        sx: {
+          borderRadius: 2,
+          padding: 2
+        }
+      }}
     >
-      <Box
-        component={"div"}
+      <DialogTitle
+        id={titleId}
         sx={{
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "space-between",
-          width: "100%",
-          padding: 1
+          textAlign: "center",
+          color: "var(--primary)",
+          fontWeight: "bold",
+          fontSize: "2rem",
+          paddingBottom: 3,
+          position: "relative",
+          paddingTop: 2
         }}
       >
-        <DialogTitle
-          id={titleId}
-          variant="h5"
-          color={isDarkMode ? "white" : "tertiary"}
-          sx={{ fontWeight: "bold",textAlign: "left", paddingLeft: 0, paddingRight: 0 }}
-          className="custom-font"
-        >
-          {titulo}
-        </DialogTitle>
+        {titulo}
         <IconButton
           aria-label="close"
           onClick={handleClose}
-          sx={{ padding: "12px", height: "fit-content"}}
+          sx={{
+            position: "absolute",
+            right: 8,
+            top: 8,
+            color: (theme) => theme.palette.grey[500],
+          }}
         >
           <CloseIcon />
         </IconButton>
-      </Box>
+      </DialogTitle>
       <DialogContent>
         <Box
           component={isForm ? "form" : "div"}
           onSubmit={isForm ? onSubmit ?? doNothing : undefined}
-          sx={containerStyle}
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 2,
+            width: "100%",
+            ...containerStyle
+          }}
         >
           {children}
         </Box>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleCancel} variant="contained" color="inerhit">
+        <Button onClick={handleCancel} variant="contained" color="inherit">
           {textCancel}
         </Button>
         {isForm ? (
-          <Button type="submit" variant="contained" onClick={onSubmit}>
+          <Button type="submit" variant="contained">
             {textSubmit}
           </Button>
         ) : (

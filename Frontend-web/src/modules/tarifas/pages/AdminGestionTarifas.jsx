@@ -26,6 +26,7 @@ import LoadingBackdrop from "../../../components/LoadingBackdrop";
 import HeadingDescription from "../../../components/HeadingDescription";
 import sweetAlert from "../../../utils/sweetAlert";
 import { useTarifas } from "./../hooks/useTarifas";
+import AgregarTarifaModal from "../components/AgregarTarifaModal";
 
 const links = [
   { nombre: "Inicio", ruta: "/admin", disabled: false },
@@ -33,9 +34,12 @@ const links = [
 ];
 
 export default function AdminGestionTarifas() {
+  // Estados para el modal
+  const [showModalAgregarTarifa, setShowModalAgregarTarifa] = useState(false);
 
   const {
     tarifas, setTarifas,
+    tiposVehiculos, setTiposVehiculos,
     loading, setLoading,
     error, setError,
     retry, setRetry,
@@ -46,7 +50,8 @@ export default function AdminGestionTarifas() {
     ordenarPor, setOrdenarPor,
     ordenDireccion, setOrdenDireccion,
     buscarTexto, setBuscarTexto,
-    cargarTarifas, cargarTarifasPaginado, actualizarEstadoTarifa
+    cargarTarifas, cargarTarifasPaginado, actualizarEstadoTarifa,
+    cargarTiposVehiculos
   } = useTarifas();
 
 
@@ -88,6 +93,18 @@ export default function AdminGestionTarifas() {
     // No resetea página ni hace búsqueda automática
   };
 
+  const handleCloseModalAgregarTarifa = () => {
+    setShowModalAgregarTarifa(false);
+  };
+
+  const handleShowModalAgregarTarifa = () => {
+    // Se le pone un pequeño delay para que no se haga tan rapido
+    setTimeout(() => {
+      cargarTiposVehiculos();
+    }, 500); // Espera 500ms antes de hacer la petición
+    setShowModalAgregarTarifa(true);
+  };
+
   const handleChangeEstatus = (idTarifa, estatus) => {
     sweetAlert({
       title: `${estatus ? "Desactivar" : "Activar"} tarifa`,
@@ -98,30 +115,30 @@ export default function AdminGestionTarifas() {
       showCloseButton: true,
       reverseButtons: true,
     })
-    .then(async (result) => {
-      // result.isConfirmed = true si hizo clic en confirmar
-      if (result.isConfirmed) {
-        // Ejecutar la función de actualización
-        const resultado = await actualizarEstadoTarifa(idTarifa);
-        
-        if (resultado.success) {
-          // Mostrar mensaje de éxito
-          sweetAlert({
-            title: "¡Éxito!",
-            text: `La tarifa se ha ${estatus ? "desactivado" : "activado"} correctamente`,
-            icon: "success",
-            confirmText: "Aceptar",
-          });
-        } else {
-          // Mostrar mensaje de error
-          sweetAlert({
-            title: "Error",
-            text: resultado.error || "No se pudo actualizar el estado de la tarifa",
-            icon: "error"
-          });
+      .then(async (result) => {
+        // result.isConfirmed = true si hizo clic en confirmar
+        if (result.isConfirmed) {
+          // Ejecutar la función de actualización
+          const resultado = await actualizarEstadoTarifa(idTarifa);
+
+          if (resultado.success) {
+            // Mostrar mensaje de éxito
+            sweetAlert({
+              title: "¡Éxito!",
+              text: `La tarifa se ha ${estatus ? "desactivado" : "activado"} correctamente`,
+              icon: "success",
+              confirmText: "Aceptar",
+            });
+          } else {
+            // Mostrar mensaje de error
+            sweetAlert({
+              title: "Error",
+              text: resultado.error || "No se pudo actualizar el estado de la tarifa",
+              icon: "error"
+            });
+          }
         }
-      }
-    });
+      });
   }
 
   return (
@@ -206,6 +223,7 @@ export default function AdminGestionTarifas() {
             color="primary"
             variant="contained"
             sx={{ minWidth: 150 }}
+            onClick={handleShowModalAgregarTarifa}
           >
             + AGREGAR NUEVA
           </Button>
@@ -290,6 +308,15 @@ export default function AdminGestionTarifas() {
           />
         </TableContainer>
       </Box>
+
+      {/* Modal de agregar una tarifa */}
+      {showModalAgregarTarifa && (
+        <AgregarTarifaModal
+          showModal={showModalAgregarTarifa}
+          tiposVehiculos={tiposVehiculos}
+          onClose={handleCloseModalAgregarTarifa}
+        />
+      )}
     </>
   );
 }

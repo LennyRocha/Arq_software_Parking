@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { fetchTarifas, searchTarifasPaginated, toggleTarifaStatus } from "./../api/TarifasApi";
+import { fetchTarifas, searchTarifasPaginated, toggleTarifaStatus, fetchTiposVehiculos } from "./../api/TarifasApi";
 import { getAxiosErrorMessage } from "../../../utils/getAxiosMessage";
 
 export const useTarifas = () => {
   const [tarifas, setTarifas] = useState(null);
+  const [tiposVehiculos, setTiposVehiculos] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [retry, setRetry] = useState(false);
@@ -82,12 +83,45 @@ export const useTarifas = () => {
     }
   };
 
+  // Carga los tipos de vehiculos de la base de datos
+  const cargarTiposVehiculos = async () => {
+    setError("");
+    try {
+      const response = await fetchTiposVehiculos();
+      const data = response.data.data || [];
+      setTiposVehiculos(data);
+    } catch (err) {
+      setError(getAxiosErrorMessage(err));
+      setTiposVehiculos([]); // Array vacío en caso de error
+    }
+  };
+
+  // Actualizar el estado de la tarifa
+  const agregarNuevaTarifa = async (tarifa) => {
+    setLoading(true);
+    setError("");
+    try {
+      await toggleTarifaStatus({tarifa});
+      
+      // Recargar las tarifas después de actualizar
+      await cargarTarifasPaginado();
+      
+      return { success: true };
+    } catch (err) {
+      setError(getAxiosErrorMessage(err));
+      return { success: false, error: getAxiosErrorMessage(err) };
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     cargarTarifasPaginado();
   }, [retry]);
 
   return {
     tarifas, setTarifas,
+    tiposVehiculos, setTiposVehiculos,
     loading, setLoading,
     error, setError,
     retry, setRetry,
@@ -98,6 +132,6 @@ export const useTarifas = () => {
     ordenarPor, setOrdenarPor,
     ordenDireccion, setOrdenDireccion,
     buscarTexto, setBuscarTexto,
-    cargarTarifas, cargarTarifasPaginado, actualizarEstadoTarifa
+    cargarTarifas, cargarTarifasPaginado, actualizarEstadoTarifa, cargarTiposVehiculos
   };
 };

@@ -38,3 +38,5 @@ export const searchTarifasPaginated = ({
   return apiToken.get("/api/tarifa/search/paginated", { params });
 };
 
+// Obtener todos los tipos de vehiculos
+export const fetchTiposVehiculos = () => apiToken.get("/api/vehiculos/tipos");
