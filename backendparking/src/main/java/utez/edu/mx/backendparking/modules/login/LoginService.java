@@ -39,7 +39,7 @@ public class LoginService {
             String token = jwtUtils.generateAccessToken(correo, role, id);
             return ApiResponse.success(
         HttpStatus.OK,
-        token+" y el rol "+role,
+        token,
         null
       );
            }   
