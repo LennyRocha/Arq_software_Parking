@@ -21,9 +21,9 @@ import {
 } from "@mui/material";
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import EditIcon from '@mui/icons-material/Edit';
-import MainHeader from "../../../../components/MainHeader";
-import LoadingBackdrop from "../../../../components/LoadingBackdrop";
-import HeadingDescription from "../../../../components/HeadingDescription";
+import MainHeader from "../../../components/MainHeader";
+import LoadingBackdrop from "../../../components/LoadingBackdrop";
+import HeadingDescription from "../../../components/HeadingDescription";
 
 const links = [
   { nombre: "Inicio", ruta: "/admin", disabled: false },
