@@ -2,7 +2,7 @@ import React from "react";
 import Skeleton from "@mui/material/Skeleton";
 import Stack from "@mui/material/Stack";
 import { Button, Link, Typography } from "@mui/material";
-import { useDarkContext } from "../../../context/DarkContext";
+import { useDarkContext } from "../context/DarkContext";
 
 export default function LandingPage() {
   const { toggleDarkMode } = useDarkContext();
@@ -15,6 +15,11 @@ export default function LandingPage() {
     }}>
       LandingPage
       <br />
+
+      <Link href="/admin">Ir al Menu admin</Link>
+      <Link href="/empleado">Ir al Menu Empleado</Link>
+      <Link href="/pensionados">Ir al Menu Pensionados</Link>
+
       <Stack spacing={1} sx={{ maxWidth: "500px" }}>
         {/* For variant="text", adjust the height via font-size */}
         <Skeleton variant="text" sx={{ fontSize: "1rem" }} />
@@ -28,6 +33,8 @@ export default function LandingPage() {
       <Link href="https://mui.com/material-ui/react-skeleton/">
         Documentación: https://mui.com/material-ui/react-skeleton/
       </Link>
+
+      
     </div>
   );
 }

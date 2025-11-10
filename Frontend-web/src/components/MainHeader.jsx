@@ -36,9 +36,10 @@
  * @param {string} breads[].ruta - Ruta de navegación del breadcrumb
  * @param {boolean} breads[].disabled - Si el breadcrumb está deshabilitado (no clickeable)
  */
-import { Box, Breadcrumbs, Typography, Link } from "@mui/material";
+import { Box, Breadcrumbs, Typography} from "@mui/material";
 import logo from "../img/logo_parking_hd_no_titulo.png";
 import React from "react";
+import { Link } from "react-router-dom";
 
 export default function MainHeader({ titulo, breads }) {
   const BreadCrumbs = (
