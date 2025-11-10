@@ -5,10 +5,9 @@ import LandingPage from "../modules/LandingPage";
 import EmpleadoRouter from "./EmpleadoRouter";
 import PensionadoRouter from "./PensionadoRouter";
 import Pages from "../modules/cajon/pages/Pages";
-import AdminGestionarEntradasSalidas from "../modules/admin/entradas_salidas/pages/AdminGestionarEntradasSalidas";
-import AdminGestionTarifas from "../modules/admin/tarifas/pages/AdminGestionTarifas";
-import GestionTiposPension from "../modules/tipo_pension/pages/GestionTiposPension";
-import PensionesUsuarios from "../modules/tipo_pension/pages/PensionesUsuarios";
+import AdminGestionarEntradasSalidas from "../modules/entradas_salidas/pages/AdminGestionarEntradasSalidas";
+import AdminGestionTarifas from "../modules/tarifas/pages/AdminGestionTarifas";
+
 
 const Err = () => <h1>404 - Not Found!</h1>;
 
