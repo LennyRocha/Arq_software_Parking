@@ -8,7 +8,7 @@ import TableFilters from "../../../components/TableFilters";
 import useDialogController from "../../../hooks/useDialogController";
 import useTiposPension from "../hooks/useTiposPension";
 import TipoPensionFormModal from "../components/TipoPensionFormModal";
-import { tipoPensionColumns, orderOptions } from "../config/tableColumns";
+import { tipoPensionColumns, orderOptions } from "../config/tableColumns.jsx";
 
 const links = [
   { nombre: "Pensiones", ruta: "/admin/tipos_de_pension", disabled: false },
@@ -149,10 +149,9 @@ export default function GestionTiposPension() {
         isOpen={open}
         onClose={closeDialog}
         tipoPension={tipoPensionSeleccionado}
+        setLoading={setLoading}
         onSubmit={async (values) => {
           const esEdicion = !!tipoPensionSeleccionado;
-          closeDialog();
-
           const resultado = esEdicion
             ? await actualizarTipoPension(tipoPensionSeleccionado.id, values)
             : await crearTipoPension(values);
@@ -160,6 +159,7 @@ export default function GestionTiposPension() {
           if (resultado.success) {
             cargarTiposPensionPaginados();
           }
+          return resultado;
         }}
       />
     </>

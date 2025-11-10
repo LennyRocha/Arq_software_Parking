@@ -1,15 +1,54 @@
 import React from 'react';
 import { Box, TextField } from "@mui/material";
-import CustomDialog from "../../../../components/CustomDialog";
+import CustomDialog from '../../../components/CustomDialog';
+import CustomSweetAlert from '../../../components/CustomSweetAlert';
 import { useFormik } from "formik";
-import pensionYup from "../../../../models/yup/pensionYup";
+import pensionYup from '../config/pensionYup';
 
 export default function TipoPensionFormModal({
   isOpen,
   onClose,
   tipoPension,
   onSubmit,
+  setLoading
 }) {
+  const handleSubmit = async (values) => {
+    const esEdicion = !!tipoPension;
+
+    // Primero cerramos el modal
+    onClose();
+    
+    // Mostrar diálogo de confirmación
+    const confirmResult = await CustomSweetAlert.confirm({
+      title: `¿Desea ${esEdicion ? "modificar" : "registrar"} el tipo de pensión?`,
+      text: `Se ${esEdicion ? "modificará" : "agregará"} el tipo de pensión con los datos proporcionados`,
+      confirmButtonText: esEdicion ? "Modificar" : "Agregar",
+    });
+
+    if (confirmResult.isConfirmed) {
+      setLoading(true);
+      const resultado = await onSubmit(values);
+      setLoading(false);
+      
+      if (resultado.success) {
+        formik.resetForm(); // Limpiamos el formulario después de un registro exitoso
+        await CustomSweetAlert.success({
+          title: "¡Éxito!",
+          text: `El tipo de pensión se ha ${esEdicion ? "modificado" : "registrado"} correctamente`
+        });
+      } else {
+        await CustomSweetAlert.error({
+          text: resultado.error
+        });
+        // Si hay error, volvemos a abrir el modal
+        setTimeout(() => onClose(false), 100);
+      }
+    } else {
+      // Si cancela, volvemos a abrir el modal
+      setTimeout(() => onClose(false), 100);
+    }
+  };
+
   const formik = useFormik({
     initialValues: {
       nombre: tipoPension?.nombre || "",
@@ -17,7 +56,7 @@ export default function TipoPensionFormModal({
       costo: tipoPension?.costo || ""
     },
     validationSchema: pensionYup,
-    onSubmit,
+    onSubmit: handleSubmit,
     enableReinitialize: true
   });
 

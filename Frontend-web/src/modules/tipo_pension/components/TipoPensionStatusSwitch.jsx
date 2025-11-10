@@ -1,6 +1,6 @@
 import React from 'react';
 import { Switch } from "@mui/material";
-import CustomSweetAlert from "../../../../components/CustomSweetAlert";
+import CustomSweetAlert from '../../../components/CustomSweetAlert';
 
 export default function TipoPensionStatusSwitch({
   id,

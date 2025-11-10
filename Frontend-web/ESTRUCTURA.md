@@ -1,6 +1,6 @@
 # 📁 Estructura del Proyecto - Frontend Web
 
-Este documento explica la organización y estructura del proyecto para ayudarte a comenzar a trabajar en él.
+Este documento explica la organización y estructura del proyecto siguiendo principios de Clean Architecture y modularización.
 
 ## 🎯 Descripción General
 
@@ -17,7 +17,6 @@ Frontend-web/
 │   ├── context/        # Contextos de React (estado global)
 │   ├── hooks/          # Custom hooks reutilizables
 │   ├── img/            # Imágenes del proyecto
-│   ├── models/         # Modelos de datos y validaciones
 │   ├── modules/        # Módulos funcionales de la aplicación
 │   ├── routes/         # Configuración de rutas y navegación
 │   └── utils/          # Utilidades y funciones auxiliares
@@ -34,6 +33,9 @@ Frontend-web/
 - `CustomDialog.jsx` - Diálogo personalizado para mostrar información
 - `LoadingBackdrop.jsx` - Indicador de carga con overlay
 - `MainHeader.jsx` - Cabecera principal de la aplicación
+- `CustomTable.jsx` - Tabla reutilizable con ordenamiento y paginación
+- `TableFilters.jsx` - Componente de filtros y ordenamiento para tablas
+- `CustomSweetAlert.jsx` - Wrapper personalizado de SweetAlert2 para confirmaciones
 
 ### 🎨 `/src/context/`
 **Contextos de React** para manejar estado global.
@@ -45,24 +47,6 @@ Frontend-web/
 
 - `useDialogController.js` - Hook para controlar diálogos
 
-### 📊 `/src/models/`
-**Modelos de datos** y sus validaciones con Yup.
-
-**Modelos principales:**
-- `Cajon.js` - Modelo de cajón de estacionamiento
-- `EntSal.js` - Modelo de entrada/salida
-- `GlobalConfig.js` - Configuración global
-- `Historial.js` - Modelo de historial
-- `Pension.js` - Modelo de pensión
-- `Role.js` - Modelo de roles de usuario
-- `Tarifa.js` - Modelo de tarifas
-- `TipoVehiculo.js` - Tipos de vehículos
-- `User.js` - Modelo de usuario
-- `UserPension.js` - Relación usuario-pensión
-- `Vehicle.js` - Modelo de vehículo
-
-**Carpeta `/models/yup/`:**
-Contiene los esquemas de validación Yup para cada modelo. Estos se usan para validar formularios antes de enviar datos al backend.
 
 ### 🏗️ `/src/modules/`
 **Módulos funcionales** de la aplicación. Cada módulo representa una característica específica y sigue su propia estructura interna:
@@ -70,15 +54,20 @@ Contiene los esquemas de validación Yup para cada modelo. Estos se usan para va
 #### Estructura de un módulo:
 ```
 modulo/
-├── components/     # Componentes específicos del módulo
-├── hooks/          # Hooks específicos del módulo
-├── pages/          # Páginas/vistas del módulo
-└── styles/         # Estilos específicos del módulo
+├── api/                     # Llamadas a la API del módulo
+│   └── moduloApi.js         # Funciones de conexión con el backend
+├── components/             # Componentes específicos del módulo
+│   ├── ModuloFormModal.jsx  # Modal para crear/editar
+│   └── ModuloStatusSwitch.jsx # Componente para cambiar estado
+├── config/                 # Configuraciones del módulo
+│   ├── moduloYup.js        # Esquema de validación del formulario
+│   ├── tableColumns.jsx    # Configuración de columnas para CustomTable y de OrderOptions para TableFilters
+├── hooks/                  # Hooks específicos del módulo
+│   └── useModulo.js        # Lógica de negocio y estado del módulo
+└── pages/                  # Páginas principales del módulo
+    └── GestionModulo.jsx   # Página principal del módulo
 ```
 
-**Módulos actuales:**
-- **`cajon/`** - Gestión de cajones de estacionamiento
-- **`vehiculo/`** - Gestión de vehículos
 
 > 💡 **Nota:** Al crear nuevos módulos, sigue esta estructura para mantener la consistencia.
 
@@ -126,7 +115,6 @@ npm run build
 2. **Componentes específicos** → `/src/modules/{modulo}/components/`
 3. **Hooks reutilizables** → `/src/hooks/`
 4. **Hooks específicos** → `/src/modules/{modulo}/hooks/`
-5. **Validaciones** → `/src/models/yup/`
 6. **Estilos globales** → `App.css` o `index.css`
 7. **Estilos de módulo** → `/src/modules/{modulo}/styles/`
 
@@ -165,11 +153,10 @@ El proyecto usa:
 ## 💡 Consejos para Nuevos Desarrolladores
 
 1. **Empieza explorando** los componentes en `/src/components/`
-2. **Revisa los modelos** en `/src/models/` para entender las entidades
-3. **Examina un módulo completo** (ejemplo: `cajon/`) para ver el patrón
-4. **Usa los hooks existentes** antes de crear nuevos
-5. **Sigue la estructura** al añadir nuevas funcionalidades
-6. **Consulta los routers** para entender el flujo de navegación
+2. **Examina un módulo completo** (ejemplo: `tipos_pension/`) para ver el patrón
+3. **Usa los hooks existentes** antes de crear nuevos
+4. **Sigue la estructura** al añadir nuevas funcionalidades
+5. **Consulta los routers** para entender el flujo de navegación
 
 ---
 
