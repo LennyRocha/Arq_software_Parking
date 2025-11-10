@@ -1,27 +1,14 @@
 import React, { useEffect } from "react";
-import {
-  Box,
-  Button,
-  TextField,
-  IconButton,
-  Switch,
-  FormControl,
-  InputLabel,
-  OutlinedInput,
-  MenuItem,
-  Select,
-} from "@mui/material";
-import EditIcon from '@mui/icons-material/Edit';
+import { Box, Button } from "@mui/material";
 import MainHeader from "../../../components/MainHeader";
-import CustomDialog from "../../../components/CustomDialog";
 import LoadingBackdrop from "../../../components/LoadingBackdrop";
 import HeadingDescription from "../../../components/HeadingDescription";
 import CustomTable from "../../../components/CustomTable";
-import CustomSweetAlert from "../../../components/CustomSweetAlert";
+import TableFilters from "../../../components/TableFilters";
 import useDialogController from "../../../hooks/useDialogController";
 import useTiposPension from "../hooks/useTiposPension";
-import { useFormik } from "formik";
-import pensionYup from "../../../models/yup/pensionYup";
+import TipoPensionFormModal from "../components/TipoPensionFormModal";
+import { tipoPensionColumns, orderOptions } from "../config/tableColumns";
 
 const links = [
   { nombre: "Pensiones", ruta: "/admin/tipos_de_pension", disabled: false },
@@ -65,52 +52,6 @@ export default function GestionTiposPension() {
     }, 500);
   }, [page, rowsPerPage, ordenarPor, ordenDireccion]);
 
-  // Formik para el formulario
-  const formik = useFormik({
-    initialValues: {
-      nombre: "",
-      duracionDias: "",
-      costo: ""
-    },
-    validationSchema: pensionYup,
-    onSubmit: async (values) => {
-      const esEdicion = !!tipoPensionSeleccionado;
-      
-      // Primero cerramos el modal
-      closeDialog();
-      
-      // Mostrar diálogo de confirmación
-      const confirmResult = await CustomSweetAlert.confirm({
-        title: `¿Desea ${esEdicion ? "modificar" : "registrar"} el tipo de pensión?`,
-        text: `Se ${esEdicion ? "modificará" : "agregará"} el tipo de pensión con los datos proporcionados`,
-        confirmButtonText: esEdicion ? "Modificar" : "Agregar",
-      });
-
-      if (confirmResult.isConfirmed) {
-        setLoading(true); // Mostrar loading
-        const resultado = esEdicion
-          ? await actualizarTipoPension(tipoPensionSeleccionado.id, values)
-          : await crearTipoPension(values);
-        setLoading(false); // Ocultar loading
-
-        if (resultado.success) {
-          await CustomSweetAlert.success({
-            title: "¡Éxito!",
-            text: `El tipo de pensión se ha ${esEdicion ? "modificado" : "registrado"} correctamente`
-          });
-          cargarTiposPensionPaginados();
-        } else {
-          await CustomSweetAlert.error({
-            text: resultado.error
-          });
-        }
-      } else {
-        // Si cancela, volvemos a abrir el modal con los datos
-        openDialog();
-      }
-    }
-  });
-
   // Manejadores
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -136,86 +77,9 @@ export default function GestionTiposPension() {
   };
 
   const handleAbrirModal = (tipoPension = null) => {
-    if (tipoPension) {
-      setTipoPensionSeleccionado(tipoPension);
-      formik.setValues({
-        nombre: tipoPension.nombre,
-        duracionDias: tipoPension.duracionDias,
-        costo: tipoPension.costo
-      });
-    } else {
-      setTipoPensionSeleccionado(null);
-      formik.resetForm();
-    }
+    setTipoPensionSeleccionado(tipoPension);
     openDialog();
   };
-
-  const handleChangeEstatus = async (id, estatus) => {
-    const confirmResult = await CustomSweetAlert.confirm({
-      title: `${estatus ? "Desactivar" : "Activar"} tipo de pensión`,
-      text: `¿Está seguro que desea ${estatus ? "desactivar" : "activar"} este tipo de pensión?`,
-    });
-
-    if (confirmResult.isConfirmed) {
-      setLoading(true); // Mostrar loading
-      const resultado = await actualizarEstadoTipoPension(id);
-      setLoading(false); // Ocultar loading
-      
-      if (resultado.success) {
-        await CustomSweetAlert.success({
-          title: "¡Éxito!",
-          text: `El tipo de pensión se ha ${estatus ? "desactivado" : "activado"} correctamente`
-        });
-      } else {
-        await CustomSweetAlert.error({
-          text: resultado.error
-        });
-      }
-    }
-  };
-
-  // Configuración de columnas para la tabla
-  const columns = [
-    { field: "nombre", label: "Nombre" },
-    { 
-      field: "duracionDias", 
-      label: "Duración",
-      render: (row) => `${row.duracionDias} días`
-    },
-    { 
-      field: "costo", 
-      label: "Costo",
-      render: (row) => `$${row.costo}`
-    },
-    {
-      field: "status",
-      label: "Estatus",
-      render: (row) => row.status ? "Activa" : "Inactiva"
-    },
-    {
-      field: "opciones",
-      label: "Opciones",
-      align: "center",
-      render: (row) => (
-        <>
-          <Button
-            startIcon={<EditIcon />}
-            onClick={() => handleAbrirModal(row)}
-            color="secondary"
-            size="small"
-            sx={{ mr: 1 }}
-          >
-            Editar
-          </Button>
-          <Switch
-            checked={row.status}
-            onChange={() => handleChangeEstatus(row.id, row.status)}
-            color="primary"
-          />
-        </>
-      )
-    }
-  ];
 
   return (
     <>
@@ -239,49 +103,17 @@ export default function GestionTiposPension() {
             justifyContent: "space-between"
           }}
         >
-          <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap", flex: 1 }}>
-            <FormControl size="small" sx={{ minWidth: 150 }}>
-              <InputLabel>Ordenar por</InputLabel>
-              <Select
-                value={ordenarPor}
-                label="Ordenar por"
-                onChange={(e) => setOrdenarPor(e.target.value)}
-              >
-                <MenuItem value="id">ID</MenuItem>
-                <MenuItem value="nombre">Nombre</MenuItem>
-                <MenuItem value="duracionDias">Duración</MenuItem>
-                <MenuItem value="costo">Costo</MenuItem>
-              </Select>
-            </FormControl>
-
-            <FormControl size="small" sx={{ minWidth: 150 }}>
-              <InputLabel>Dirección</InputLabel>
-              <Select
-                value={ordenDireccion}
-                label="Dirección"
-                onChange={(e) => setOrdenDireccion(e.target.value)}
-              >
-                <MenuItem value="asc">Ascendente</MenuItem>
-                <MenuItem value="desc">Descendente</MenuItem>
-              </Select>
-            </FormControl>
-
-            <FormControl size="small" sx={{ minWidth: 150 }}>
-              <InputLabel>Buscar</InputLabel>
-              <OutlinedInput
-                label="Buscar"
-                value={buscarTexto}
-                onChange={(e) => setBuscarTexto(e.target.value)}
-              />
-            </FormControl>
-
-            <Button variant="outlined" onClick={handleBuscar}>
-              BUSCAR
-            </Button>
-            <Button variant="outlined" onClick={handleLimpiarFiltros}>
-              LIMPIAR FILTROS
-            </Button>
-          </Box>
+          <TableFilters
+            orderOptions={orderOptions}
+            orderBy={ordenarPor}
+            orderDirection={ordenDireccion}
+            searchText={buscarTexto}
+            onOrderByChange={setOrdenarPor}
+            onOrderDirectionChange={setOrdenDireccion}
+            onSearchChange={setBuscarTexto}
+            onSearch={handleBuscar}
+            onClearFilters={handleLimpiarFiltros}
+          />
 
           <Button
             variant="contained"
@@ -295,7 +127,11 @@ export default function GestionTiposPension() {
 
         {/* Tabla */}
         <CustomTable
-          columns={columns}
+          columns={tipoPensionColumns({
+            onEdit: handleAbrirModal,
+            onChangeStatus: actualizarEstadoTipoPension,
+            setLoading: setLoading
+          })}
           data={tiposPension}
           page={page}
           rowsPerPage={rowsPerPage}
@@ -309,54 +145,23 @@ export default function GestionTiposPension() {
       </Box>
 
       {/* Modal para crear/editar */}
-      <CustomDialog
-        titulo={tipoPensionSeleccionado ? "Modificar tipo de pensión" : "Agregar tipo de pensión"}
+      <TipoPensionFormModal
         isOpen={open}
-        handleClose={() => {
+        onClose={closeDialog}
+        tipoPension={tipoPensionSeleccionado}
+        onSubmit={async (values) => {
+          const esEdicion = !!tipoPensionSeleccionado;
           closeDialog();
-          formik.resetForm();
+
+          const resultado = esEdicion
+            ? await actualizarTipoPension(tipoPensionSeleccionado.id, values)
+            : await crearTipoPension(values);
+
+          if (resultado.success) {
+            cargarTiposPensionPaginados();
+          }
         }}
-        isForm={true}
-        onSubmit={formik.handleSubmit}
-        textSubmit={tipoPensionSeleccionado ? "Modificar" : "Agregar"}
-        textCancel="Cancelar"
-        maxWidth="sm"
-        fullWidth
-      >
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 2, p: 2 }}>
-          <TextField
-            fullWidth
-            label="Nombre"
-            name="nombre"
-            value={formik.values.nombre}
-            onChange={formik.handleChange}
-            error={formik.touched.nombre && Boolean(formik.errors.nombre)}
-            helperText={formik.touched.nombre && formik.errors.nombre}
-          />
-
-          <TextField
-            fullWidth
-            label="Duración (días)"
-            name="duracionDias"
-            type="number"
-            value={formik.values.duracionDias}
-            onChange={formik.handleChange}
-            error={formik.touched.duracionDias && Boolean(formik.errors.duracionDias)}
-            helperText={formik.touched.duracionDias && formik.errors.duracionDias}
-          />
-
-          <TextField
-            fullWidth
-            label="Costo"
-            name="costo"
-            type="number"
-            value={formik.values.costo}
-            onChange={formik.handleChange}
-            error={formik.touched.costo && Boolean(formik.errors.costo)}
-            helperText={formik.touched.costo && formik.errors.costo}
-          />
-        </Box>
-      </CustomDialog>
+      />
     </>
   );
 }
