@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import utez.edu.mx.backendparking.modules.usuario.model.Usuario;
-import utez.edu.mx.backendparking.modules.usuario.repository.UsuarioRepository;
+import utez.edu.mx.backendparking.modules.usuario.Repository.UsuarioRepository;
 import utez.edu.mx.backendparking.shared.exception.ResourceNotFoundException;
 
 import java.util.Optional;

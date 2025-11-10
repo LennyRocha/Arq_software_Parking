@@ -12,7 +12,7 @@ import utez.edu.mx.backendparking.shared.api.ApiResponse;
 import utez.edu.mx.backendparking.modules.roles.ERole;
 import utez.edu.mx.backendparking.modules.usuario.Repository.UsuarioRepository;
 import utez.edu.mx.backendparking.modules.usuario.Request.UsuarioRequest;
-
+import utez.edu.mx.backendparking.modules.usuario.model.Usuario;
 import utez.edu.mx.backendparking.modules.roles.Roles;
 import utez.edu.mx.backendparking.modules.roles.Repository.RolesRepository;
 @Service

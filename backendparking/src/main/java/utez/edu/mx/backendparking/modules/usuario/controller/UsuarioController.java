@@ -1,4 +1,4 @@
-package utez.edu.mx.backendparking.modules.usuario.controller;
+package utez.edu.mx.backendparking.modules.usuario.Controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;

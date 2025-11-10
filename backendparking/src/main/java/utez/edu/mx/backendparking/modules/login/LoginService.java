@@ -6,9 +6,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import utez.edu.mx.backendparking.modules.security.JWTUtils;
-import utez.edu.mx.backendparking.modules.usuario.Repository.UsuarioRepository;
+import utez.edu.mx.backendparking.modules.usuario.Repository.*;
 import utez.edu.mx.backendparking.shared.api.ApiResponse;
-import utez.edu.mx.backendparking.modules.usuario.Usuario;
+import utez.edu.mx.backendparking.modules.usuario.model.Usuario;
 @Service
 public class LoginService {
     @Autowired
