@@ -37,5 +37,7 @@ export default function sweetAlert({
       denyButton: "deny-button-class",
       popup: "popup-class",
     },
+    heightAuto: false, // Evita que SweetAlert ajuste la altura del body
+    backdrop: true, // Asegura que tenga backdrop
   });
 }

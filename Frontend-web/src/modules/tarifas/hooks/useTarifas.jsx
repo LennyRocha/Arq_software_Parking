@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { fetchTarifas, searchTarifasPaginated, toggleTarifaStatus, fetchTiposVehiculos } from "./../api/TarifasApi";
+import { fetchTarifas, searchTarifasPaginated, toggleTarifaStatus, fetchTiposVehiculos, createTarifa } from "./../api/TarifasApi";
 import { getAxiosErrorMessage } from "../../../utils/getAxiosMessage";
 
 export const useTarifas = () => {
@@ -96,14 +96,14 @@ export const useTarifas = () => {
     }
   };
 
-  // Actualizar el estado de la tarifa
+  // Agregar una nueva tarifa
   const agregarNuevaTarifa = async (tarifa) => {
     setLoading(true);
     setError("");
     try {
-      await toggleTarifaStatus({tarifa});
+      await createTarifa(tarifa);
       
-      // Recargar las tarifas después de actualizar
+      // Recargar las tarifas después de agregar
       await cargarTarifasPaginado();
       
       return { success: true };
@@ -132,6 +132,6 @@ export const useTarifas = () => {
     ordenarPor, setOrdenarPor,
     ordenDireccion, setOrdenDireccion,
     buscarTexto, setBuscarTexto,
-    cargarTarifas, cargarTarifasPaginado, actualizarEstadoTarifa, cargarTiposVehiculos
+    cargarTarifas, cargarTarifasPaginado, actualizarEstadoTarifa, cargarTiposVehiculos, agregarNuevaTarifa
   };
 };

@@ -170,7 +170,7 @@ export default function CustomDialog({
           {textCancel}
         </Button>
         {isForm ? (
-          <Button type="submit" variant="contained">
+          <Button type="submit" variant="contained" onClick={onSubmit}>
             {textSubmit}
           </Button>
         ) : (

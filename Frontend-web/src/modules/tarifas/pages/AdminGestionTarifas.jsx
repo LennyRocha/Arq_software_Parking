@@ -51,7 +51,7 @@ export default function AdminGestionTarifas() {
     ordenDireccion, setOrdenDireccion,
     buscarTexto, setBuscarTexto,
     cargarTarifas, cargarTarifasPaginado, actualizarEstadoTarifa,
-    cargarTiposVehiculos
+    cargarTiposVehiculos, agregarNuevaTarifa
   } = useTarifas();
 
 
@@ -315,6 +315,7 @@ export default function AdminGestionTarifas() {
           showModal={showModalAgregarTarifa}
           tiposVehiculos={tiposVehiculos}
           onClose={handleCloseModalAgregarTarifa}
+          onAgregar={agregarNuevaTarifa}
         />
       )}
     </>
