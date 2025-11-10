@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { fetchTarifas, searchTarifasPaginated, toggleTarifaStatus } from "../api/TarifasApi";
-import { getAxiosErrorMessage } from "../../../../utils/getAxiosMessage";
+import { fetchTarifas, searchTarifasPaginated, toggleTarifaStatus } from "./../api/TarifasApi";
+import { getAxiosErrorMessage } from "../../../utils/getAxiosMessage";
 
 export const useTarifas = () => {
   const [tarifas, setTarifas] = useState(null);

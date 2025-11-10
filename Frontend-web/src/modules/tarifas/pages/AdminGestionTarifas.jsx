@@ -21,11 +21,11 @@ import {
   Switch
 } from "@mui/material";
 import EditIcon from '@mui/icons-material/Edit';
-import MainHeader from "../../../../components/MainHeader";
-import LoadingBackdrop from "../../../../components/LoadingBackdrop";
-import HeadingDescription from "../../../../components/HeadingDescription";
-import sweetAlert from "../../../../utils/sweetAlert";
-import { useTarifas } from "../hooks/useTarifas";
+import MainHeader from "../../../components/MainHeader";
+import LoadingBackdrop from "../../../components/LoadingBackdrop";
+import HeadingDescription from "../../../components/HeadingDescription";
+import sweetAlert from "../../../utils/sweetAlert";
+import { useTarifas } from "./../hooks/useTarifas";
 
 const links = [
   { nombre: "Inicio", ruta: "/admin", disabled: false },
@@ -93,7 +93,7 @@ export default function AdminGestionTarifas() {
       title: `${estatus ? "Desactivar" : "Activar"} tarifa`,
       text: `¿Está seguro que desea ${estatus ? "desactivar" : "activar"} esta tarifa?`,
       icon: "warning",
-      denyButtonText: "Cancelar",
+      denyText: "Cancelar",
       showDenyButton: true,
       showCloseButton: true,
       reverseButtons: true,
@@ -110,8 +110,7 @@ export default function AdminGestionTarifas() {
             title: "¡Éxito!",
             text: `La tarifa se ha ${estatus ? "desactivado" : "activado"} correctamente`,
             icon: "success",
-            timer: 2000,
-            showConfirmButton: false
+            confirmText: "Aceptar",
           });
         } else {
           // Mostrar mensaje de error

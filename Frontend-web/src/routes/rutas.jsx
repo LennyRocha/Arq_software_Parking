@@ -5,8 +5,8 @@ import LandingPage from "../modules/cajon/pages/LandingPage";
 import EmpleadoRouter from "./EmpleadoRouter";
 import PensionadoRouter from "./PensionadoRouter";
 import Pages from "../modules/cajon/pages/Pages";
-import AdminGestionarEntradasSalidas from "../modules/admin/entradas_salidas/pages/AdminGestionarEntradasSalidas";
-import AdminGestionTarifas from "../modules/admin/tarifas/pages/AdminGestionTarifas";
+import AdminGestionarEntradasSalidas from "../modules/entradas_salidas/pages/AdminGestionarEntradasSalidas";
+import AdminGestionTarifas from "../modules/tarifas/pages/AdminGestionTarifas";
 
 
 const Err = () => <h1>404 - Not Found!</h1>;
