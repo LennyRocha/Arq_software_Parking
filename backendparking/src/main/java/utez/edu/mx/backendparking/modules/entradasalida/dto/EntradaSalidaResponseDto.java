@@ -1,8 +1,8 @@
 package utez.edu.mx.backendparking.modules.entradasalida.dto;
 
-import utez.edu.mx.backendparking.modules.tipovehiculo.TipoVehiculo;
-import utez.edu.mx.backendparking.modules.usuario.Usuario;
-import utez.edu.mx.backendparking.modules.vehiculo.Vehiculo;
+import utez.edu.mx.backendparking.modules.tipovehiculo.model.TipoVehiculo;
+import utez.edu.mx.backendparking.modules.usuario.model.Usuario;
+import utez.edu.mx.backendparking.modules.vehiculo.model.Vehiculo;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

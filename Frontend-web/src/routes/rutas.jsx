@@ -1,10 +1,14 @@
 import React from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
 import AdminRouter from "./AdminRouter";
-import LandingPage from "../modules/cajon/pages/LandingPage";
+import LandingPage from "../modules/LandingPage";
 import EmpleadoRouter from "./EmpleadoRouter";
 import PensionadoRouter from "./PensionadoRouter";
 import Pages from "../modules/cajon/pages/Pages";
+import AdminGestionarEntradasSalidas from "../modules/entradas_salidas/pages/AdminGestionarEntradasSalidas";
+import AdminGestionTarifas from "../modules/tarifas/pages/AdminGestionTarifas";
+import GestionTiposPension from "../modules/tipo_pension/pages/GestionTiposPension";
+import PensionesUsuario from "../modules/tipo_pension/pages/PensionesUsuarios";
 
 const Err = () => <h1>404 - Not Found!</h1>;
 
@@ -23,11 +27,11 @@ export default function Rutas() {
 
         {/* Rutas del admin */}
         <Route path="/admin" element={<AdminRouter />}>
-          <Route index element={<Pages />} />
+          <Route index element={<AdminGestionarEntradasSalidas />} />
           <Route path="reportes" element={<Pages />} />
-          <Route path="tipos_de_pension" element={<Pages />} />
-          <Route path="ver_pensiones" element={<Pages />} />
-          <Route path="tarifas" element={<Pages />} />
+          <Route path="tipos_de_pension" element={<GestionTiposPension/>} />
+          <Route path="pensiones_de_usuarios" element={<PensionesUsuario />} />
+          <Route path="tarifas" element={<AdminGestionTarifas />} />
           <Route path="cajones" element={<Pages />} />
           <Route path="gestion_empleados" element={<Pages />} />
           <Route path="gestion_pensionados" element={<Pages />} />

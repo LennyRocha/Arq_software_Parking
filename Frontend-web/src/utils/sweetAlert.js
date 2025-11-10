@@ -6,7 +6,7 @@ export default function sweetAlert({
   icon,
   allowEscapeKey = true,
   allowOutsideClick = false,
-  confirmText = "Aceptar",
+  confirmText = "Confirmar",
   cancelText = "Cancelar",
   denyText = "No",
   showCancelButton = false,
@@ -19,7 +19,7 @@ export default function sweetAlert({
   return Swal.fire({
     title, // título del modal
     text, // texto del modal
-    icon, // tipo de icono (success, error, etc.)
+    icon, // tipo de icono (success, error, info, etc.)
     confirmButtonText: confirmText, // texto botón Confirmar
     cancelButtonText: cancelText, // texto botón Cancelar
     denyButtonText: denyText, // texto botón Denegar
@@ -37,5 +37,7 @@ export default function sweetAlert({
       denyButton: "deny-button-class",
       popup: "popup-class",
     },
+    heightAuto: false, // Evita que SweetAlert ajuste la altura del body
+    backdrop: true, // Asegura que tenga backdrop
   });
 }

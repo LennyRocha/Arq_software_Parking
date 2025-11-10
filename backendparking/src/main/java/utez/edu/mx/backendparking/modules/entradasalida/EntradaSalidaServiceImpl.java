@@ -15,6 +15,7 @@ import utez.edu.mx.backendparking.modules.entradasalida.dto.ReporteGananciasResp
 import utez.edu.mx.backendparking.modules.tarifa.Tarifa;
 import utez.edu.mx.backendparking.modules.tarifa.TarifaMessages;
 import utez.edu.mx.backendparking.modules.tarifa.TarifaRepository;
+import utez.edu.mx.backendparking.modules.usuario.model.Usuario;
 import utez.edu.mx.backendparking.shared.exception.BadRequestException;
 import utez.edu.mx.backendparking.shared.exception.ResourceNotFoundException;
 
@@ -24,6 +25,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 @Service
@@ -84,16 +86,14 @@ public class EntradaSalidaServiceImpl implements EntradaSalidaService {
 
         // Convertir a DTO de respuesta usando el mapper
         return EntradaSalidaMapper.toResponseDto(savedEntradaSalida);
-
-         */
-
+        */
         return null;
     }
 
     @Override
     @Transactional(rollbackFor = {SQLException.class, ConstraintViolationException.class})
     public EntradaSalidaResponseDto createVisitante(EntradaSalidaCreateVisitanteRequestDto dto) {
-        /*
+
         // 1. Convertir DTO a entidad usando el mapper
         // El mapper ya maneja la lógica: si hay vehículo, toma su tipo; si no, usa el tipo especificado
         EntradaSalida entradaSalida = EntradaSalidaMapper.toEntityFromVisitante(dto);
@@ -109,8 +109,6 @@ public class EntradaSalidaServiceImpl implements EntradaSalidaService {
 
         // Convertir a DTO de respuesta usando el mapper
         return EntradaSalidaMapper.toResponseDto(savedEntradaSalida);
-        */
-        return null;
     }
 
     @Override
@@ -315,7 +313,7 @@ public class EntradaSalidaServiceImpl implements EntradaSalidaService {
         return new PageImpl<>(reporteDtos, pageable, resultados.getTotalElements());
     }
 
-    /*
+
     // Método privado para generar folio único
     private Integer generarFolioUnico() {
         Random random = new Random();
@@ -325,7 +323,7 @@ public class EntradaSalidaServiceImpl implements EntradaSalidaService {
         } while (entradaSalidaRepository.existsByFolioTicket(folio));
         return folio;
     }
-
+    /*
     // Método privado para verificar si la pensión vence hoy
     private boolean verificarVencimientoPension(Usuario usuario) {
         // Asumiendo que existe un método en el usuario para obtener la fecha de vencimiento

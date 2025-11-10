@@ -1,4 +1,4 @@
-package utez.edu.mx.backendparking.modules.usuario;
+package utez.edu.mx.backendparking.modules.usuario.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

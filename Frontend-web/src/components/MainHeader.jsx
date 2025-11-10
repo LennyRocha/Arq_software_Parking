@@ -1,11 +1,52 @@
-import { Box, Breadcrumbs, Typography } from "@mui/material";
-import { Link } from "react-router-dom";
+/**
+ * MainHeader - Componente de encabezado principal con breadcrumbs
+ * 
+ * @description
+ * Componente que muestra el encabezado principal de la aplicación con:
+ * - Breadcrumbs (migas de pan) para navegación
+ * - Logo del sistema
+ * - Título de la página actual
+ * 
+ * Se adapta a diferentes tamaños de pantalla (responsive).
+ * 
+ * @example
+ * // Uso básico
+ * <MainHeader 
+ *   titulo="Gestión de Cajones"
+ *   breads={[
+ *     { nombre: "Inicio", ruta: "/", disabled: false },
+ *     { nombre: "Cajones", ruta: "/cajones", disabled: true }
+ *   ]}
+ * />
+ * 
+ * @example
+ * // Con múltiples niveles de navegación
+ * <MainHeader 
+ *   titulo="Editar Vehículo"
+ *   breads={[
+ *     { nombre: "Inicio", ruta: "/", disabled: false },
+ *     { nombre: "Vehículos", ruta: "/vehiculos", disabled: false },
+ *     { nombre: "Editar", ruta: "/vehiculos/editar", disabled: true }
+ *   ]}
+ * />
+ * 
+ * @param {string} titulo - Título principal a mostrar en el encabezado
+ * @param {Array<Object>} breads - Array de objetos para las migas de pan
+ * @param {string} breads[].nombre - Nombre del breadcrumb
+ * @param {string} breads[].ruta - Ruta de navegación del breadcrumb
+ * @param {boolean} breads[].disabled - Si el breadcrumb está deshabilitado (no clickeable)
+ */
+import { Box, Breadcrumbs, Typography} from "@mui/material";
 import logo from "../img/logo_parking_hd_no_titulo.png";
 import React from "react";
+import { Link } from "react-router-dom";
 
 export default function MainHeader({ titulo, breads }) {
   const BreadCrumbs = (
-    <Breadcrumbs aria-label="breadcrumb">
+    <Breadcrumbs
+      aria-label="breadcrumb"
+      sx={{ "& .MuiBreadcrumbs-separator": { color: "var(--other)" } }}
+    >
       {breads.map((bread, index) => (
         <Link
           key={index}
@@ -39,7 +80,6 @@ export default function MainHeader({ titulo, breads }) {
     >
       {BreadCrumbs}
       <Box
-        display={"flex"}
         sx={{
           flexDirection: { xs: "column", md: "row" },
           alignItems: "center",
@@ -48,6 +88,7 @@ export default function MainHeader({ titulo, breads }) {
           width: "100%",
           paddingTop: 1,
         }}
+        className="bread_head"
       >
         <Box
           component="img"

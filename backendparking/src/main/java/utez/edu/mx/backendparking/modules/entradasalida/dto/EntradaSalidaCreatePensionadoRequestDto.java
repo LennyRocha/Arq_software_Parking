@@ -2,12 +2,8 @@ package utez.edu.mx.backendparking.modules.entradasalida.dto;
 
 import jakarta.validation.constraints.NotNull;
 import utez.edu.mx.backendparking.modules.entradasalida.EntradaSalidaMessages;
-import utez.edu.mx.backendparking.modules.tarifa.TarifaMessages;
-import utez.edu.mx.backendparking.modules.tipovehiculo.TipoVehiculo;
-import utez.edu.mx.backendparking.modules.usuario.Usuario;
-import utez.edu.mx.backendparking.modules.vehiculo.Vehiculo;
-
-import java.time.LocalTime;
+import utez.edu.mx.backendparking.modules.usuario.model.Usuario;
+import utez.edu.mx.backendparking.modules.vehiculo.model.Vehiculo;
 
 public class EntradaSalidaCreatePensionadoRequestDto {
 

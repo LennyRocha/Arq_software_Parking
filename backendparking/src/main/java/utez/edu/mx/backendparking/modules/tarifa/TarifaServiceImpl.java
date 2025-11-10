@@ -2,9 +2,9 @@ package utez.edu.mx.backendparking.modules.tarifa;
 
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import utez.edu.mx.backendparking.modules.tarifa.dto.TarifaRequestDto;
@@ -14,8 +14,6 @@ import utez.edu.mx.backendparking.shared.exception.ConflictException;
 import utez.edu.mx.backendparking.shared.exception.ResourceNotFoundException;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -48,78 +46,43 @@ public class TarifaServiceImpl implements TarifaService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<TarifaResponseDto> searchAndSortPaginated(Integer tiempo, Double costo, String sortBy, String sortOrder, int page, int size) {
-        // Obtener tarifas filtradas
-        List<Tarifa> tarifas = tarifaRepository.findByFilters(tiempo, costo);
+    public Page<TarifaResponseDto> searchAndSortPaginated(Double search, String sortBy, String sortOrder, int page, int size) {
+        // 1. Crear el objeto Sort según los parámetros
+        Sort sort;
 
-        // Determinar el comparador según el campo de ordenamiento usando lambdas
-        Comparator<Tarifa> comparator;
-
-        if (sortBy == null || sortBy.isEmpty()) {
-            sortBy = "tipoVehiculo"; // Por defecto
-        }
-
-        String sortByLower = sortBy.toLowerCase();
-
-        if (sortByLower.equals("tipovehiculo")) {
-            // Lambda que compara por nombre de tipo de vehículo, y luego por tiempo
-            comparator = (t1, t2) -> {
-                int comparacion = t1.getTipoVehiculo().getNombre().compareTo(t2.getTipoVehiculo().getNombre());
-                if (comparacion == 0) {
-                    return t1.getTiempo().compareTo(t2.getTiempo());
-                }
-                return comparacion;
-            };
-        } else if (sortByLower.equals("tiempo")) {
-            // Lambda que compara solo por tiempo
-            comparator = (t1, t2) -> t1.getTiempo().compareTo(t2.getTiempo());
-        } else if (sortByLower.equals("costo")) {
-            // Lambda que compara solo por costo
-            comparator = (t1, t2) -> t1.getCosto().compareTo(t2.getCosto());
+        if (sortBy == null || sortBy.isEmpty() || sortBy.equalsIgnoreCase("tipovehiculo")) {
+            // Por defecto: ordenar por tipo de vehículo y luego por tiempo
+            Sort.Direction direction = "desc".equalsIgnoreCase(sortOrder) ? Sort.Direction.DESC : Sort.Direction.ASC;
+            sort = Sort.by(direction, "tipoVehiculo.nombre").and(Sort.by(direction, "tiempo"));
+        } else if (sortBy.equalsIgnoreCase("tiempo")) {
+            // Ordenar por tiempo
+            Sort.Direction direction = "desc".equalsIgnoreCase(sortOrder) ? Sort.Direction.DESC : Sort.Direction.ASC;
+            sort = Sort.by(direction, "tiempo");
+        } else if (sortBy.equalsIgnoreCase("costo")) {
+            // Ordenar por costo
+            Sort.Direction direction = "desc".equalsIgnoreCase(sortOrder) ? Sort.Direction.DESC : Sort.Direction.ASC;
+            sort = Sort.by(direction, "costo");
         } else {
-            // Por defecto: tipo de vehículo y tiempo
-            comparator = (t1, t2) -> {
-                int comparacion = t1.getTipoVehiculo().getNombre().compareTo(t2.getTipoVehiculo().getNombre());
-                if (comparacion == 0) {
-                    return t1.getTiempo().compareTo(t2.getTiempo());
-                }
-                return comparacion;
-            };
+            // Por defecto si el sortBy no es reconocido: tipo de vehículo y tiempo ascendente
+            sort = Sort.by(Sort.Direction.ASC, "tipoVehiculo.nombre").and(Sort.by(Sort.Direction.ASC, "tiempo"));
         }
 
-        // Aplicar orden descendente si es necesario
-        if ("desc".equalsIgnoreCase(sortOrder)) {
-            // Lambda que invierte el orden usando el comparador anterior
-            Comparator<Tarifa> ascComparator = comparator;
-            comparator = (t1, t2) -> ascComparator.compare(t2, t1); // Invertir el orden
+        // 2. Crear el objeto Pageable con paginación y ordenamiento
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        // 3. Obtener resultados paginados directamente de la base de datos
+        Page<Tarifa> tarifasPage;
+
+        if (search == null) {
+            // Si no hay búsqueda, traer todos los registros paginados
+            tarifasPage = tarifaRepository.findAll(pageable);
+        } else {
+            // Si hay búsqueda, filtrar por término de búsqueda
+            tarifasPage = tarifaRepository.findByFiltersPaginated(search, pageable);
         }
 
-        // Ordenar la lista
-        tarifas.sort(comparator);
-
-        // Calcular índices para la paginación
-        int totalElements = tarifas.size();
-        int fromIndex = page * size;
-        int toIndex = Math.min(fromIndex + size, totalElements);
-
-        // Validar que la página solicitada existe
-        if (fromIndex > totalElements) {
-            fromIndex = 0;
-            toIndex = 0;
-        }
-
-        // Obtener sublista paginada
-        List<Tarifa> tarifasPaginadas = tarifas.subList(fromIndex, toIndex);
-
-        // Convertir a DTOs usando un bucle for-each
-        List<TarifaResponseDto> resultado = new ArrayList<>();
-        for (Tarifa tarifa : tarifasPaginadas) {
-            resultado.add(TarifaMapper.toResponseDto(tarifa));
-        }
-
-        // Crear objeto Pageable y Page
-        Pageable pageable = PageRequest.of(page, size);
-        return new PageImpl<>(resultado, pageable, totalElements);
+        // 4. Convertir a DTOs usando map
+        return tarifasPage.map(TarifaMapper::toResponseDto);
     }
 
     @Override

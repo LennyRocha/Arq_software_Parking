@@ -5,7 +5,7 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import utez.edu.mx.backendparking.modules.tarifa.TarifaMessages;
-import utez.edu.mx.backendparking.modules.tipovehiculo.TipoVehiculo;
+import utez.edu.mx.backendparking.modules.tipovehiculo.model.TipoVehiculo;
 
 public class TarifaUpdateRequestDto {
 
