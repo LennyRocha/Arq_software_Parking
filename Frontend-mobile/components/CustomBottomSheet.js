@@ -16,10 +16,6 @@ const CustomBottomSheet = forwardRef(
 
     const themes = useTheme();
     const { theme, mode } = useCustomThemes();
-
-    React.useEffect(() => {
-        console.log("Snap points:", ref);
-    }, [ref]);
     return (
       <BottomSheet
         ref={bottomSheetRef}

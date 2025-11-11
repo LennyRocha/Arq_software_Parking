@@ -1,0 +1,4 @@
+#Esta carpeta es para crear los estlios de sus pantalllas
+con Stylesheet.create({})
+
+#para exportarla se utiliza export default

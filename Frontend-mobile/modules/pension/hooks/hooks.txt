@@ -1,0 +1,1 @@
+#Aqui manejan la logica para llamar a la api, renderizar listas u otras cosas
