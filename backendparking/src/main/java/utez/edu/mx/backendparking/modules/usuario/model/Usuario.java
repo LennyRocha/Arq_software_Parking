@@ -18,7 +18,6 @@ public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    //wa
     
     @Column(nullable = false)
     private String nombre;
@@ -37,8 +36,11 @@ public class Usuario {
 
     @Column(nullable = false)
     private boolean status;
+//El atributo que me faltaba añadir
+     @Column(nullable = false)
+    private boolean esPensionado;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id", referencedColumnName = "id")
-    private Roles roles;
+    private Roles rol;
 }

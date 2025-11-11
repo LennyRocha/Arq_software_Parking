@@ -11,4 +11,5 @@ public class UsuarioRequest {
     private String telefono;
     private String apellidos;
     private String status;
+    private boolean esPensionado;
 }

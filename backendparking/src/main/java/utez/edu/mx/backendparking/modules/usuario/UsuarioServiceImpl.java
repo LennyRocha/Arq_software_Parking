@@ -56,8 +56,9 @@ public ApiResponse<?> createUser(UsuarioRequest request){
           .correo(request.getCorreo())
           .telefono(request.getTelefono())
           .contra(passwordEncoder.encode(request.getContra()))
-          .status(true) // Usuario activo por defecto
-          .roles(rol) // ✅ CORRECTO - coincide con el campo en la entidad
+          .status(true)
+          .esPensionado(request.isEsPensionado())
+          .rol(rol) 
           .build();
       
       usuarioRepository.save(nuevoUsuario);

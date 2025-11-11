@@ -34,7 +34,7 @@ public class LoginService {
             null
             );
             }else{
-            String role = usuario.getRoles().getName().name();
+            String role = usuario.getRol().getName().name();
             Long id=usuario.getId();
             String token = jwtUtils.generateAccessToken(correo, role, id);
             return ApiResponse.success(
