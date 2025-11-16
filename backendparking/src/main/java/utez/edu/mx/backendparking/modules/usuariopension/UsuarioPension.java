@@ -9,7 +9,7 @@ import utez.edu.mx.backendparking.modules.usuario.model.Usuario;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "pension")
+@Table(name = "usuario_pension")
 public class UsuarioPension {
 
     // ATRIBUTOS
@@ -25,9 +25,6 @@ public class UsuarioPension {
 
     @Column(name= "uuid_codigo_qr", nullable = false)
     private String uuidCodigoQR;
-
-    @Column(nullable = false)
-    private Long idUltimaEntrada;
 
     // ATRIBUTOS DE RELACION
     @ManyToOne(fetch = FetchType.EAGER)
@@ -47,22 +44,20 @@ public class UsuarioPension {
     public UsuarioPension() {
     }
 
-    public UsuarioPension(boolean estatus, LocalDate fechaFinalizacion, String uuidCodigoQR, Long idUltimaEntrada, Usuario usuario, Pension pension, EntradaSalida ultimaEntradaSalida) {
+    public UsuarioPension(boolean estatus, LocalDate fechaFinalizacion, String uuidCodigoQR, Usuario usuario, Pension pension, EntradaSalida ultimaEntradaSalida) {
         this.estatus = estatus;
         this.fechaFinalizacion = fechaFinalizacion;
         this.uuidCodigoQR = uuidCodigoQR;
-        this.idUltimaEntrada = idUltimaEntrada;
         this.usuario = usuario;
         this.pension = pension;
         this.ultimaEntradaSalida = ultimaEntradaSalida;
     }
 
-    public UsuarioPension(Long id, boolean estatus, LocalDate fechaFinalizacion, String uuidCodigoQR, Long idUltimaEntrada, Usuario usuario, Pension pension, EntradaSalida ultimaEntradaSalida) {
+    public UsuarioPension(Long id, boolean estatus, LocalDate fechaFinalizacion, String uuidCodigoQR, Usuario usuario, Pension pension, EntradaSalida ultimaEntradaSalida) {
         this.id = id;
         this.estatus = estatus;
         this.fechaFinalizacion = fechaFinalizacion;
         this.uuidCodigoQR = uuidCodigoQR;
-        this.idUltimaEntrada = idUltimaEntrada;
         this.usuario = usuario;
         this.pension = pension;
         this.ultimaEntradaSalida = ultimaEntradaSalida;
@@ -92,14 +87,6 @@ public class UsuarioPension {
 
     public void setFechaFinalizacion(LocalDate fechaFinalizacion) {
         this.fechaFinalizacion = fechaFinalizacion;
-    }
-
-    public Long getIdUltimaEntrada() {
-        return idUltimaEntrada;
-    }
-
-    public void setIdUltimaEntrada(Long idUltimaEntrada) {
-        this.idUltimaEntrada = idUltimaEntrada;
     }
 
     public String getUuidCodigoQR() {
