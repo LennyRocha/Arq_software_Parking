@@ -12,4 +12,9 @@ public interface UsuarioPensionRepository extends JpaRepository<UsuarioPension, 
      // Metodo para buscar por id usuario y estado true
      Optional<UsuarioPension> findByUsuarioIdAndStatusTrue(Long idUsuario);
 
+     // Metodo para verificar si existe un UUID
+     boolean existsByUuidCodigoQR(String uuidCodigoQR);
+
+     Optional<UsuarioPension> findByUuidCodigoQRAndStatusTrue(String uuidCodigoQR);
+
 }

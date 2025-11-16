@@ -17,7 +17,10 @@ import utez.edu.mx.backendparking.modules.tarifa.TarifaMessages;
 import utez.edu.mx.backendparking.modules.tarifa.TarifaRepository;
 import utez.edu.mx.backendparking.modules.usuario.model.Usuario;
 import utez.edu.mx.backendparking.modules.usuariopension.UsuarioPension;
+import utez.edu.mx.backendparking.modules.usuariopension.UsuarioPensionMessages;
 import utez.edu.mx.backendparking.modules.usuariopension.UsuarioPensionRepository;
+import utez.edu.mx.backendparking.modules.vehiculo.model.Vehiculo;
+import utez.edu.mx.backendparking.modules.vehiculo.repository.VehiculoRepository;
 import utez.edu.mx.backendparking.shared.exception.BadRequestException;
 import utez.edu.mx.backendparking.shared.exception.ResourceNotFoundException;
 
@@ -36,17 +39,15 @@ public class EntradaSalidaServiceImpl implements EntradaSalidaService {
     private final EntradaSalidaRepository entradaSalidaRepository;
     private final TarifaRepository tarifaRepository;
     private final UsuarioPensionRepository usuarioPensionRepository;
+    private final VehiculoRepository vehiculoRepository;
 
-    public EntradaSalidaServiceImpl(EntradaSalidaRepository entradaSalidaRepository, TarifaRepository tarifaRepository, UsuarioPensionRepository usuarioPensionRepository) {
+    public EntradaSalidaServiceImpl(EntradaSalidaRepository entradaSalidaRepository, TarifaRepository tarifaRepository, UsuarioPensionRepository usuarioPensionRepository, VehiculoRepository vehiculoRepository) {
         this.entradaSalidaRepository = entradaSalidaRepository;
         this.tarifaRepository = tarifaRepository;
         this.usuarioPensionRepository = usuarioPensionRepository;
+        this.vehiculoRepository = vehiculoRepository;
     }
 
-    // COSAS QUE FALTAN POR HACER
-    //  1.- Corregir lo comentado
-    //  2.- Actualizar el campo de "id_ultima_entrada" en la entidad usuario al momento de hacer una entrada
-    //      con un carro especifico de un usuario
 
     @Override
     @Transactional(readOnly = true)
@@ -70,22 +71,27 @@ public class EntradaSalidaServiceImpl implements EntradaSalidaService {
     @Transactional(rollbackFor = {SQLException.class, ConstraintViolationException.class})
     public EntradaSalidaResponseDto createPensionado(EntradaSalidaCreatePensionadoRequestDto dto) {
 
-        // 1. Validar que el vehículo le pertenezca al usuario
-        if (!dto.getVehiculo().getUsuario().getId().equals(dto.getUsuario().getId())) {
+
+        // 1. Buscar el vehículo por ID en la base de datos
+        Vehiculo vehiculo = vehiculoRepository.findById(dto.getVehiculo().getId())
+                .orElseThrow(() -> new ResourceNotFoundException(EntradaSalidaMessages.ERROR_VEHICULO_NO_ENCONTRADO));
+
+        // 2. Validar que el vehículo le pertenezca al usuario
+        if (!vehiculo.getUsuario().getId().equals(dto.getUsuario().getId())) {
             throw new BadRequestException(EntradaSalidaMessages.ERROR_VEHICULO_NO_PERTENECE_USUARIO);
         }
 
-        // 1.5 Validar que el usuario tenga una pensión activa
+        // 3. Validar que el usuario tenga una pensión activa
         UsuarioPension usuarioPension = usuarioPensionRepository.findByUsuarioIdAndStatusTrue(dto.getUsuario().getId())
                 .orElseThrow(() -> new BadRequestException(EntradaSalidaMessages.ERROR_USUARIO_SIN_PENSION_ACTIVA));
 
-        // 2. Convertir DTO a entidad usando el mapper
+        // 4. Convertir DTO a entidad usando el mapper
         EntradaSalida entradaSalida = EntradaSalidaMapper.toEntityFromPensionado(dto);
 
-        // 3. Generar folio automático único
+        // 5. Generar folio automático único
         entradaSalida.setFolioTicket(generarFolioUnico());
 
-        // 4. Verificar si la pensión va a caducar en el día en curso
+        // 6. Verificar si la pensión va a caducar en el día en curso
         boolean vencimientoHoy = verificarVencimientoPension(usuarioPension);
         entradaSalida.setVencimientoPension(vencimientoHoy);
 
@@ -94,6 +100,12 @@ public class EntradaSalidaServiceImpl implements EntradaSalidaService {
 
         // Cambiar ultima entrada del usuario y guardar
         usuarioPension.setUltimaEntradaSalida(savedEntradaSalida);
+
+        // Generar UUID único para el código QR si no tiene uno
+        if (usuarioPension.getUuidCodigoQR() == null || usuarioPension.getUuidCodigoQR().isEmpty()) {
+            usuarioPension.setUuidCodigoQR(generarUuidUnico());
+        }
+
         usuarioPensionRepository.save(usuarioPension);
 
         // Convertir a DTO de respuesta usando el mapper
@@ -131,6 +143,18 @@ public class EntradaSalidaServiceImpl implements EntradaSalidaService {
     @Transactional(readOnly = true)
     public EntradaSalidaResponseDto marcarSalidaVisitante(Integer folioTicket) {
         return salidaVisitante(folioTicket, true);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public EntradaSalidaResponseDto solicitarDatosSalidaPensionado(String uuidCodigoQR) {
+        return salidaPensionado(uuidCodigoQR, false);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public EntradaSalidaResponseDto marcarSalidaPensionado(String uuidCodigoQR) {
+        return salidaPensionado(uuidCodigoQR, true);
     }
 
     /**
@@ -188,6 +212,64 @@ public class EntradaSalidaServiceImpl implements EntradaSalidaService {
         return responseDto;
     }
 
+    private EntradaSalidaResponseDto salidaPensionado(String uuidCodigoQR, boolean guardarDatosBD){
+        // 1. Buscar el registro por codigo QR
+        UsuarioPension usuarioPension = usuarioPensionRepository.findByUuidCodigoQRAndStatusTrue(uuidCodigoQR)
+                .orElseThrow(() -> new ResourceNotFoundException(UsuarioPensionMessages.ERROR_USUARIO_PENSION_NOT_FOUND));
+
+        // 2. Encontrar la última entradaSalida del usuario
+        EntradaSalida entradaSalida = usuarioPension.getUltimaEntradaSalida();
+
+        // 3. Validar que no tenga ya una salida registrada
+        if (entradaSalida.getHoraSalida() != null) {
+            throw new BadRequestException(EntradaSalidaMessages.ERROR_SALIDA_YA_REGISTRADA);
+        }
+
+        // 4. Establecer hora de salida actual
+        LocalTime horaSalida = LocalTime.now();
+        LocalDate fechaActual = LocalDate.now();
+
+        // 5. Verificar si la pensión ya caducó
+        boolean pensionCaducada = usuarioPension.getFechaFinalizacion() != null &&
+                                   fechaActual.isAfter(usuarioPension.getFechaFinalizacion());
+
+        double montoPagar = 0.0;
+
+        // 6. Solo aplicar tarifa si la pensión ya caducó
+        if (pensionCaducada) {
+            // Calcular tiempo transcurrido en minutos
+            long minutosTranscurridos = Duration.between(entradaSalida.getHoraEntrada(), horaSalida).toMinutes();
+
+            // Obtener tarifas activas para el tipo de vehículo, ordenadas por tiempo ascendente
+            List<Tarifa> tarifas = tarifaRepository.findByTipoVehiculoAndEstatusOrderByTiempoAsc(
+                    entradaSalida.getTipoVehiculo(), true);
+
+            if (tarifas.isEmpty()) {
+                throw new ResourceNotFoundException(TarifaMessages.ERROR_TARIFA_NOT_FOUND +
+                        ": " + entradaSalida.getTipoVehiculo().getNombre());
+            }
+
+            // Calcular el monto a pagar según las tarifas
+            montoPagar = calcularMontoPago(minutosTranscurridos, tarifas);
+        }
+
+        // 7. Actualizar la entidad con hora de salida y monto a pagar
+        entradaSalida.setHoraSalida(horaSalida);
+        entradaSalida.setCantidadPago(montoPagar);
+
+        // 8. Si es marcado, se guardan los datos en la base de datos
+        if(guardarDatosBD){
+            entradaSalidaRepository.save(entradaSalida);
+        }
+
+        // 9. Crear el DTO de respuesta con los datos calculados
+        EntradaSalidaResponseDto responseDto = EntradaSalidaMapper.toResponseDto(entradaSalida);
+        responseDto.setHoraSalida(horaSalida);
+        responseDto.setCantidadPago(montoPagar);
+
+        return responseDto;
+    }
+
     /**
      * Calcula el monto a pagar basado en el tiempo transcurrido y las tarifas disponibles.
      * Se cobra por cada fracción de tiempo definida en las tarifas.
@@ -226,7 +308,7 @@ public class EntradaSalidaServiceImpl implements EntradaSalidaService {
     @Override
     @Transactional(readOnly = true)
     public Page<EntradaSalidaResponseDto> searchAndSortPaginated(String search, String sortBy, String sortOrder, int page, int size) {
-        /*
+
         // 1. Crear el objeto Sort según los parámetros
         Sort sort;
 
@@ -250,8 +332,7 @@ public class EntradaSalidaServiceImpl implements EntradaSalidaService {
         Page<EntradaSalida> entradasSalidasPage = entradaSalidaRepository.findByFolioOrUsuarioNombre(search, pageable);
 
         // 4. Convertir a DTOs usando map
-        return entradasSalidasPage.map(EntradaSalidaMapper::toResponseDto); */
-        return null;
+        return entradasSalidasPage.map(EntradaSalidaMapper::toResponseDto);
     }
 
     @Override
@@ -343,6 +424,15 @@ public class EntradaSalidaServiceImpl implements EntradaSalidaService {
             return usuarioPension.getFechaFinalizacion().equals(hoy);
         }
         return false;
+    }
+
+    // Método privado para generar UUID único para código QR
+    private String generarUuidUnico() {
+        String uuid;
+        do {
+            uuid = java.util.UUID.randomUUID().toString();
+        } while (usuarioPensionRepository.existsByUuidCodigoQR(uuid));
+        return uuid;
     }
 
 

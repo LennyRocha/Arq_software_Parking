@@ -15,7 +15,10 @@ public interface EntradaSalidaService {
     List<EntradaSalidaResponseDto> findAll();
     EntradaSalidaResponseDto findById(Long id);
     EntradaSalidaResponseDto solicitarDatosSalidaVisitante(Integer folioTicket);
+    EntradaSalidaResponseDto solicitarDatosSalidaPensionado(String uuidCodigoQR);
     EntradaSalidaResponseDto marcarSalidaVisitante(Integer folioTicket);
+    EntradaSalidaResponseDto marcarSalidaPensionado(String uuidCodigoQR);
     Page<EntradaSalidaResponseDto> searchAndSortPaginated(String search, String sortBy, String sortOrder, int page, int size);
     Page<ReporteGananciasResponseDto> generarReporteGananciasPorHora(LocalDate fechaInicial, LocalDate fechaFinal, String sortOrder, int page, int size);
+
 }

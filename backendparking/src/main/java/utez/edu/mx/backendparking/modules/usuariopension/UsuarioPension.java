@@ -23,7 +23,7 @@ public class UsuarioPension {
     @Column(name= "fecha_finalizacion", nullable = false)
     private LocalDate fechaFinalizacion;
 
-    @Column(name= "uuid_codigo_qr", nullable = false)
+    @Column(name= "uuid_codigo_qr", nullable = false, unique = true)
     private String uuidCodigoQR;
 
     // ATRIBUTOS DE RELACION

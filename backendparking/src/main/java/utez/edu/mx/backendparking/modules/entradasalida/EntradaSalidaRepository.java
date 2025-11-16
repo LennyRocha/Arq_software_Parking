@@ -17,16 +17,13 @@ public interface EntradaSalidaRepository extends JpaRepository<EntradaSalida, Lo
     boolean existsByFolioTicket(Integer folioTicket);
     Optional<EntradaSalida> findByFolioTicket(Integer folioTicket);
 
-    /*
     @Query("""
            SELECT DISTINCT e FROM EntradaSalida e LEFT JOIN e.usuario u 
            WHERE :search IS NULL OR :search = '' OR 
-           CAST(e.folioTicket AS string) LIKE CONCAT('%', :search, '%') OR 
-           LOWER(CONCAT(COALESCE(u.nombre, ''), ' ', COALESCE(u.apellidoPaterno, ''), ' ', COALESCE(u.apellidoMaterno, ''))) LIKE LOWER(CONCAT('%', :search, '%'))
+           CAST(e.folioTicket AS string) LIKE CONCAT('%', :search, '%')
            """)
     Page<EntradaSalida> findByFolioOrUsuarioNombre(@Param("search") String search, Pageable pageable);
 
-     */
     @Query("SELECT COALESCE(SUM(e.cantidadPago), 0.0) FROM EntradaSalida e " +
            "WHERE e.usuario IS NULL " +
            "AND e.fecha = :fecha " +
@@ -100,4 +97,5 @@ public interface EntradaSalidaRepository extends JpaRepository<EntradaSalida, Lo
 
     @Query("SELECT MAX(e.fecha) FROM EntradaSalida e")
     LocalDate findMaxFecha();
+
 }

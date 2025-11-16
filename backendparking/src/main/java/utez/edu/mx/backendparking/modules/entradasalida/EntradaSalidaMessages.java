@@ -24,6 +24,7 @@ public class EntradaSalidaMessages {
     public static final String ERROR_ENTRADA_SALIDA_NOT_FOUND = "Registro de entrada/salida no encontrado.";
     public static final String ERROR_VEHICULO_YA_EN_ESTACIONAMIENTO = "El vehículo ya se encuentra en el estacionamiento.";
     public static final String ERROR_VEHICULO_NO_EN_ESTACIONAMIENTO = "El vehículo no se encuentra registrado en el estacionamiento.";
+    public static final String ERROR_VEHICULO_NO_ENCONTRADO = "El vehículo especificado no fue encontrado.";
     public static final String ERROR_VEHICULO_NO_PERTENECE_USUARIO = "El vehículo no pertenece al usuario especificado.";
     public static final String ERROR_FOLIO_ES_PENSIONADO = "Este folio corresponde a un pensionado, no a un visitante.";
     public static final String ERROR_SALIDA_YA_REGISTRADA = "Este folio ya tiene una salida registrada.";
