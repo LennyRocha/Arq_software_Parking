@@ -16,6 +16,8 @@ import utez.edu.mx.backendparking.modules.tarifa.Tarifa;
 import utez.edu.mx.backendparking.modules.tarifa.TarifaMessages;
 import utez.edu.mx.backendparking.modules.tarifa.TarifaRepository;
 import utez.edu.mx.backendparking.modules.usuario.model.Usuario;
+import utez.edu.mx.backendparking.modules.usuariopension.UsuarioPension;
+import utez.edu.mx.backendparking.modules.usuariopension.UsuarioPensionRepository;
 import utez.edu.mx.backendparking.shared.exception.BadRequestException;
 import utez.edu.mx.backendparking.shared.exception.ResourceNotFoundException;
 
@@ -33,10 +35,12 @@ public class EntradaSalidaServiceImpl implements EntradaSalidaService {
 
     private final EntradaSalidaRepository entradaSalidaRepository;
     private final TarifaRepository tarifaRepository;
+    private final UsuarioPensionRepository usuarioPensionRepository;
 
-    public EntradaSalidaServiceImpl(EntradaSalidaRepository entradaSalidaRepository, TarifaRepository tarifaRepository) {
+    public EntradaSalidaServiceImpl(EntradaSalidaRepository entradaSalidaRepository, TarifaRepository tarifaRepository, UsuarioPensionRepository usuarioPensionRepository) {
         this.entradaSalidaRepository = entradaSalidaRepository;
         this.tarifaRepository = tarifaRepository;
+        this.usuarioPensionRepository = usuarioPensionRepository;
     }
 
     // COSAS QUE FALTAN POR HACER
@@ -65,11 +69,15 @@ public class EntradaSalidaServiceImpl implements EntradaSalidaService {
     @Override
     @Transactional(rollbackFor = {SQLException.class, ConstraintViolationException.class})
     public EntradaSalidaResponseDto createPensionado(EntradaSalidaCreatePensionadoRequestDto dto) {
-        /*
+
         // 1. Validar que el vehículo le pertenezca al usuario
         if (!dto.getVehiculo().getUsuario().getId().equals(dto.getUsuario().getId())) {
             throw new BadRequestException(EntradaSalidaMessages.ERROR_VEHICULO_NO_PERTENECE_USUARIO);
         }
+
+        // 1.5 Validar que el usuario tenga una pensión activa
+        UsuarioPension usuarioPension = usuarioPensionRepository.findByUsuarioIdAndStatusTrue(dto.getUsuario().getId())
+                .orElseThrow(() -> new BadRequestException(EntradaSalidaMessages.ERROR_USUARIO_SIN_PENSION_ACTIVA));
 
         // 2. Convertir DTO a entidad usando el mapper
         EntradaSalida entradaSalida = EntradaSalidaMapper.toEntityFromPensionado(dto);
@@ -78,16 +86,18 @@ public class EntradaSalidaServiceImpl implements EntradaSalidaService {
         entradaSalida.setFolioTicket(generarFolioUnico());
 
         // 4. Verificar si la pensión va a caducar en el día en curso
-        boolean vencimientoHoy = verificarVencimientoPension(dto.getUsuario());
+        boolean vencimientoHoy = verificarVencimientoPension(usuarioPension);
         entradaSalida.setVencimientoPension(vencimientoHoy);
 
         // Guardar la entidad
         EntradaSalida savedEntradaSalida = entradaSalidaRepository.save(entradaSalida);
 
+        // Cambiar ultima entrada del usuario y guardar
+        usuarioPension.setUltimaEntradaSalida(savedEntradaSalida);
+        usuarioPensionRepository.save(usuarioPension);
+
         // Convertir a DTO de respuesta usando el mapper
         return EntradaSalidaMapper.toResponseDto(savedEntradaSalida);
-        */
-        return null;
     }
 
     @Override
@@ -323,16 +333,17 @@ public class EntradaSalidaServiceImpl implements EntradaSalidaService {
         } while (entradaSalidaRepository.existsByFolioTicket(folio));
         return folio;
     }
-    /*
+
     // Método privado para verificar si la pensión vence hoy
-    private boolean verificarVencimientoPension(Usuario usuario) {
+    private boolean verificarVencimientoPension(UsuarioPension usuarioPension) {
+
         // Asumiendo que existe un método en el usuario para obtener la fecha de vencimiento
-        if (usuario.getFechaVencimientoPension() != null) {
+        if (usuarioPension.getFechaFinalizacion() != null) {
             LocalDate hoy = LocalDate.now();
-            return usuario.getFechaVencimientoPension().equals(hoy);
+            return usuarioPension.getFechaFinalizacion().equals(hoy);
         }
         return false;
     }
-    */
+
 
 }
