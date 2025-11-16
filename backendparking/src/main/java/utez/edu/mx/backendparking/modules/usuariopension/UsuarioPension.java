@@ -23,6 +23,9 @@ public class UsuarioPension {
     @Column(name= "fecha_finalizacion", nullable = false)
     private LocalDate fechaFinalizacion;
 
+    @Column(name= "uuid_codigo_qr", nullable = false)
+    private String uuidCodigoQR;
+
     @Column(nullable = false)
     private Long idUltimaEntrada;
 
@@ -44,26 +47,28 @@ public class UsuarioPension {
     public UsuarioPension() {
     }
 
-    public UsuarioPension(boolean estatus, LocalDate fechaFinalizacion, Long idUltimaEntrada, Usuario usuario, Pension pension, EntradaSalida ultimaEntradaSalida) {
+    public UsuarioPension(boolean estatus, LocalDate fechaFinalizacion, String uuidCodigoQR, Long idUltimaEntrada, Usuario usuario, Pension pension, EntradaSalida ultimaEntradaSalida) {
         this.estatus = estatus;
         this.fechaFinalizacion = fechaFinalizacion;
+        this.uuidCodigoQR = uuidCodigoQR;
         this.idUltimaEntrada = idUltimaEntrada;
         this.usuario = usuario;
         this.pension = pension;
         this.ultimaEntradaSalida = ultimaEntradaSalida;
     }
 
-    public UsuarioPension(Long id, boolean estatus, LocalDate fechaFinalizacion, Long idUltimaEntrada, Usuario usuario, Pension pension, EntradaSalida ultimaEntradaSalida) {
+    public UsuarioPension(Long id, boolean estatus, LocalDate fechaFinalizacion, String uuidCodigoQR, Long idUltimaEntrada, Usuario usuario, Pension pension, EntradaSalida ultimaEntradaSalida) {
         this.id = id;
         this.estatus = estatus;
         this.fechaFinalizacion = fechaFinalizacion;
+        this.uuidCodigoQR = uuidCodigoQR;
         this.idUltimaEntrada = idUltimaEntrada;
         this.usuario = usuario;
         this.pension = pension;
         this.ultimaEntradaSalida = ultimaEntradaSalida;
     }
 
-    
+
     // GETTERS Y SETTERS
     public Long getId() {
         return id;
@@ -95,6 +100,14 @@ public class UsuarioPension {
 
     public void setIdUltimaEntrada(Long idUltimaEntrada) {
         this.idUltimaEntrada = idUltimaEntrada;
+    }
+
+    public String getUuidCodigoQR() {
+        return uuidCodigoQR;
+    }
+
+    public void setUuidCodigoQR(String uuidCodigoQR) {
+        this.uuidCodigoQR = uuidCodigoQR;
     }
 
     public Usuario getUsuario() {
