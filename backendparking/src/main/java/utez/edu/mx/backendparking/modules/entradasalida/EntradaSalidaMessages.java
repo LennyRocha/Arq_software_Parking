@@ -6,6 +6,7 @@ public class EntradaSalidaMessages {
 
     // Errores de validación basados en los atributos de la entidad EntradaSalida
     public static final String ERROR_FOLIO_TICKET_OBLIGATORIO = "El folio del ticket es obligatorio.";
+    public static final String ERROR_QR_OBLIGATORIO = "El codigo QR es obligatorio es obligatorio.";
     public static final String ERROR_FOLIO_TICKET_MAYOR_0 = "El folio del ticket debe ser mayor a 0.";
 
     public static final String ERROR_HORA_ENTRADA_OBLIGATORIA = "La hora de entrada es obligatoria.";

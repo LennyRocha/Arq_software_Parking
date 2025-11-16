@@ -71,22 +71,21 @@ public class EntradaSalidaServiceImpl implements EntradaSalidaService {
     @Transactional(rollbackFor = {SQLException.class, ConstraintViolationException.class})
     public EntradaSalidaResponseDto createPensionado(EntradaSalidaCreatePensionadoRequestDto dto) {
 
+        // 1. Validar que el usuario tenga una pensión activa buscando por su codigo QR
+        UsuarioPension usuarioPension = usuarioPensionRepository.findByUuidCodigoQRAndEstatusTrue(dto.getUuidCodigoQR())
+                .orElseThrow(() -> new ResourceNotFoundException(UsuarioPensionMessages.ERROR_USUARIO_PENSION_NOT_FOUND));
 
-        // 1. Buscar el vehículo por ID en la base de datos
+        // 2. Buscar el vehículo por ID en la base de datos
         Vehiculo vehiculo = vehiculoRepository.findById(dto.getVehiculo().getId())
                 .orElseThrow(() -> new ResourceNotFoundException(EntradaSalidaMessages.ERROR_VEHICULO_NO_ENCONTRADO));
 
-        // 2. Validar que el vehículo le pertenezca al usuario
-        if (!vehiculo.getUsuario().getId().equals(dto.getUsuario().getId())) {
+        // 3. Validar que el vehículo le pertenezca al usuario
+        if (!vehiculo.getUsuario().getId().equals(usuarioPension.getUsuario().getId())) {
             throw new BadRequestException(EntradaSalidaMessages.ERROR_VEHICULO_NO_PERTENECE_USUARIO);
         }
 
-        // 3. Validar que el usuario tenga una pensión activa
-        UsuarioPension usuarioPension = usuarioPensionRepository.findByUsuarioIdAndEstatusTrue(dto.getUsuario().getId())
-                .orElseThrow(() -> new BadRequestException(EntradaSalidaMessages.ERROR_USUARIO_SIN_PENSION_ACTIVA));
-
         // 4. Convertir DTO a entidad usando el mapper
-        EntradaSalida entradaSalida = EntradaSalidaMapper.toEntityFromPensionado(dto);
+        EntradaSalida entradaSalida = EntradaSalidaMapper.toEntityFromPensionado(dto, usuarioPension.getUsuario());
 
         // 5. Generar folio automático único
         entradaSalida.setFolioTicket(generarFolioUnico());

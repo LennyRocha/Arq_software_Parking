@@ -3,15 +3,16 @@ package utez.edu.mx.backendparking.modules.entradasalida;
 import utez.edu.mx.backendparking.modules.entradasalida.dto.EntradaSalidaCreatePensionadoRequestDto;
 import utez.edu.mx.backendparking.modules.entradasalida.dto.EntradaSalidaCreateVisitanteRequestDto;
 import utez.edu.mx.backendparking.modules.entradasalida.dto.EntradaSalidaResponseDto;
+import utez.edu.mx.backendparking.modules.usuario.model.Usuario;
 
 import java.time.LocalTime;
 
 public class EntradaSalidaMapper {
 
     // Convertir DTO de pensionado a entidad
-    public static EntradaSalida toEntityFromPensionado(EntradaSalidaCreatePensionadoRequestDto dto) {
+    public static EntradaSalida toEntityFromPensionado(EntradaSalidaCreatePensionadoRequestDto dto, Usuario usuario) {
         EntradaSalida entradaSalida = new EntradaSalida();
-        entradaSalida.setUsuario(dto.getUsuario());
+        entradaSalida.setUsuario(usuario);
         entradaSalida.setVehiculo(dto.getVehiculo());
         entradaSalida.setHoraEntrada(LocalTime.now());
         // El tipo de vehículo se obtiene del vehículo asociado
