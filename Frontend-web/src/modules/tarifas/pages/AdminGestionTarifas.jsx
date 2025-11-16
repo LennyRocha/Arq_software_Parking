@@ -36,6 +36,7 @@ const links = [
 export default function AdminGestionTarifas() {
   // Estados para el modal
   const [showModalAgregarTarifa, setShowModalAgregarTarifa] = useState(false);
+  const [tarifaSeleccionada, setTarifaSeleccionada] = useState({});
 
   const {
     tarifas, setTarifas,
@@ -51,7 +52,7 @@ export default function AdminGestionTarifas() {
     ordenDireccion, setOrdenDireccion,
     buscarTexto, setBuscarTexto,
     cargarTarifas, cargarTarifasPaginado, actualizarEstadoTarifa,
-    cargarTiposVehiculos, agregarNuevaTarifa
+    cargarTiposVehiculos, agregarNuevaTarifa, actualizarTarifaExistente
   } = useTarifas();
 
 
@@ -95,7 +96,18 @@ export default function AdminGestionTarifas() {
 
   const handleCloseModalAgregarTarifa = () => {
     setShowModalAgregarTarifa(false);
+    setTarifaSeleccionada({});
   };
+
+  const handleEditarTarifa = (tarifaSeleccionada) => {
+    // Se le pone un pequeño delay para que no se haga tan rapido
+    setTimeout(() => {
+      cargarTiposVehiculos();
+    }, 500); // Espera 500ms antes de hacer la petición
+
+    setTarifaSeleccionada(tarifaSeleccionada);
+    setShowModalAgregarTarifa(true);
+  }
 
   const handleShowModalAgregarTarifa = () => {
     // Se le pone un pequeño delay para que no se haga tan rapido
@@ -273,6 +285,7 @@ export default function AdminGestionTarifas() {
                     <TableCell>${row.costo || '-'}</TableCell>
                     <TableCell align="center">
                       <IconButton
+                        onClick={() => handleEditarTarifa(row)}
                         color="secondary"
                         size="small"
                         aria-label="editar"
@@ -312,10 +325,12 @@ export default function AdminGestionTarifas() {
       {/* Modal de agregar una tarifa */}
       {showModalAgregarTarifa && (
         <AgregarTarifaModal
+          data={tarifaSeleccionada}
           showModal={showModalAgregarTarifa}
           tiposVehiculos={tiposVehiculos}
           onClose={handleCloseModalAgregarTarifa}
           onAgregar={agregarNuevaTarifa}
+          onActualizar={actualizarTarifaExistente}
         />
       )}
     </>

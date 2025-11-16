@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { fetchTarifas, searchTarifasPaginated, toggleTarifaStatus, fetchTiposVehiculos, createTarifa } from "./../api/TarifasApi";
+import { fetchTarifas, searchTarifasPaginated, toggleTarifaStatus, fetchTiposVehiculos, 
+  createTarifa, updateTarifa } from "./../api/TarifasApi";
 import { getAxiosErrorMessage } from "../../../utils/getAxiosMessage";
 
 export const useTarifas = () => {
@@ -70,10 +71,10 @@ export const useTarifas = () => {
     setError("");
     try {
       await toggleTarifaStatus(idTarifa);
-      
+
       // Recargar las tarifas después de actualizar
       await cargarTarifasPaginado();
-      
+
       return { success: true };
     } catch (err) {
       setError(getAxiosErrorMessage(err));
@@ -102,10 +103,29 @@ export const useTarifas = () => {
     setError("");
     try {
       await createTarifa(tarifa);
-      
+
       // Recargar las tarifas después de agregar
       await cargarTarifasPaginado();
-      
+
+      return { success: true };
+    } catch (err) {
+      setError(getAxiosErrorMessage(err));
+      return { success: false, error: getAxiosErrorMessage(err) };
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Actualizar tarifa ya existente
+  const actualizarTarifaExistente = async (tarifa) => {
+    setLoading(true);
+    setError("");
+    try {
+      await updateTarifa(tarifa);
+
+      // Recargar las tarifas después de agregar
+      await cargarTarifasPaginado();
+
       return { success: true };
     } catch (err) {
       setError(getAxiosErrorMessage(err));
@@ -132,6 +152,6 @@ export const useTarifas = () => {
     ordenarPor, setOrdenarPor,
     ordenDireccion, setOrdenDireccion,
     buscarTexto, setBuscarTexto,
-    cargarTarifas, cargarTarifasPaginado, actualizarEstadoTarifa, cargarTiposVehiculos, agregarNuevaTarifa
+    cargarTarifas, cargarTarifasPaginado, actualizarEstadoTarifa, cargarTiposVehiculos, agregarNuevaTarifa, actualizarTarifaExistente
   };
 };
