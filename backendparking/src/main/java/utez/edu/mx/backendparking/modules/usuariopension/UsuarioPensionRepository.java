@@ -10,11 +10,12 @@ import java.util.Optional;
 public interface UsuarioPensionRepository extends JpaRepository<UsuarioPension, Long> {
 
      // Metodo para buscar por id usuario y estado true
-     Optional<UsuarioPension> findByUsuarioIdAndStatusTrue(Long idUsuario);
+     Optional<UsuarioPension> findByUsuarioIdAndEstatusTrue(Long idUsuario);
 
      // Metodo para verificar si existe un UUID
      boolean existsByUuidCodigoQR(String uuidCodigoQR);
 
-     Optional<UsuarioPension> findByUuidCodigoQRAndStatusTrue(String uuidCodigoQR);
+     // Metodo para buscar por UUID y estado true
+     Optional<UsuarioPension> findByUuidCodigoQRAndEstatusTrue(String uuidCodigoQR);
 
 }

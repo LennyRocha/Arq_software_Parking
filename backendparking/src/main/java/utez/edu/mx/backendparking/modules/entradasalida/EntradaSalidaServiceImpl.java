@@ -82,7 +82,7 @@ public class EntradaSalidaServiceImpl implements EntradaSalidaService {
         }
 
         // 3. Validar que el usuario tenga una pensión activa
-        UsuarioPension usuarioPension = usuarioPensionRepository.findByUsuarioIdAndStatusTrue(dto.getUsuario().getId())
+        UsuarioPension usuarioPension = usuarioPensionRepository.findByUsuarioIdAndEstatusTrue(dto.getUsuario().getId())
                 .orElseThrow(() -> new BadRequestException(EntradaSalidaMessages.ERROR_USUARIO_SIN_PENSION_ACTIVA));
 
         // 4. Convertir DTO a entidad usando el mapper
@@ -214,7 +214,7 @@ public class EntradaSalidaServiceImpl implements EntradaSalidaService {
 
     private EntradaSalidaResponseDto salidaPensionado(String uuidCodigoQR, boolean guardarDatosBD){
         // 1. Buscar el registro por codigo QR
-        UsuarioPension usuarioPension = usuarioPensionRepository.findByUuidCodigoQRAndStatusTrue(uuidCodigoQR)
+        UsuarioPension usuarioPension = usuarioPensionRepository.findByUuidCodigoQRAndEstatusTrue(uuidCodigoQR)
                 .orElseThrow(() -> new ResourceNotFoundException(UsuarioPensionMessages.ERROR_USUARIO_PENSION_NOT_FOUND));
 
         // 2. Encontrar la última entradaSalida del usuario
