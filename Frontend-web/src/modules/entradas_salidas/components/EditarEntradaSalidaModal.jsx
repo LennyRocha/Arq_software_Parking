@@ -13,8 +13,10 @@ const EditarEntradaSalidaModal = ({
     entrada,
     onActualizar,
     onMarcarSalida,
+    tiposVehiculos = [],
 }) => {
     const [formData, setFormData] = useState({
+        id: 0,
         modelo: "",
         placa: "",
         horaEntrada: "",
@@ -22,17 +24,21 @@ const EditarEntradaSalidaModal = ({
         descripcion: "",
     });
 
+    const [tipoVehiculo, setTipoVehiculo] = useState("");
+
     const [errors, setErrors] = useState({});
 
     useEffect(() => {
         if (entrada) {
             setFormData({
+                id: entrada.vehiculo?.id || "",
                 modelo: entrada.vehiculo?.modelo || "",
                 placa: entrada.vehiculo?.placa || "",
                 horaEntrada: entrada.horaEntrada || "",
                 horaSalida: entrada.horaSalida || "",
                 descripcion: entrada.vehiculo?.descripcion || "",
             });
+            setTipoVehiculo(entrada.tipoVehiculo?.id?.toString() || "");
         }
     }, [entrada]);
 
@@ -77,10 +83,13 @@ const EditarEntradaSalidaModal = ({
                     // Preparar datos para enviar (solo datos del vehículo)
                     const datosActualizar = {
                         vehiculo: {
+                            id: formData.id || null,
                             modelo: formData.modelo || null,
                             placa: formData.placa || null,
                             descripcion: formData.descripcion || null,
-                        }
+                            tipoVehiculo: { id: tipoVehiculo ? parseInt(tipoVehiculo) : undefined }
+                        },
+                        tipoVehiculo: { id: tipoVehiculo ? parseInt(tipoVehiculo) : undefined },
                     };
 
                     await onActualizar(entrada.id, datosActualizar);
@@ -121,6 +130,7 @@ const EditarEntradaSalidaModal = ({
             horaSalida: "",
             descripcion: "",
         });
+        setTipoVehiculo("");
         setErrors({});
         onClose();
     };
@@ -146,13 +156,16 @@ const EditarEntradaSalidaModal = ({
                 />
             </Box>
 
-            {/* Tipo de vehículo - Solo lectura */}
+            {/* Tipo de vehículo - Select editable */}
             <Box sx={{ mb: 2 }}>
-                <CustomInputLabel
+                <CustomInputSelect
                     labelText="Tipo de vehículo"
                     name="tipoVehiculo"
-                    value={entrada?.tipoVehiculo?.nombre || ""}
-                    isDisabled={true}
+                    value={tipoVehiculo}
+                    onChange={(e) => setTipoVehiculo(e.target.value)}
+                    isObligatory={true}
+                    options={tiposVehiculos}
+                    setPlaceholder={false}
                 />
             </Box>
 

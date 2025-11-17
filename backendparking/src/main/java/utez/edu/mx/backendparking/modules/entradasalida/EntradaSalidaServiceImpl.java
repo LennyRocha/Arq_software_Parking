@@ -153,28 +153,83 @@ public class EntradaSalidaServiceImpl implements EntradaSalidaService {
         return EntradaSalidaMapper.toResponseDto(savedEntradaSalida);
     }
 
+
     @Override
     @Transactional(rollbackFor = {SQLException.class, ConstraintViolationException.class})
     public EntradaSalidaResponseDto actualizarEntrada(Long idEntradaSalida, EntradaSalidaCreateVisitanteRequestDto dto) {
 
+        // 1. Buscar la entrada/salida existente
         EntradaSalida entradaSalidaExistente = entradaSalidaRepository.findById(idEntradaSalida)
                 .orElseThrow(() -> new ResourceNotFoundException(EntradaSalidaMessages.ERROR_ENTRADA_SALIDA_NOT_FOUND));
 
-        // Verificar que el registro solo se puedan modificar entradas y salidas de visitantes
+        // 2. Verificar que sea de visitante
         if(entradaSalidaExistente.getUsuario() != null) {
             throw new BadRequestException(EntradaSalidaMessages.ERROR_SOLO_ACTUALIZAR_VISITANTES);
         }
 
-        // 1. Convertir DTO a entidad usando el mapper
-        // El mapper ya maneja la lógica: si hay vehículo, toma su tipo; si no, usa el tipo especificado
-        EntradaSalida entradaSalida = EntradaSalidaMapper.toUpdateEntity(entradaSalidaExistente, dto);
+        // 3. Actualizar vehículo si viene en el DTO
+        if (dto.getVehiculo() != null) {
+            Vehiculo vehiculo;
 
-        // Guardar la entidad
-        EntradaSalida savedEntradaSalida = entradaSalidaRepository.save(entradaSalida);
+            // Verificar si tiene ID (actualizar) o no (crear nuevo)
+            if (dto.getVehiculo().getId() != null) {
+                // Actualizar vehículo existente
+                vehiculo = vehiculoRepository.findById(dto.getVehiculo().getId())
+                        .orElseThrow(() -> new ResourceNotFoundException("Vehículo no encontrado"));
+            } else {
+                // Crear nuevo vehículo
+                vehiculo = new Vehiculo();
+                vehiculo.setUsuario(null); // ✅ Explícitamente null para visitantes
+            }
 
-        // Convertir a DTO de respuesta usando el mapper
+            // Actualizar campos del vehículo
+            if (dto.getVehiculo().getModelo() != null) {
+                vehiculo.setModelo(dto.getVehiculo().getModelo());
+            }
+            if (dto.getVehiculo().getPlaca() != null) {
+                vehiculo.setPlaca(dto.getVehiculo().getPlaca());
+            }
+            if (dto.getVehiculo().getDescripcion() != null) {
+                vehiculo.setDescripcion(dto.getVehiculo().getDescripcion());
+            }
+
+            // ✅ Validar que tipoVehiculo no sea null antes de acceder a getId()
+            if (dto.getVehiculo().getTipoVehiculo() != null && dto.getVehiculo().getTipoVehiculo().getId() != null) {
+                TipoVehiculo tipoVehiculo = tipoVehiculoRepository.findById(dto.getVehiculo().getTipoVehiculo().getId())
+                        .orElseThrow(() -> new ResourceNotFoundException("Tipo de vehículo no encontrado"));
+                vehiculo.setTipoVehiculo(tipoVehiculo);
+            } else if (vehiculo.getId() == null) {
+                // Si es un vehículo nuevo, el tipo es obligatorio
+                throw new BadRequestException("El tipo de vehículo es obligatorio");
+            }
+
+            vehiculo.setEstatus(true);
+            vehiculo = vehiculoRepository.save(vehiculo);
+
+            entradaSalidaExistente.setVehiculo(vehiculo);
+            entradaSalidaExistente.setTipoVehiculo(vehiculo.getTipoVehiculo());
+        }
+        // 4. Si solo viene tipo de vehículo
+        else if (dto.getTipoVehiculo() != null && dto.getTipoVehiculo().getId() != null) {
+            // Si antes habia una entrada ocupando ese vehiculo
+            if(entradaSalidaExistente.getVehiculo() != null && entradaSalidaExistente.getVehiculo().getUsuario() == null){
+                vehiculoRepository.deleteById(entradaSalidaExistente.getVehiculo().getId());
+            }
+
+            TipoVehiculo tipoVehiculo = tipoVehiculoRepository.findById(dto.getTipoVehiculo().getId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Tipo de vehículo no encontrado"));
+
+            entradaSalidaExistente.setTipoVehiculo(tipoVehiculo);
+            entradaSalidaExistente.setVehiculo(null);
+        }
+
+        // 5. Guardar
+        EntradaSalida savedEntradaSalida = entradaSalidaRepository.save(entradaSalidaExistente);
+
+        // 6. Convertir a DTO de respuesta
         return EntradaSalidaMapper.toResponseDto(savedEntradaSalida);
     }
+
 
     @Override
     @Transactional(readOnly = true)

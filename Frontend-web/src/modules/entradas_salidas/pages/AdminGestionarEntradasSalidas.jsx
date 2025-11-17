@@ -86,6 +86,10 @@ export default function AdminGestionarEntradasSalidas() {
 
   const handleEditar = (entradaSalida) => {
     setEntradaSeleccionada(entradaSalida);
+    // Cargar tipos de vehículos antes de abrir el modal
+    setTimeout(() => {
+      cargarTiposVehiculos();
+    }, 500);
     setShowModalEditarEntrada(true);
   };
 
@@ -251,6 +255,7 @@ export default function AdminGestionarEntradasSalidas() {
           open={showModalEditarEntrada}
           onClose={handleCloseModalEditarEntrada}
           entrada={entradaSeleccionada}
+          tiposVehiculos={tiposVehiculos}
           onActualizar={handleActualizarEntrada}
           onMarcarSalida={handleMarcarSalida}
         />

@@ -138,7 +138,7 @@ public class EntradaSalidaController {
                 .body(ApiResponse.success(HttpStatus.OK, EntradaSalidaMessages.ENDPOINT_REPORTE_GANANCIAS_POR_HORA, reporte));
     }
 
-    @PostMapping("/actualizar-datos/{id}")
+    @PutMapping("/actualizar-datos/{id}")
     @Operation(summary = "Actualizar datos de entrada/salida de un visitante",
             description = "Registra la entrada de un vehículo visitante al estacionamiento. " +
                     "Si se especifica un vehículo, toma su tipo de vehículo; si no, usa el tipo de vehículo especificado directamente. " +
