@@ -10,6 +10,7 @@ import { entradasSalidasColumns, orderOptions } from "../config/tableColumns";
 import AgregarEntradaModal from "../components/AgregarEntradaModal";
 import EditarEntradaSalidaModal from "../components/EditarEntradaSalidaModal";
 import ConfirmarSalidaModal from "../components/ConfirmarSalidaModal";
+import VerDetalleEntradaSalidaModal from "../components/VerDetalleEntradaSalidaModal";
 import sweetAlert from "../../../utils/sweetAlert";
 
 const links = [
@@ -21,6 +22,7 @@ export default function AdminGestionarEntradasSalidas() {
   const [showModalAgregarEntrada, setShowModalAgregarEntrada] = useState(false);
   const [showModalEditarEntrada, setShowModalEditarEntrada] = useState(false);
   const [showModalConfirmarSalida, setShowModalConfirmarSalida] = useState(false);
+  const [showModalVerDetalle, setShowModalVerDetalle] = useState(false);
   const [entradaSeleccionada, setEntradaSeleccionada] = useState(null);
   const [datosSalida, setDatosSalida] = useState(null);
 
@@ -79,13 +81,13 @@ export default function AdminGestionarEntradasSalidas() {
     setPage(0);
   };
 
-  const handleVerDetalle = (entradaSalida) => {
-    console.log("Ver detalle:", entradaSalida);
-    // TODO: Implementar modal de detalle
+  const handleVerDetalle = (entrada) => {
+    setEntradaSeleccionada(entrada);
+    setShowModalVerDetalle(true);
   };
 
-  const handleEditar = (entradaSalida) => {
-    setEntradaSeleccionada(entradaSalida);
+  const handleEditar = (entrada) => {
+    setEntradaSeleccionada(entrada);
     // Cargar tipos de vehículos antes de abrir el modal
     setTimeout(() => {
       cargarTiposVehiculos();
@@ -268,6 +270,18 @@ export default function AdminGestionarEntradasSalidas() {
           onClose={handleCloseModalConfirmarSalida}
           datosSalida={datosSalida}
           onConfirmar={handleConfirmarSalida}
+        />
+      )}
+
+      {/* Modal de ver detalle */}
+      {showModalVerDetalle && (
+        <VerDetalleEntradaSalidaModal
+          open={showModalVerDetalle}
+          onClose={() => {
+            setShowModalVerDetalle(false);
+            setEntradaSeleccionada(null);
+          }}
+          entrada={entradaSeleccionada}
         />
       )}
     </>

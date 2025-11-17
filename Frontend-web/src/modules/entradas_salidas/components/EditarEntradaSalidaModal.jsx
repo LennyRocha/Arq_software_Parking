@@ -7,6 +7,21 @@ import CustomTextArea from "../../../components/inputs/CustomTextArea";
 import { entradaSalidaEditarSchema } from "../../../models/yup/entradaSalidaYup.js";
 import sweetAlert from "../../../utils/sweetAlert";
 
+// Función para formatear hora en formato legible (HH:MM am/pm)
+const formatearHora = (horaString) => {
+    if (!horaString) return "";
+
+    const [horas, minutos] = horaString.split(':');
+    let hora = parseInt(horas);
+    const min = minutos;
+    const periodo = hora >= 12 ? 'pm' : 'am';
+
+    if (hora > 12) hora -= 12;
+    if (hora === 0) hora = 12;
+
+    return `${hora}:${min} ${periodo}`;
+};
+
 const EditarEntradaSalidaModal = ({
     open,
     onClose,
@@ -34,8 +49,8 @@ const EditarEntradaSalidaModal = ({
                 id: entrada.vehiculo?.id || "",
                 modelo: entrada.vehiculo?.modelo || "",
                 placa: entrada.vehiculo?.placa || "",
-                horaEntrada: entrada.horaEntrada || "",
-                horaSalida: entrada.horaSalida || "",
+                horaEntrada: formatearHora(entrada.horaEntrada) || "",
+                horaSalida: formatearHora(entrada.horaSalida) || "",
                 descripcion: entrada.vehiculo?.descripcion || "",
             });
             setTipoVehiculo(entrada.tipoVehiculo?.id?.toString() || "");
