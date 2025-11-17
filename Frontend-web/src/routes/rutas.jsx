@@ -39,7 +39,7 @@ export default function Rutas() {
         </Route>
         {/* Rutas del empleado */}
         <Route path="/empleado" element={<EmpleadoRouter />}>
-          <Route index element={<Pages />} />
+          <Route index element={<AdminGestionarEntradasSalidas />} />
           <Route path="pensiones" element={<Pages />} />
           <Route path="cajones" element={<Pages />} />
           <Route path="nuevo_pensionado" element={<Pages />} />
