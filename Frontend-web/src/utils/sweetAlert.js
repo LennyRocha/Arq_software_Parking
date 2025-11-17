@@ -15,6 +15,7 @@ export default function sweetAlert({
   showCloseButton = false,
   showLoaderOnConfirm = false,
   reverseButtons = false,
+  zIndex = undefined, // Nueva prop opcional para z-index personalizado
 }) {
   return Swal.fire({
     title, // título del modal
@@ -39,5 +40,6 @@ export default function sweetAlert({
     },
     heightAuto: false, // Evita que SweetAlert ajuste la altura del body
     backdrop: true, // Asegura que tenga backdrop
+    ...(zIndex && { zIndex }), // Agrega zIndex solo si se proporciona
   });
 }

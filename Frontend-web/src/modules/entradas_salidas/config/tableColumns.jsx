@@ -36,37 +36,46 @@ export const entradasSalidasColumns = ({ onView, onEdit }) => [
     }
   },
   {
-    field: "fechaHoraEntrada",
-    label: "Fecha y hora de entrada",
+    field: "fecha",
+    label: "Fecha",
     render: (row) => {
-      if (row.fechaHoraEntrada) {
-        const fecha = new Date(row.fechaHoraEntrada);
-        return fecha.toLocaleString('es-MX', {
-          year: 'numeric',
-          month: '2-digit',
+      if (row.fecha) {
+        const fecha = new Date(row.fecha);
+        return fecha.toLocaleDateString('es-MX', {
           day: '2-digit',
-          hour: '2-digit',
-          minute: '2-digit',
-          hour12: true
+          month: '2-digit',
+          year: 'numeric'
         });
       }
       return "-";
     }
   },
   {
-    field: "fechaHoraSalida",
-    label: "Fecha y hora de salida",
+    field: "horaEntradaSalida",
+    label: "Hora entrada - Hora salida",
     render: (row) => {
-      if (row.fechaHoraSalida) {
-        const fecha = new Date(row.fechaHoraSalida);
-        return fecha.toLocaleString('es-MX', {
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit',
-          hour: '2-digit',
-          minute: '2-digit',
-          hour12: true
-        });
+      // Función para convertir hora "HH:MM:SS.mmm" a formato "HH:MM am/pm"
+      const formatearHora = (horaString) => {
+        if (!horaString) return null;
+        
+        const [horas, minutos] = horaString.split(':');
+        let hora = parseInt(horas);
+        const min = minutos;
+        const periodo = hora >= 12 ? 'pm' : 'am';
+        
+        if (hora > 12) hora -= 12;
+        if (hora === 0) hora = 12;
+        
+        return `${hora}:${min} ${periodo}`;
+      };
+
+      const horaEntrada = formatearHora(row.horaEntrada);
+      const horaSalida = formatearHora(row.horaSalida);
+      
+      if (horaEntrada && horaSalida) {
+        return `${horaEntrada} - ${horaSalida}`;
+      } else if (horaEntrada) {
+        return horaEntrada;
       }
       return "-";
     }

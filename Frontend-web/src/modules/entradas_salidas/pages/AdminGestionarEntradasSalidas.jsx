@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Button } from "@mui/material";
 import MainHeader from "../../../components/MainHeader";
 import LoadingBackdrop from "../../../components/LoadingBackdrop";
@@ -7,6 +7,7 @@ import CustomTable from "../../../components/CustomTable";
 import TableFilters from "../../../components/TableFilters";
 import { useEntradasSalidas } from "../hooks/useEntradasSalidas";
 import { entradasSalidasColumns, orderOptions } from "../config/tableColumns";
+import AgregarEntradaModal from "../components/AgregarEntradaModal";
 
 const links = [
   { nombre: "Inicio", ruta: "/admin", disabled: false },
@@ -14,8 +15,11 @@ const links = [
 ];
 
 export default function AdminGestionarEntradasSalidas() {
+  const [showModalAgregarEntrada, setShowModalAgregarEntrada] = useState(false);
+
   const {
     entradasSalidas,
+    tiposVehiculos,
     loading,
     error,
     page,
@@ -29,7 +33,9 @@ export default function AdminGestionarEntradasSalidas() {
     setOrdenarPor,
     setOrdenDireccion,
     setBuscarTexto,
-    cargarEntradasSalidasPaginado
+    cargarEntradasSalidasPaginado,
+    cargarTiposVehiculos,
+    agregarNuevaEntrada
   } = useEntradasSalidas();
 
   // Cargar datos al montar el componente o cambiar parámetros
@@ -71,6 +77,18 @@ export default function AdminGestionarEntradasSalidas() {
   const handleEditar = (entradaSalida) => {
     console.log("Editar:", entradaSalida);
     // TODO: Implementar edición
+  };
+
+  const handleShowModalAgregarEntrada = () => {
+    // Cargar tipos de vehículos antes de abrir el modal
+    setTimeout(() => {
+      cargarTiposVehiculos();
+    }, 500);
+    setShowModalAgregarEntrada(true);
+  };
+
+  const handleCloseModalAgregarEntrada = () => {
+    setShowModalAgregarEntrada(false);
   };
 
   return (
@@ -115,6 +133,7 @@ export default function AdminGestionarEntradasSalidas() {
             color="primary"
             variant="contained"
             sx={{ minWidth: 150 }}
+            onClick={handleShowModalAgregarEntrada}
           >
             + AGREGAR NUEVA
           </Button>
@@ -137,6 +156,16 @@ export default function AdminGestionarEntradasSalidas() {
           emptyMessage="No hay entradas y salidas disponibles"
         />
       </Box>
+
+      {/* Modal de agregar entrada */}
+      {showModalAgregarEntrada && (
+        <AgregarEntradaModal
+          showModal={showModalAgregarEntrada}
+          tiposVehiculos={tiposVehiculos}
+          onClose={handleCloseModalAgregarEntrada}
+          onAgregar={agregarNuevaEntrada}
+        />
+      )}
     </>
   );
 }
