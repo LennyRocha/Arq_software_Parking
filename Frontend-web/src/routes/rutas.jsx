@@ -6,6 +6,7 @@ import EmpleadoRouter from "./EmpleadoRouter";
 import PensionadoRouter from "./PensionadoRouter";
 import Pages from "../modules/cajon/pages/Pages";
 import AdminGestionarEntradasSalidas from "../modules/entradas_salidas/pages/AdminGestionarEntradasSalidas";
+import AdminGestionarReportesGanancias from "../modules/entradas_salidas/pages/AdminGestionarReportesGanancias";
 import AdminGestionTarifas from "../modules/tarifas/pages/AdminGestionTarifas";
 import GestionTiposPension from "../modules/tipo_pension/pages/GestionTiposPension";
 import PensionesUsuario from "../modules/tipo_pension/pages/PensionesUsuarios";
@@ -28,7 +29,7 @@ export default function Rutas() {
         {/* Rutas del admin */}
         <Route path="/admin" element={<AdminRouter />}>
           <Route index element={<AdminGestionarEntradasSalidas />} />
-          <Route path="reportes" element={<Pages />} />
+          <Route path="reportes" element={<AdminGestionarReportesGanancias />} />
           <Route path="tipos_de_pension" element={<GestionTiposPension/>} />
           <Route path="pensiones_de_usuarios" element={<PensionesUsuario />} />
           <Route path="tarifas" element={<AdminGestionTarifas />} />

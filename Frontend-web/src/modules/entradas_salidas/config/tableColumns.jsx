@@ -109,3 +109,72 @@ export const entradasSalidasColumns = ({ onView, onEdit }) => [
     )
   }
 ];
+
+/**
+ * Opciones de ordenamiento para reportes de ganancias
+ */
+export const reporteGananciasOrderOptions = [
+  { value: "desc", label: "Más recientes" },
+  { value: "asc", label: "Más antiguos" }
+];
+
+/**
+ * Configuración de columnas para la tabla de reportes de ganancias por hora
+ */
+export const reporteGananciasColumns = ({ onView }) => [
+  {
+    field: "fecha",
+    label: "Fecha",
+    render: (row) => {
+      if (row.fechaInicial) {
+        const fecha = new Date(row.fechaInicial);
+        return fecha.toLocaleDateString('es-MX', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric'
+        });
+      }
+      return "-";
+    }
+  },
+  {
+    field: "hora",
+    label: "Hora",
+    render: (row) => {
+      if (!row.hora) return "-";
+      
+      // Formatear hora a formato legible (HH:MM am/pm)
+      const hora24 = parseInt(row.hora.split(':')[0]);
+      const minutos = row.hora.split(':')[1] || '00';
+      const periodo = hora24 >= 12 ? 'pm' : 'am';
+      let hora12 = hora24 > 12 ? hora24 - 12 : hora24;
+      if (hora12 === 0) hora12 = 12;
+      
+      return `${String(hora12).padStart(2, '0')}:${minutos} ${periodo}`;
+    }
+  },
+  {
+    field: "cantidadTotal",
+    label: "Cantidad",
+    align: "right",
+    render: (row) => {
+      const total = row.gananciasTotales || 0;
+      return `$${total.toFixed(2)}`;
+    }
+  },
+  {
+    field: "opciones",
+    label: "Opciones",
+    align: "center",
+    render: (row) => (
+      <IconButton
+        onClick={() => onView(row)}
+        color="primary"
+        size="small"
+        aria-label="ver detalle"
+      >
+        <VisibilityIcon />
+      </IconButton>
+    )
+  }
+];

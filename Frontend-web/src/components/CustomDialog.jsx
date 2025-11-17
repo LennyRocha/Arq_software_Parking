@@ -44,6 +44,7 @@
  * @param {string} [textSubmit="Submit"] - Texto del botón de envío
  * @param {string} [textCancel="Cancel"] - Texto del botón de cancelar
  * @param {string} [textConfirm="Confirm"] - Texto del botón de confirmar
+ * @param {boolean} [showActions=true] - Si se muestran los botones de acción
  * @param {boolean} [fullWidth=true] - Si el diálogo ocupa el ancho completo
  * @param {string} [maxWidth="sm"] - Ancho máximo del diálogo (xs, sm, md, lg, xl)
  * @param {Object} [containerStyle] - Estilos personalizados del contenedor
@@ -75,6 +76,7 @@ export default function CustomDialog({
   textSubmit = "Submit",
   textCancel = "Cancel",
   textConfirm = "Confirm",
+  showActions = true,
   fullWidth = true, // changed default to true
   maxWidth = "sm",  // changed default to "sm"
   containerStyle = {},
@@ -165,20 +167,22 @@ export default function CustomDialog({
           {children}
         </Box>
       </DialogContent>
-      <DialogActions>
-        <Button onClick={handleCancel} variant="contained" color="inherit">
-          {textCancel}
-        </Button>
-        {isForm ? (
-          <Button type="submit" variant="contained" onClick={onSubmit}>
-            {textSubmit}
+      {showActions && (
+        <DialogActions>
+          <Button onClick={handleCancel} variant="contained" color="inherit">
+            {textCancel}
           </Button>
-        ) : (
-          <Button onClick={handleConfirm} variant="contained">
-            {textConfirm}
-          </Button>
-        )}
-      </DialogActions>
+          {isForm ? (
+            <Button type="submit" variant="contained" onClick={onSubmit}>
+              {textSubmit}
+            </Button>
+          ) : (
+            <Button onClick={handleConfirm} variant="contained">
+              {textConfirm}
+            </Button>
+          )}
+        </DialogActions>
+      )}
     </Dialog>
   );
 }
