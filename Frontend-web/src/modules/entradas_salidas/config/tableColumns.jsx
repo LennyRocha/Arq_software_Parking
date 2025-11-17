@@ -94,15 +94,17 @@ export const entradasSalidasColumns = ({ onView, onEdit }) => [
         >
           <VisibilityIcon />
         </IconButton>
-        <IconButton
-          onClick={() => onEdit(row)}
-          color="secondary"
-          size="small"
-          aria-label="editar"
-          sx={{ ml: 1 }}
-        >
-          <EditIcon />
-        </IconButton>
+        {!row.horaSalida && (
+          <IconButton
+            onClick={() => onEdit(row)}
+            color="secondary"
+            size="small"
+            aria-label="editar"
+            sx={{ ml: 1 }}
+          >
+            <EditIcon />
+          </IconButton>
+        )}
       </>
     )
   }

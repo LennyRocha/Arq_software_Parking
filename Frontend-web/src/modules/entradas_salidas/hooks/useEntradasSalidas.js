@@ -1,5 +1,12 @@
 import { useState } from "react";
-import { searchEntradasSalidasPaginated, createEntradaSalidaVisitante, fetchTiposVehiculos } from "../api/EntradaSalidaApi";
+import { 
+  searchEntradasSalidasPaginated, 
+  createEntradaSalidaVisitante, 
+  fetchTiposVehiculos,
+  updateEntradaSalida,
+  fetchEntradaSalidaCostoFinal,
+  updateEntradaSalidaPagar
+} from "../api/EntradaSalidaApi";
 import { getAxiosErrorMessage } from "../../../utils/getAxiosMessage";
 
 export const useEntradasSalidas = () => {
@@ -31,6 +38,7 @@ export const useEntradasSalidas = () => {
       });
 
       const data = response.data.data;
+      console.log(data.content)
       setEntradasSalidas(data.content || []);
       setTotalElements(data.totalElements || 0);
     } catch (err) {
@@ -73,6 +81,65 @@ export const useEntradasSalidas = () => {
     }
   };
 
+  // Actualizar una entrada/salida existente
+  const actualizarEntradaSalida = async (id, datosActualizados) => {
+    setLoading(true);
+    setError("");
+    try {
+      await updateEntradaSalida(id, datosActualizados);
+
+      // Recargar las entradas después de actualizar
+      await cargarEntradasSalidasPaginado();
+
+      return { success: true };
+    } catch (err) {
+      setError(getAxiosErrorMessage(err));
+      return { success: false, error: getAxiosErrorMessage(err) };
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Consultar datos de salida antes de marcar
+  const consultarDatosSalida = async (folioTicket) => {
+    setLoading(true);
+    setError("");
+    try {
+      const response = await fetchEntradaSalidaCostoFinal(folioTicket);
+      const datos = response.data.data;
+
+      // Formatear los datos para el modal de confirmación
+      return {
+        success: true,
+        datos: datos
+      };
+    } catch (err) {
+      setError(getAxiosErrorMessage(err));
+      return { success: false, error: getAxiosErrorMessage(err) };
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Marcar salida y realizar pago
+  const marcarSalida = async (folioTicket) => {
+    setLoading(true);
+    setError("");
+    try {
+      await updateEntradaSalidaPagar(folioTicket);
+
+      // Recargar las entradas después de marcar salida
+      await cargarEntradasSalidasPaginado();
+
+      return { success: true };
+    } catch (err) {
+      setError(getAxiosErrorMessage(err));
+      return { success: false, error: getAxiosErrorMessage(err) };
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return {
     entradasSalidas,
     setEntradasSalidas,
@@ -96,6 +163,9 @@ export const useEntradasSalidas = () => {
     setBuscarTexto,
     cargarEntradasSalidasPaginado,
     cargarTiposVehiculos,
-    agregarNuevaEntrada
+    agregarNuevaEntrada,
+    actualizarEntradaSalida,
+    consultarDatosSalida,
+    marcarSalida
   };
 };

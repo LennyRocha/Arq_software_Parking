@@ -1,0 +1,243 @@
+import React, { useState, useEffect } from "react";
+import { Grid, Button, Box, Typography } from "@mui/material";
+import CustomDialog from "../../../components/CustomDialog";
+import CustomInputLabel from "../../../components/inputs/CustomInputLabel";
+import CustomInputSelect from "../../../components/inputs/CustomInputSelect";
+import CustomTextArea from "../../../components/inputs/CustomTextArea";
+import { entradaSalidaEditarSchema } from "../../../models/yup/entradaSalidaYup.js";
+import sweetAlert from "../../../utils/sweetAlert";
+
+const EditarEntradaSalidaModal = ({
+    open,
+    onClose,
+    entrada,
+    onActualizar,
+    onMarcarSalida,
+}) => {
+    const [formData, setFormData] = useState({
+        modelo: "",
+        placa: "",
+        horaEntrada: "",
+        horaSalida: "",
+        descripcion: "",
+    });
+
+    const [errors, setErrors] = useState({});
+
+    useEffect(() => {
+        if (entrada) {
+            setFormData({
+                modelo: entrada.vehiculo?.modelo || "",
+                placa: entrada.vehiculo?.placa || "",
+                horaEntrada: entrada.horaEntrada || "",
+                horaSalida: entrada.horaSalida || "",
+                descripcion: entrada.vehiculo?.descripcion || "",
+            });
+        }
+    }, [entrada]);
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData((prev) => ({
+            ...prev,
+            [name]: value,
+        }));
+
+        // Limpiar error del campo
+        if (errors[name]) {
+            setErrors((prev) => ({
+                ...prev,
+                [name]: undefined,
+            }));
+        }
+    };
+
+    const handleActualizar = async (e) => {
+        e.preventDefault();
+
+        try {
+            // Validar datos
+            await entradaSalidaEditarSchema.validate(formData, { abortEarly: false });
+
+            // Cerrar modal antes de mostrar confirmación
+            onClose();
+
+            // Mostrar confirmación
+            setTimeout(async () => {
+                const result = await sweetAlert({
+                    title: "¿Confirmar actualización?",
+                    text: "¿Estás seguro de actualizar los datos de esta entrada?",
+                    icon: "question",
+                    showCancelButton: true,
+                    confirmButtonText: "Sí, actualizar",
+                    cancelButtonText: "Cancelar",
+                });
+
+                if (result.isConfirmed) {
+                    // Preparar datos para enviar (solo datos del vehículo)
+                    const datosActualizar = {
+                        vehiculo: {
+                            modelo: formData.modelo || null,
+                            placa: formData.placa || null,
+                            descripcion: formData.descripcion || null,
+                        }
+                    };
+
+                    await onActualizar(entrada.id, datosActualizar);
+                }
+            }, 300);
+        } catch (error) {
+            if (error.name === "ValidationError") {
+                const validationErrors = {};
+                error.inner.forEach((err) => {
+                    validationErrors[err.path] = err.message;
+                });
+                setErrors(validationErrors);
+            } else {
+                console.error("Error al actualizar entrada:", error);
+                onClose();
+                setTimeout(() => {
+                    sweetAlert({
+                        title: "Error",
+                        text: "Ocurrió un error al actualizar la entrada",
+                        icon: "error",
+                    });
+                }, 300);
+            }
+        }
+    };
+
+    const handleMarcarSalida = () => {
+        // Cerrar modal y llamar función para abrir modal de confirmación
+        onClose();
+        onMarcarSalida(entrada);
+    };
+
+    const handleCancel = () => {
+        setFormData({
+            modelo: "",
+            placa: "",
+            horaEntrada: "",
+            horaSalida: "",
+            descripcion: "",
+        });
+        setErrors({});
+        onClose();
+    };
+
+    return (
+        <CustomDialog
+            isOpen={open}
+            handleClose={handleCancel}
+            titulo="Editar entrada/salida"
+            maxWidth="sm"
+            isForm={true}
+            onSubmit={handleActualizar}
+            textSubmit="Actualizar"
+            textCancel="Cancelar"
+        >
+            {/* Folio de reconocimiento - Solo lectura */}
+            <Box sx={{ mb: 2 }}>
+                <CustomInputLabel
+                    labelText="Folio de reconocimiento"
+                    name="folioTicket"
+                    value={entrada?.folioTicket || ""}
+                    isDisabled={true}
+                />
+            </Box>
+
+            {/* Tipo de vehículo - Solo lectura */}
+            <Box sx={{ mb: 2 }}>
+                <CustomInputLabel
+                    labelText="Tipo de vehículo"
+                    name="tipoVehiculo"
+                    value={entrada?.tipoVehiculo?.nombre || ""}
+                    isDisabled={true}
+                />
+            </Box>
+
+
+            {/* Modelo y Placa en la misma fila */}
+            <Grid item xs={12} sm={6}>
+                <Box sx={{ mb: 2 }}>
+                    <CustomInputLabel
+                        labelText="Modelo"
+                        name="modelo"
+                        value={formData.modelo}
+                        onChange={handleChange}
+                        isWrong={!!errors.modelo}
+                        errorMessage={errors.modelo}
+                    />
+                </Box>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+                <Box sx={{ mb: 2 }}>
+                    <CustomInputLabel
+                        labelText="Placa"
+                        name="placa"
+                        value={formData.placa}
+                        onChange={handleChange}
+                        isWrong={!!errors.placa}
+                        errorMessage={errors.placa}
+                    />
+                </Box>
+            </Grid>
+
+            {/* Hora de entrada y salida en la misma fila */}
+            <Grid container spacing={2} sx={{ mb: 0 }} columns={2}>
+                <Grid>
+                    <Box sx={{ mb: 2 }}>
+                        <CustomInputLabel
+                            labelText="Hora de entrada"
+                            name="horaEntrada"
+                            value={formData.horaEntrada}
+                            isDisabled={true}
+                        />
+                    </Box>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                    <Box sx={{ mb: 2 }}>
+                        <CustomInputLabel
+                            labelText="Hora de salida"
+                            name="horaSalida"
+                            value={formData.horaSalida}
+                            isDisabled={true}
+                        />
+                    </Box>
+                </Grid>
+            </Grid>
+
+            {/* Botón marcar salida - Solo si no hay hora de salida */}
+            {!entrada?.horaSalida && (
+                <Button
+                    variant="contained"
+                    fullWidth
+                    onClick={handleMarcarSalida}
+                    sx={{
+                        backgroundColor: "#5FB4A2",
+                        color: "#fff",
+                        mb: 2,
+                        "&:hover": {
+                            backgroundColor: "#4A9080",
+                        },
+                    }}
+                >
+                    Marcar salida
+                </Button>
+            )}
+
+            {/* Descripción */}
+            <CustomTextArea
+                labelText="Descripción"
+                name="descripcion"
+                value={formData.descripcion}
+                onChange={handleChange}
+                isWrong={!!errors.descripcion}
+                errorMessage={errors.descripcion}
+                rows={3}
+            />
+        </CustomDialog>
+    );
+};
+
+export default EditarEntradaSalidaModal;

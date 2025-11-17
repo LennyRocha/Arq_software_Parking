@@ -11,7 +11,11 @@ export const createEntradaSalidaVisitante = (entrada) => apiToken.post("/api/ent
 export const fetchEntradaSalidaCostoFinal = (folioTicket) => apiToken.get(`/api/entrada-salida/visitante/salida-datos/${folioTicket}`);
 
 // Realizar el pago de una entrada-salida como visitante 
-export const updateEntradaSalidaPagar = (folioTicket) => apiToken.put(`/api/entrada-salida/visitante/salida/${folioTicket}`, tarifa);
+export const updateEntradaSalidaPagar = (folioTicket) => apiToken.put(`/api/entrada-salida/visitante/salida/${folioTicket}`);
+
+// Actualizar los datos de una entrada/salida de un visitante
+export const updateEntradaSalida = (id, entrada) => apiToken.put(`/api/entrada-salida/actualizar-datos/${id}`, entrada);
+
 
 // Buscar entradas-salidas con filtros, ordenamiento y paginación
 export const searchEntradasSalidasPaginated = ({

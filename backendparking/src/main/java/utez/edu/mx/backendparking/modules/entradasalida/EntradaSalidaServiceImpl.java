@@ -183,7 +183,7 @@ public class EntradaSalidaServiceImpl implements EntradaSalidaService {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional(rollbackFor = {SQLException.class, ConstraintViolationException.class})
     public EntradaSalidaResponseDto marcarSalidaVisitante(Integer folioTicket) {
         return salidaVisitante(folioTicket, true);
     }
@@ -195,7 +195,7 @@ public class EntradaSalidaServiceImpl implements EntradaSalidaService {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional(rollbackFor = {SQLException.class, ConstraintViolationException.class})
     public EntradaSalidaResponseDto marcarSalidaPensionado(String uuidCodigoQR) {
         return salidaPensionado(uuidCodigoQR, true);
     }

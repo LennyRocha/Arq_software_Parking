@@ -8,6 +8,9 @@ import TableFilters from "../../../components/TableFilters";
 import { useEntradasSalidas } from "../hooks/useEntradasSalidas";
 import { entradasSalidasColumns, orderOptions } from "../config/tableColumns";
 import AgregarEntradaModal from "../components/AgregarEntradaModal";
+import EditarEntradaSalidaModal from "../components/EditarEntradaSalidaModal";
+import ConfirmarSalidaModal from "../components/ConfirmarSalidaModal";
+import sweetAlert from "../../../utils/sweetAlert";
 
 const links = [
   { nombre: "Inicio", ruta: "/admin", disabled: false },
@@ -16,6 +19,10 @@ const links = [
 
 export default function AdminGestionarEntradasSalidas() {
   const [showModalAgregarEntrada, setShowModalAgregarEntrada] = useState(false);
+  const [showModalEditarEntrada, setShowModalEditarEntrada] = useState(false);
+  const [showModalConfirmarSalida, setShowModalConfirmarSalida] = useState(false);
+  const [entradaSeleccionada, setEntradaSeleccionada] = useState(null);
+  const [datosSalida, setDatosSalida] = useState(null);
 
   const {
     entradasSalidas,
@@ -35,7 +42,10 @@ export default function AdminGestionarEntradasSalidas() {
     setBuscarTexto,
     cargarEntradasSalidasPaginado,
     cargarTiposVehiculos,
-    agregarNuevaEntrada
+    agregarNuevaEntrada,
+    actualizarEntradaSalida,
+    consultarDatosSalida,
+    marcarSalida
   } = useEntradasSalidas();
 
   // Cargar datos al montar el componente o cambiar parámetros
@@ -75,8 +85,76 @@ export default function AdminGestionarEntradasSalidas() {
   };
 
   const handleEditar = (entradaSalida) => {
-    console.log("Editar:", entradaSalida);
-    // TODO: Implementar edición
+    setEntradaSeleccionada(entradaSalida);
+    setShowModalEditarEntrada(true);
+  };
+
+  const handleActualizarEntrada = async (id, datosActualizados) => {
+    const resultado = await actualizarEntradaSalida(id, datosActualizados);
+    
+    if (resultado.success) {
+      await sweetAlert({
+        title: "Actualización exitosa",
+        text: "La entrada/salida ha sido actualizada correctamente",
+        icon: "success",
+      });
+      setShowModalEditarEntrada(false);
+      setEntradaSeleccionada(null);
+    } else {
+      await sweetAlert({
+        title: "Error",
+        text: resultado.error || "No se pudo actualizar la entrada",
+        icon: "error",
+      });
+    }
+  };
+
+  const handleMarcarSalida = async (entrada) => {
+    // Consultar datos de salida
+    const resultado = await consultarDatosSalida(entrada.folioTicket);
+    
+    if (resultado.success) {
+      setDatosSalida(resultado.datos);
+      setShowModalConfirmarSalida(true);
+    } else {
+      await sweetAlert({
+        title: "Error",
+        text: resultado.error || "No se pudieron consultar los datos de salida",
+        icon: "error",
+        zIndex: 1400,
+      });
+    }
+  };
+
+  const handleConfirmarSalida = async (folioTicket) => {
+    const resultado = await marcarSalida(folioTicket);
+    
+    if (resultado.success) {
+      await sweetAlert({
+        title: "Salida registrada",
+        text: "La salida ha sido marcada exitosamente",
+        icon: "success",
+      });
+      setShowModalConfirmarSalida(false);
+      setDatosSalida(null);
+      setEntradaSeleccionada(null);
+    } else {
+      await sweetAlert({
+        title: "Error",
+        text: resultado.error || "No se pudo marcar la salida",
+        icon: "error",
+      });
+    }
+  };
+
+  const handleCloseModalEditarEntrada = () => {
+    setShowModalEditarEntrada(false);
+    setEntradaSeleccionada(null);
+  };
+
+  const handleCloseModalConfirmarSalida = () => {
+    setShowModalConfirmarSalida(false);
+    setDatosSalida(null);
   };
 
   const handleShowModalAgregarEntrada = () => {
@@ -164,6 +242,27 @@ export default function AdminGestionarEntradasSalidas() {
           tiposVehiculos={tiposVehiculos}
           onClose={handleCloseModalAgregarEntrada}
           onAgregar={agregarNuevaEntrada}
+        />
+      )}
+
+      {/* Modal de editar entrada */}
+      {showModalEditarEntrada && (
+        <EditarEntradaSalidaModal
+          open={showModalEditarEntrada}
+          onClose={handleCloseModalEditarEntrada}
+          entrada={entradaSeleccionada}
+          onActualizar={handleActualizarEntrada}
+          onMarcarSalida={handleMarcarSalida}
+        />
+      )}
+
+      {/* Modal de confirmar salida */}
+      {showModalConfirmarSalida && (
+        <ConfirmarSalidaModal
+          open={showModalConfirmarSalida}
+          onClose={handleCloseModalConfirmarSalida}
+          datosSalida={datosSalida}
+          onConfirmar={handleConfirmarSalida}
         />
       )}
     </>
