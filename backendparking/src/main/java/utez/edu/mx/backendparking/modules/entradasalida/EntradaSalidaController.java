@@ -12,6 +12,7 @@ import utez.edu.mx.backendparking.modules.entradasalida.dto.EntradaSalidaCreateP
 import utez.edu.mx.backendparking.modules.entradasalida.dto.EntradaSalidaCreateVisitanteRequestDto;
 import utez.edu.mx.backendparking.modules.entradasalida.dto.EntradaSalidaResponseDto;
 import utez.edu.mx.backendparking.modules.entradasalida.dto.ReporteGananciasResponseDto;
+import utez.edu.mx.backendparking.modules.entradasalida.dto.ReporteGananciasTotalesResponseDto;
 import utez.edu.mx.backendparking.shared.api.ApiResponse;
 
 import java.time.LocalDate;
@@ -136,6 +137,23 @@ public class EntradaSalidaController {
         Page<ReporteGananciasResponseDto> reporte = entradaSalidaService.generarReporteGananciasPorHora(fechaInicial, fechaFinal, sortOrder, page, size);
         return ResponseEntity.ok()
                 .body(ApiResponse.success(HttpStatus.OK, EntradaSalidaMessages.ENDPOINT_REPORTE_GANANCIAS_POR_HORA, reporte));
+    }
+
+    @GetMapping("/reportes/ganancias-totales")
+    @Operation(summary = "Generar reporte de ganancias totales",
+            description = "Genera un reporte con las ganancias totales del sistema en un rango de fechas especificado. " +
+                    "Si no se especifican fechas, genera el reporte para TODAS las fechas con registros en la base de datos. " +
+                    "Si se especifica solo fechaInicial, genera el reporte solo para esa fecha. " +
+                    "Si se especifican ambas fechas, genera el reporte para el rango de fechas. " +
+                    "Calcula las ganancias de visitantes (basado en cantidadPago de EntradaSalida) y " +
+                    "pensionados (basado en HistorialPagos). Retorna un objeto único con el resumen total de ganancias.")
+    public ResponseEntity<ApiResponse<ReporteGananciasTotalesResponseDto>> generarReporteGananciasTotales(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicial,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFinal) {
+
+        ReporteGananciasTotalesResponseDto reporte = entradaSalidaService.generarReporteGananciasTotales(fechaInicial, fechaFinal);
+        return ResponseEntity.ok()
+                .body(ApiResponse.success(HttpStatus.OK, EntradaSalidaMessages.ENDPOINT_REPORTE_GANANCIAS_TOTALES, reporte));
     }
 
     @PutMapping("/actualizar-datos/{id}")

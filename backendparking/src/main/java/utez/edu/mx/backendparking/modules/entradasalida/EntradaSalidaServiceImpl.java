@@ -12,6 +12,8 @@ import utez.edu.mx.backendparking.modules.entradasalida.dto.EntradaSalidaCreateP
 import utez.edu.mx.backendparking.modules.entradasalida.dto.EntradaSalidaCreateVisitanteRequestDto;
 import utez.edu.mx.backendparking.modules.entradasalida.dto.EntradaSalidaResponseDto;
 import utez.edu.mx.backendparking.modules.entradasalida.dto.ReporteGananciasResponseDto;
+import utez.edu.mx.backendparking.modules.entradasalida.dto.ReporteGananciasTotalesResponseDto;
+import utez.edu.mx.backendparking.modules.historialpagos.PagoRepository;
 import utez.edu.mx.backendparking.modules.tarifa.Tarifa;
 import utez.edu.mx.backendparking.modules.tarifa.TarifaMessages;
 import utez.edu.mx.backendparking.modules.tarifa.TarifaRepository;
@@ -43,13 +45,15 @@ public class EntradaSalidaServiceImpl implements EntradaSalidaService {
     private final UsuarioPensionRepository usuarioPensionRepository;
     private final VehiculoRepository vehiculoRepository;
     private final TipoVehiculoRepository tipoVehiculoRepository;
+    private final PagoRepository pagoRepository;
 
-    public EntradaSalidaServiceImpl(EntradaSalidaRepository entradaSalidaRepository, TarifaRepository tarifaRepository, UsuarioPensionRepository usuarioPensionRepository, VehiculoRepository vehiculoRepository, TipoVehiculoRepository tipoVehiculoRepository) {
+    public EntradaSalidaServiceImpl(EntradaSalidaRepository entradaSalidaRepository, TarifaRepository tarifaRepository, UsuarioPensionRepository usuarioPensionRepository, VehiculoRepository vehiculoRepository, TipoVehiculoRepository tipoVehiculoRepository, PagoRepository pagoRepository) {
         this.entradaSalidaRepository = entradaSalidaRepository;
         this.tarifaRepository = tarifaRepository;
         this.usuarioPensionRepository = usuarioPensionRepository;
         this.vehiculoRepository = vehiculoRepository;
         this.tipoVehiculoRepository = tipoVehiculoRepository;
+        this.pagoRepository = pagoRepository;
     }
 
 
@@ -459,14 +463,22 @@ public class EntradaSalidaServiceImpl implements EntradaSalidaService {
         // 2. Crear el objeto Pageable para la paginación en BD
         Pageable pageable = PageRequest.of(page, size);
 
-        // 3. Obtener resultados paginados directamente de la base de datos según el orden
-        Page<Object[]> resultados;
+        // 3. Obtener resultados paginados de visitantes y pensionados según el orden
+        Page<Object[]> resultadosVisitantes;
+        Page<Object[]> resultadosPensionados;
+
         if ("asc".equalsIgnoreCase(sortOrder)) {
-            resultados = entradaSalidaRepository.findReporteGananciasPorHoraAsc(
+            resultadosVisitantes = entradaSalidaRepository.findReporteGananciasPorHoraAsc(
+                fechaInicialFinal, fechaFinalFinal, pageable
+            );
+            resultadosPensionados = pagoRepository.findGananciasPensionadosPorHoraAsc(
                 fechaInicialFinal, fechaFinalFinal, pageable
             );
         } else {
-            resultados = entradaSalidaRepository.findReporteGananciasPorHoraDesc(
+            resultadosVisitantes = entradaSalidaRepository.findReporteGananciasPorHoraDesc(
+                fechaInicialFinal, fechaFinalFinal, pageable
+            );
+            resultadosPensionados = pagoRepository.findGananciasPensionadosPorHoraDesc(
                 fechaInicialFinal, fechaFinalFinal, pageable
             );
         }
@@ -475,31 +487,38 @@ public class EntradaSalidaServiceImpl implements EntradaSalidaService {
         final LocalDate rangoInicial = fechaInicialFinal;
         final LocalDate rangoFinal = fechaFinalFinal;
 
-        // 4. Convertir los resultados a DTOs
-        List<ReporteGananciasResponseDto> reporteDtos = resultados.getContent().stream()
-            .map(row -> {
-                // Ahora obtenemos fecha y hora individual de cada registro
-                LocalDate fechaRegistro = ((java.sql.Date) row[0]).toLocalDate();
-                Integer hora = ((Number) row[1]).intValue();
-                Double gananciasVisitantes = ((Number) row[2]).doubleValue();
-                Double gananciasPensionados = ((Number) row[3]).doubleValue();
+        // 4. Combinar los resultados de visitantes y pensionados
+        List<ReporteGananciasResponseDto> reporteDtos = new ArrayList<>();
+        List<Object[]> visitantesContent = resultadosVisitantes.getContent();
+        List<Object[]> pensionadosContent = resultadosPensionados.getContent();
 
-                ReporteGananciasResponseDto dto = new ReporteGananciasResponseDto();
-                // El rango completo solicitado
-                dto.setFechaInicial(rangoInicial);
-                dto.setFechaFinal(rangoFinal);
-                // La hora de esta fecha específica (si hay 3 fechas, habrá 3 registros para cada hora)
-                dto.setHora(LocalTime.of(hora, 0));
-                dto.setGananciasVisitantes(gananciasVisitantes);
-                dto.setGananciasPensionados(gananciasPensionados);
-                dto.setGananciasTotales(gananciasVisitantes + gananciasPensionados);
+        for (int i = 0; i < visitantesContent.size(); i++) {
+            Object[] rowVisitantes = visitantesContent.get(i);
 
-                return dto;
-            })
-            .collect(Collectors.toList());
+            LocalDate fechaRegistro = ((java.sql.Date) rowVisitantes[0]).toLocalDate();
+            int hora = ((Number) rowVisitantes[1]).intValue();
+            Double gananciasVisitantes = ((Number) rowVisitantes[2]).doubleValue();
+
+            // Buscar las ganancias de pensionados para la misma fecha y hora
+            Double gananciasPensionados = 0.0;
+            if (i < pensionadosContent.size()) {
+                Object[] rowPensionados = pensionadosContent.get(i);
+                gananciasPensionados = ((Number) rowPensionados[2]).doubleValue();
+            }
+
+            ReporteGananciasResponseDto dto = new ReporteGananciasResponseDto();
+            dto.setFechaInicial(rangoInicial);
+            dto.setFechaFinal(rangoFinal);
+            dto.setHora(LocalTime.of(hora, 0));
+            dto.setGananciasVisitantes(gananciasVisitantes);
+            dto.setGananciasPensionados(gananciasPensionados);
+            dto.setGananciasTotales(gananciasVisitantes + gananciasPensionados);
+
+            reporteDtos.add(dto);
+        }
 
         // 5. Retornar el Page con los DTOs
-        return new PageImpl<>(reporteDtos, pageable, resultados.getTotalElements());
+        return new PageImpl<>(reporteDtos, pageable, resultadosVisitantes.getTotalElements());
     }
 
 
@@ -531,6 +550,53 @@ public class EntradaSalidaServiceImpl implements EntradaSalidaService {
             uuid = java.util.UUID.randomUUID().toString();
         } while (usuarioPensionRepository.existsByUuidCodigoQR(uuid));
         return uuid;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ReporteGananciasTotalesResponseDto generarReporteGananciasTotales(LocalDate fechaInicial, LocalDate fechaFinal) {
+        // 1. Determinar el rango de fechas
+        LocalDate fechaInicialFinal = fechaInicial;
+        LocalDate fechaFinalFinal = fechaFinal;
+
+        // Si no se especifican fechas, obtener todas las fechas disponibles en la BD
+        if (fechaInicialFinal == null && fechaFinalFinal == null) {
+            fechaInicialFinal = entradaSalidaRepository.findMinFecha();
+            fechaFinalFinal = entradaSalidaRepository.findMaxFecha();
+
+            // Si no hay registros en la BD, retornar objeto con valores en 0
+            if (fechaInicialFinal == null || fechaFinalFinal == null) {
+                ReporteGananciasTotalesResponseDto dto = new ReporteGananciasTotalesResponseDto();
+                dto.setFechaInicial(LocalDate.now());
+                dto.setFechaFinal(LocalDate.now());
+                dto.setGananciasVisitantes(0.0);
+                dto.setGananciasPensionados(0.0);
+                dto.setGananciasTotales(0.0);
+                return dto;
+            }
+        } else if (fechaInicialFinal == null) {
+            fechaInicialFinal = fechaFinalFinal;
+        } else if (fechaFinalFinal == null) {
+            fechaFinalFinal = fechaInicialFinal;
+        }
+
+        // 2. Obtener las ganancias totales de visitantes y pensionados
+        Double gananciasVisitantes = entradaSalidaRepository.findReporteGananciasTotales(fechaInicialFinal, fechaFinalFinal);
+        Double gananciasPensionados = pagoRepository.findGananciasPensionadosTotales(fechaInicialFinal, fechaFinalFinal);
+
+        // 3. Asegurar que no sean null
+        if (gananciasVisitantes == null) gananciasVisitantes = 0.0;
+        if (gananciasPensionados == null) gananciasPensionados = 0.0;
+
+        // 4. Crear y retornar el DTO
+        ReporteGananciasTotalesResponseDto dto = new ReporteGananciasTotalesResponseDto();
+        dto.setFechaInicial(fechaInicialFinal);
+        dto.setFechaFinal(fechaFinalFinal);
+        dto.setGananciasVisitantes(gananciasVisitantes);
+        dto.setGananciasPensionados(gananciasPensionados);
+        dto.setGananciasTotales(gananciasVisitantes + gananciasPensionados);
+
+        return dto;
     }
 
 
