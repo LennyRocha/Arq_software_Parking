@@ -52,4 +52,16 @@ public class EntradaSalidaMapper {
         responseDto.setTipoVehiculo(entity.getTipoVehiculo());
         return responseDto;
     }
+
+    // Actualizar datos de entrada/salida
+    public static EntradaSalida toUpdateEntity(EntradaSalida entradaSalida, EntradaSalidaCreateVisitanteRequestDto dto) {
+        if(dto.getVehiculo() != null) {
+            entradaSalida.setVehiculo(dto.getVehiculo());
+            entradaSalida.setTipoVehiculo(dto.getVehiculo().getTipoVehiculo());
+        } else if(dto.getTipoVehiculo() != null) {
+            entradaSalida.setTipoVehiculo(dto.getTipoVehiculo());
+        }
+
+        return entradaSalida;
+    }
 }

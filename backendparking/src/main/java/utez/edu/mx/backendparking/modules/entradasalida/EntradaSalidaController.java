@@ -137,4 +137,17 @@ public class EntradaSalidaController {
         return ResponseEntity.ok()
                 .body(ApiResponse.success(HttpStatus.OK, EntradaSalidaMessages.ENDPOINT_REPORTE_GANANCIAS_POR_HORA, reporte));
     }
+
+    @PostMapping("/actualizar-datos/{id}")
+    @Operation(summary = "Actualizar datos de entrada/salida de un visitante",
+            description = "Registra la entrada de un vehículo visitante al estacionamiento. " +
+                    "Si se especifica un vehículo, toma su tipo de vehículo; si no, usa el tipo de vehículo especificado directamente. " +
+                    "Solo sirve para modificar los datos de entrada de un visitante ya registrado.")
+    public ResponseEntity<ApiResponse<EntradaSalidaResponseDto>> actualizarDatosEntradaSalida(
+            @PathVariable Long id,
+            @RequestBody @Valid EntradaSalidaCreateVisitanteRequestDto dto) {
+        EntradaSalidaResponseDto entradaSalida = entradaSalidaService.actualizarEntrada(id, dto);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.success(HttpStatus.OK, EntradaSalidaMessages.ENDPOINT_ENTRADA_SALIDA_PUT_UPDATE, entradaSalida));
+    }
 }

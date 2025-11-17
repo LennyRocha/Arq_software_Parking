@@ -15,6 +15,8 @@ import utez.edu.mx.backendparking.modules.entradasalida.dto.ReporteGananciasResp
 import utez.edu.mx.backendparking.modules.tarifa.Tarifa;
 import utez.edu.mx.backendparking.modules.tarifa.TarifaMessages;
 import utez.edu.mx.backendparking.modules.tarifa.TarifaRepository;
+import utez.edu.mx.backendparking.modules.tipovehiculo.model.TipoVehiculo;
+import utez.edu.mx.backendparking.modules.tipovehiculo.repository.TipoVehiculoRepository;
 import utez.edu.mx.backendparking.modules.usuario.model.Usuario;
 import utez.edu.mx.backendparking.modules.usuariopension.UsuarioPension;
 import utez.edu.mx.backendparking.modules.usuariopension.UsuarioPensionMessages;
@@ -40,12 +42,14 @@ public class EntradaSalidaServiceImpl implements EntradaSalidaService {
     private final TarifaRepository tarifaRepository;
     private final UsuarioPensionRepository usuarioPensionRepository;
     private final VehiculoRepository vehiculoRepository;
+    private final TipoVehiculoRepository tipoVehiculoRepository;
 
-    public EntradaSalidaServiceImpl(EntradaSalidaRepository entradaSalidaRepository, TarifaRepository tarifaRepository, UsuarioPensionRepository usuarioPensionRepository, VehiculoRepository vehiculoRepository) {
+    public EntradaSalidaServiceImpl(EntradaSalidaRepository entradaSalidaRepository, TarifaRepository tarifaRepository, UsuarioPensionRepository usuarioPensionRepository, VehiculoRepository vehiculoRepository, TipoVehiculoRepository tipoVehiculoRepository) {
         this.entradaSalidaRepository = entradaSalidaRepository;
         this.tarifaRepository = tarifaRepository;
         this.usuarioPensionRepository = usuarioPensionRepository;
         this.vehiculoRepository = vehiculoRepository;
+        this.tipoVehiculoRepository = tipoVehiculoRepository;
     }
 
 
@@ -115,15 +119,55 @@ public class EntradaSalidaServiceImpl implements EntradaSalidaService {
     @Transactional(rollbackFor = {SQLException.class, ConstraintViolationException.class})
     public EntradaSalidaResponseDto createVisitante(EntradaSalidaCreateVisitanteRequestDto dto) {
 
-        // 1. Convertir DTO a entidad usando el mapper
-        // El mapper ya maneja la lógica: si hay vehículo, toma su tipo; si no, usa el tipo especificado
-        EntradaSalida entradaSalida = EntradaSalidaMapper.toEntityFromVisitante(dto);
+        EntradaSalida entradaSalida = new EntradaSalida();
 
-        // 2. Generar folio automático único
+        // Caso 1: Si viene un vehículo registrado
+        if (dto.getVehiculo() != null) {
+            Vehiculo vehiculo = new Vehiculo();
+            vehiculo.setEstatus(true);
+            vehiculo.setModelo(dto.getVehiculo().getModelo());
+            vehiculo.setPlaca(dto.getVehiculo().getPlaca());
+            vehiculo.setTipoVehiculo(dto.getVehiculo().getTipoVehiculo());
+            vehiculo.setDescripcion(dto.getVehiculo().getDescripcion());
+
+            // Se hace el guardado del nuevo vehiculo y se asigna a la entrada
+            entradaSalida.setVehiculo(vehiculoRepository.save(vehiculo));
+            entradaSalida.setTipoVehiculo(vehiculo.getTipoVehiculo());
+        }
+
+        // Caso 2: Si solo viene el tipo de vehículo (visitante sin vehículo registrado)
+        else if (dto.getTipoVehiculo() != null) {
+            TipoVehiculo tipoVehiculo = tipoVehiculoRepository.findById(dto.getTipoVehiculo().getId())
+                    .orElseThrow(() -> new RuntimeException(EntradaSalidaMessages.ERROR_TIPO_VEHICULO_OBLIGATORIO));
+
+            entradaSalida.setTipoVehiculo(tipoVehiculo);
+            // vehiculo queda null (es un visitante sin vehículo registrado)
+        }
+
+        // Generar folio único
         entradaSalida.setFolioTicket(generarFolioUnico());
 
-        // 3. Los demás atributos quedan nulos o se ponen por defecto automáticamente
-        // (fecha y horaEntrada se ponen automáticamente por @PrePersist en la entidad)
+        // Guardar
+        EntradaSalida savedEntradaSalida = entradaSalidaRepository.save(entradaSalida);
+
+        return EntradaSalidaMapper.toResponseDto(savedEntradaSalida);
+    }
+
+    @Override
+    @Transactional(rollbackFor = {SQLException.class, ConstraintViolationException.class})
+    public EntradaSalidaResponseDto actualizarEntrada(Long idEntradaSalida, EntradaSalidaCreateVisitanteRequestDto dto) {
+
+        EntradaSalida entradaSalidaExistente = entradaSalidaRepository.findById(idEntradaSalida)
+                .orElseThrow(() -> new ResourceNotFoundException(EntradaSalidaMessages.ERROR_ENTRADA_SALIDA_NOT_FOUND));
+
+        // Verificar que el registro solo se puedan modificar entradas y salidas de visitantes
+        if(entradaSalidaExistente.getUsuario() != null) {
+            throw new BadRequestException(EntradaSalidaMessages.ERROR_SOLO_ACTUALIZAR_VISITANTES);
+        }
+
+        // 1. Convertir DTO a entidad usando el mapper
+        // El mapper ya maneja la lógica: si hay vehículo, toma su tipo; si no, usa el tipo especificado
+        EntradaSalida entradaSalida = EntradaSalidaMapper.toUpdateEntity(entradaSalidaExistente, dto);
 
         // Guardar la entidad
         EntradaSalida savedEntradaSalida = entradaSalidaRepository.save(entradaSalida);

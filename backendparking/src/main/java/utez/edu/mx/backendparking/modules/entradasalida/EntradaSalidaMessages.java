@@ -29,6 +29,7 @@ public class EntradaSalidaMessages {
     public static final String ERROR_VEHICULO_NO_PERTENECE_USUARIO = "El vehículo no pertenece al usuario especificado.";
     public static final String ERROR_FOLIO_ES_PENSIONADO = "Este folio corresponde a un pensionado, no a un visitante.";
     public static final String ERROR_SALIDA_YA_REGISTRADA = "Este folio ya tiene una salida registrada.";
+    public static final String ERROR_SOLO_ACTUALIZAR_VISITANTES = "Solo se pueden actualizar registros de visitantes.";
     public static final String ERROR_TARIFA_NO_ENCONTRADA = "No se encontraron tarifas activas para el tipo de vehículo.";
     public static final String ERROR_USUARIO_SIN_PENSION_ACTIVA = "El usuario no tiene una pensión activa.";
 

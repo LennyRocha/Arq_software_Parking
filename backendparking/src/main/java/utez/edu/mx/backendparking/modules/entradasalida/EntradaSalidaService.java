@@ -12,6 +12,7 @@ import java.util.List;
 public interface EntradaSalidaService {
     EntradaSalidaResponseDto createPensionado(EntradaSalidaCreatePensionadoRequestDto dto);
     EntradaSalidaResponseDto createVisitante(EntradaSalidaCreateVisitanteRequestDto dto);
+    EntradaSalidaResponseDto actualizarEntrada(Long idEntradaSalida, EntradaSalidaCreateVisitanteRequestDto dto);
     List<EntradaSalidaResponseDto> findAll();
     EntradaSalidaResponseDto findById(Long id);
     EntradaSalidaResponseDto solicitarDatosSalidaVisitante(Integer folioTicket);
