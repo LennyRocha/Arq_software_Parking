@@ -22,6 +22,14 @@ public interface CajonRepository extends JpaRepository<Cajon, Long> {
     List<Cajon> findRandomCajones(@Param("limit") int limit);
     @Query(value = "SELECT * FROM Cajon ORDER BY RAND() LIMIT 1", nativeQuery = true)
     Cajon findRandomCajon();
+    @Query(value = "SELECT * FROM Cajon WHERE disponible = true AND para_pensionados = false ORDER BY RAND() LIMIT 1", nativeQuery = true)
+    Optional<Cajon> findRandomCajonToUse();
+    @Query(value = "SELECT * FROM Cajon WHERE disponible = true AND para_pensionados = true ORDER BY RAND() LIMIT 1", nativeQuery = true)
+    Optional<Cajon> findRandomCajonExclusivoToUse();
+    @Query(value = "SELECT * FROM Cajon WHERE disponible = false AND para_pensionados = false ORDER BY RAND() LIMIT 1", nativeQuery = true)
+    Optional<Cajon> findRandomCajonToUnuse();
+    @Query(value = "SELECT * FROM Cajon WHERE disponible = false AND para_pensionados = true ORDER BY RAND() LIMIT 1", nativeQuery = true)
+    Optional<Cajon> findRandomCajonExclusivoToUnuse();
     Page<Cajon> findAllByNameContainingIgnoreCaseOrUbicacionContainingIgnoreCase(String name, String ubicacion, Pageable pageable);
 
 }

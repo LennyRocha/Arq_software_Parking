@@ -46,3 +46,6 @@ npm install socket.io-client (Por instalar)
 #linear gradient
 npm install react-native-linear-gradient
 npx expo install expo-linear-gradient
+
+#Async storage
+npm install @react-native-async-storage/async-storage

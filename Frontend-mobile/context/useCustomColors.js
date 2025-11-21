@@ -1,9 +1,4 @@
-import React, {
-  createContext,
-  useState,
-  useEffect,
-  useContext,
-} from "react";
+import React, { createContext, useState, useEffect, useContext } from "react";
 import { Appearance } from "react-native";
 
 // Definimos nuestros posibles temas
@@ -20,6 +15,10 @@ const lightTheme = {
   success: "#4CAF50",
   info: "#2196F3",
   dark: "#1E1E1E",
+  //Text
+  txtPrimary: "#5E9C9A",
+  txtSecondary: "#A0CFCF",
+  txtTertiary: "#2F5A60",
 };
 
 const darkTheme = {
@@ -35,6 +34,10 @@ const darkTheme = {
   success: "#0B6E00",
   info: "#1976D2",
   dark: "#424242",
+  //Text
+  txtPrimary: "#499C96",
+  txtSecondary: "#80C1BB",
+  txtTertiary: "#2D716F",
 };
 
 // Creamos un contexto
