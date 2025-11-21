@@ -55,7 +55,7 @@ export const showConfirmDialog = ({
     icon: "warning",
     showDenyButton: true,
     confirmButtonText,
-    denyButtonText
+    denyButtonText,
   });
 };
 
@@ -95,7 +95,7 @@ const CustomSweetAlert = {
   show: showAlert,
   confirm: showConfirmDialog,
   success: showSuccessAlert,
-  error: showErrorAlert
+  error: showErrorAlert,
 };
 
 export default CustomSweetAlert;

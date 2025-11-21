@@ -10,8 +10,8 @@ export default function TipoPensionStatusSwitch({
 }) {
   const handleChangeEstatus = async () => {
     const confirmResult = await CustomSweetAlert.confirm({
-      title: `${status ? "Desactivar" : "Activar"} tipo de pensión`,
-      text: `¿Está seguro que desea ${status ? "desactivar" : "activar"} este tipo de pensión?`,
+      title: `¿Confirmar cambio de estatus?`,
+      text: `La pensión será marcada como ${status ? "desactivada" : "activa"}`,
     });
 
     if (confirmResult.isConfirmed) {
@@ -21,8 +21,8 @@ export default function TipoPensionStatusSwitch({
       
       if (resultado.success) {
         await CustomSweetAlert.success({
-          title: "¡Éxito!",
-          text: `El tipo de pensión se ha ${status ? "desactivado" : "activado"} correctamente`
+          title: "¡Operación exitosa!",
+          text: `Ha cambiado el estatus de la pensión de ${status ? "activa" : "desactivada"} a ${status ? "desactivada" : "activa"}.`
         });
       } else {
         await CustomSweetAlert.error({
