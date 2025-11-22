@@ -45,6 +45,7 @@ const CustomInputSelect = ({
   options = [],
   isObligatory = false,
   isDisabled = false,
+  setPlaceholder = true,
   placeholder = "Seleccione una opción",
   isWrong = false,
   errorMessage = "",
@@ -67,9 +68,9 @@ const CustomInputSelect = ({
       >
         {labelText} {isObligatory && <span style={{ color: "red" }}>*</span>}
       </Typography>
-      <FormControl 
-        fullWidth 
-        size="small" 
+      <FormControl
+        fullWidth
+        size="small"
         error={isWrong}
         disabled={isDisabled}
       >
@@ -91,9 +92,12 @@ const CustomInputSelect = ({
           }}
           {...selectProps}
         >
-          <MenuItem value="" disabled>
-            <em>{placeholder}</em>
-          </MenuItem>
+          {setPlaceholder && (
+            <MenuItem value="" disabled>
+              <em>{placeholder}</em>
+            </MenuItem>)
+          }
+
           {options?.map((option) => (
             <MenuItem key={option[optionValue]} value={option[optionValue]}>
               {option[optionLabel]}

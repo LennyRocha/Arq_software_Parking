@@ -22,7 +22,7 @@ public class Vehiculo {
     private String placa;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "id_usuario", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "id_usuario", referencedColumnName = "id")
     private Usuario usuario;
 
     @Column(nullable = false)

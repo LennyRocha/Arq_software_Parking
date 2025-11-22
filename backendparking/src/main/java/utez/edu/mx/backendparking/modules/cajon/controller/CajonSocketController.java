@@ -1,4 +1,4 @@
-package utez.edu.mx.backendparking.modules.cajon.ws;
+package utez.edu.mx.backendparking.modules.cajon.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -22,10 +22,4 @@ public class CajonSocketController {
     public ApiResponse<List<Cajon>> getCajones(CajonRequest req) {
         return cajonService.getCajones(req.getPiso(), req.getIdCar());
     }
-
-    @MessageMapping("/cajones/use")
-    public ApiResponse<Cajon> useCajon(CajonRequest req) {
-        return cajonService.cambiarDisponibilidad(req.getIdCajon());
-    }
-
 }

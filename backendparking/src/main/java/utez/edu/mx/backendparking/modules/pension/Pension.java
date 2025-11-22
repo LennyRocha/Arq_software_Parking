@@ -23,7 +23,6 @@ public class Pension {
     private boolean status = true;
 
     //Constructores
-
     public Pension() {}
 
     public Pension(Long id, String nombre, int duracionDias, Double costo, boolean status) {

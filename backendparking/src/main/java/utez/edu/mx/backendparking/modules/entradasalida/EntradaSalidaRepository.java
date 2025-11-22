@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -17,16 +16,13 @@ public interface EntradaSalidaRepository extends JpaRepository<EntradaSalida, Lo
     boolean existsByFolioTicket(Integer folioTicket);
     Optional<EntradaSalida> findByFolioTicket(Integer folioTicket);
 
-    /*
     @Query("""
            SELECT DISTINCT e FROM EntradaSalida e LEFT JOIN e.usuario u 
            WHERE :search IS NULL OR :search = '' OR 
-           CAST(e.folioTicket AS string) LIKE CONCAT('%', :search, '%') OR 
-           LOWER(CONCAT(COALESCE(u.nombre, ''), ' ', COALESCE(u.apellidoPaterno, ''), ' ', COALESCE(u.apellidoMaterno, ''))) LIKE LOWER(CONCAT('%', :search, '%'))
+           CAST(e.folioTicket AS string) LIKE CONCAT('%', :search, '%')
            """)
     Page<EntradaSalida> findByFolioOrUsuarioNombre(@Param("search") String search, Pageable pageable);
 
-     */
     @Query("SELECT COALESCE(SUM(e.cantidadPago), 0.0) FROM EntradaSalida e " +
            "WHERE e.usuario IS NULL " +
            "AND e.fecha = :fecha " +
@@ -43,8 +39,7 @@ public interface EntradaSalidaRepository extends JpaRepository<EntradaSalida, Lo
         SELECT 
             fecha_hora.fecha as fecha,
             fecha_hora.hora as hora,
-            COALESCE(SUM(CASE WHEN es.id_usuario IS NULL THEN es.cantidad_pago ELSE 0 END), 0) as gananciasVisitantes,
-            0.0 as gananciasPensionados
+            COALESCE(SUM(CASE WHEN es.id_usuario IS NULL THEN es.cantidad_pago ELSE 0 END), 0) as gananciasVisitantes
         FROM (
             SELECT DISTINCT 
                 es.fecha as fecha,
@@ -71,8 +66,7 @@ public interface EntradaSalidaRepository extends JpaRepository<EntradaSalida, Lo
         SELECT 
             fecha_hora.fecha as fecha,
             fecha_hora.hora as hora,
-            COALESCE(SUM(CASE WHEN es.id_usuario IS NULL THEN es.cantidad_pago ELSE 0 END), 0) as gananciasVisitantes,
-            0.0 as gananciasPensionados
+            COALESCE(SUM(CASE WHEN es.id_usuario IS NULL THEN es.cantidad_pago ELSE 0 END), 0) as gananciasVisitantes
         FROM (
             SELECT DISTINCT 
                 es.fecha as fecha,
@@ -100,4 +94,19 @@ public interface EntradaSalidaRepository extends JpaRepository<EntradaSalida, Lo
 
     @Query("SELECT MAX(e.fecha) FROM EntradaSalida e")
     LocalDate findMaxFecha();
+
+    @Query(value = """
+        SELECT 
+            COALESCE(SUM(CASE WHEN es.id_usuario IS NULL THEN es.cantidad_pago ELSE 0 END), 0) as gananciasVisitantes
+        FROM entrada_salida es
+        WHERE es.fecha BETWEEN :fechaInicial AND :fechaFinal
+            AND es.hora_salida IS NOT NULL
+            AND es.cantidad_pago IS NOT NULL
+        """,
+        nativeQuery = true)
+    Double findReporteGananciasTotales(
+        @Param("fechaInicial") LocalDate fechaInicial,
+        @Param("fechaFinal") LocalDate fechaFinal
+    );
+
 }

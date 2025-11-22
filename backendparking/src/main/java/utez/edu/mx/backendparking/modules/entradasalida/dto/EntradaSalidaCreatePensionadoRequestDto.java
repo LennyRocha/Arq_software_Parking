@@ -1,5 +1,6 @@
 package utez.edu.mx.backendparking.modules.entradasalida.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import utez.edu.mx.backendparking.modules.entradasalida.EntradaSalidaMessages;
 import utez.edu.mx.backendparking.modules.usuario.model.Usuario;
@@ -8,8 +9,8 @@ import utez.edu.mx.backendparking.modules.vehiculo.model.Vehiculo;
 public class EntradaSalidaCreatePensionadoRequestDto {
 
     // ATRIBUTOS DE RELACION
-    @NotNull(message = EntradaSalidaMessages.ERROR_USUARIO_OBLIGATORIO)
-    private Usuario usuario;
+    @NotBlank(message = EntradaSalidaMessages.ERROR_QR_OBLIGATORIO)
+    private String uuidCodigoQR;
 
     @NotNull(message = EntradaSalidaMessages.ERROR_VEHICULO_OBLIGATORIO)
     private Vehiculo vehiculo;
@@ -19,19 +20,20 @@ public class EntradaSalidaCreatePensionadoRequestDto {
     public EntradaSalidaCreatePensionadoRequestDto() {
     }
 
-    public EntradaSalidaCreatePensionadoRequestDto(Usuario usuario, Vehiculo vehiculo) {
-        this.usuario = usuario;
+    public EntradaSalidaCreatePensionadoRequestDto(String uuidCodigoQR, Vehiculo vehiculo) {
+        this.uuidCodigoQR = uuidCodigoQR;
         this.vehiculo = vehiculo;
     }
 
 
     // GETTERS Y SETTERS
-    public Usuario getUsuario() {
-        return usuario;
+
+    public String getUuidCodigoQR() {
+        return uuidCodigoQR;
     }
 
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
+    public void setUuidCodigoQR(String uuidCodigoQR) {
+        this.uuidCodigoQR = uuidCodigoQR;
     }
 
     public Vehiculo getVehiculo() {

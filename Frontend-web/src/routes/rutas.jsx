@@ -2,10 +2,13 @@ import React from "react";
 import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
 import AdminRouter from "./AdminRouter";
 import LandingPage from "../modules/LandingPage";
+import Login from "../modules/Login";
+import RegistroPension from "../modules/RegistroPension";
 import EmpleadoRouter from "./EmpleadoRouter";
 import PensionadoRouter from "./PensionadoRouter";
 import Pages from "../modules/cajon/pages/Pages";
 import AdminGestionarEntradasSalidas from "../modules/entradas_salidas/pages/AdminGestionarEntradasSalidas";
+import AdminGestionarReportesGanancias from "../modules/entradas_salidas/pages/AdminGestionarReportesGanancias";
 import AdminGestionTarifas from "../modules/tarifas/pages/AdminGestionTarifas";
 import GestionTiposPension from "../modules/tipo_pension/pages/GestionTiposPension";
 import PensionesUsuario from "../modules/tipo_pension/pages/PensionesUsuarios";
@@ -17,10 +20,16 @@ export default function Rutas() {
     <Router>
       <Routes>
         <Route index element={<LandingPage />} />
-        {/* Autenticación */}
+        
+        {/* Autenticación y registro */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/registro-pension" element={<RegistroPension />} />
+        <Route path="/registro-pension/:id" element={<RegistroPension />} />
+        
+        {/* Autenticación legacy */}
         <Route path="/auth">
-          <Route index element={<Navigate to="login" replace />} />
-          <Route path="login" element={<Pages />} />
+          <Route index element={<Navigate to="/login" replace />} />
+          <Route path="login" element={<Login />} />
           <Route path="signup" element={<Pages />} />
           <Route path="forgot_password" element={<Pages />} />
         </Route>
@@ -28,7 +37,7 @@ export default function Rutas() {
         {/* Rutas del admin */}
         <Route path="/admin" element={<AdminRouter />}>
           <Route index element={<AdminGestionarEntradasSalidas />} />
-          <Route path="reportes" element={<Pages />} />
+          <Route path="reportes" element={<AdminGestionarReportesGanancias />} />
           <Route path="tipos_de_pension" element={<GestionTiposPension/>} />
           <Route path="pensiones_de_usuarios" element={<PensionesUsuario />} />
           <Route path="tarifas" element={<AdminGestionTarifas />} />
@@ -39,7 +48,7 @@ export default function Rutas() {
         </Route>
         {/* Rutas del empleado */}
         <Route path="/empleado" element={<EmpleadoRouter />}>
-          <Route index element={<Pages />} />
+          <Route index element={<AdminGestionarEntradasSalidas />} />
           <Route path="pensiones" element={<Pages />} />
           <Route path="cajones" element={<Pages />} />
           <Route path="nuevo_pensionado" element={<Pages />} />

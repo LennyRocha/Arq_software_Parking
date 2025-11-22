@@ -1,0 +1,4 @@
+#Aqui crean componenetes que pueden reutilizar, utilicen los colores de los contextos
+para que cambien de color dinamicamente, 
+
+#Los componenetes globales estan en la carpeta Components

@@ -1,7 +1,8 @@
 import React from 'react';
-import { Box, TextField } from "@mui/material";
+import { Box } from "@mui/material";
 import CustomDialog from '../../../components/CustomDialog';
 import CustomSweetAlert from '../../../components/CustomSweetAlert';
+import CustomInputLabel from '../../../components/inputs/CustomInputLabel';
 import { useFormik } from "formik";
 import pensionYup from '../config/pensionYup';
 
@@ -20,8 +21,8 @@ export default function TipoPensionFormModal({
     
     // Mostrar diálogo de confirmación
     const confirmResult = await CustomSweetAlert.confirm({
-      title: `¿Desea ${esEdicion ? "modificar" : "registrar"} el tipo de pensión?`,
-      text: `Se ${esEdicion ? "modificará" : "agregará"} el tipo de pensión con los datos proporcionados`,
+      title: ` ${esEdicion ? "Modificar" : "Registrar"} tipo de pensión`,
+      text: `¿Está seguro que desea ${esEdicion ? "modificar" : "registrar"} el tipo de pensión?`,
       confirmButtonText: esEdicion ? "Modificar" : "Agregar",
     });
 
@@ -34,7 +35,7 @@ export default function TipoPensionFormModal({
         formik.resetForm(); // Limpiamos el formulario después de un registro exitoso
         await CustomSweetAlert.success({
           title: "¡Éxito!",
-          text: `El tipo de pensión se ha ${esEdicion ? "modificado" : "registrado"} correctamente`
+          text: `Tipo de pensión ${esEdicion ? "modificado" : "agregado"} correctamente`
         });
       } else {
         await CustomSweetAlert.error({
@@ -76,36 +77,40 @@ export default function TipoPensionFormModal({
       fullWidth
     >
       <Box sx={{ display: "flex", flexDirection: "column", gap: 2, p: 2 }}>
-        <TextField
-          fullWidth
-          label="Nombre"
-          name="nombre"
+        <CustomInputLabel
+          labelText="Nombre"
           value={formik.values.nombre}
           onChange={formik.handleChange}
-          error={formik.touched.nombre && Boolean(formik.errors.nombre)}
-          helperText={formik.touched.nombre && formik.errors.nombre}
+          name="nombre"
+          isObligatory={true}
+          type="text"
+          placeholder="Ejemplo: Coche-Basic"
+          isWrong={formik.touched.nombre && Boolean(formik.errors.nombre)}
+          errorMessage={formik.touched.nombre && formik.errors.nombre}
         />
 
-        <TextField
-          fullWidth
-          label="Duración (días)"
-          name="duracionDias"
-          type="number"
+        <CustomInputLabel
+          labelText="Duración (días)"
           value={formik.values.duracionDias}
           onChange={formik.handleChange}
-          error={formik.touched.duracionDias && Boolean(formik.errors.duracionDias)}
-          helperText={formik.touched.duracionDias && formik.errors.duracionDias}
+          name="duracionDias"
+          isObligatory={true}
+          type="number"
+          placeholder="30"
+          isWrong={formik.touched.duracionDias && Boolean(formik.errors.duracionDias)}
+          errorMessage={formik.touched.duracionDias && formik.errors.duracionDias}
         />
 
-        <TextField
-          fullWidth
-          label="Costo"
-          name="costo"
-          type="number"
+        <CustomInputLabel
+          labelText="Costo"
           value={formik.values.costo}
           onChange={formik.handleChange}
-          error={formik.touched.costo && Boolean(formik.errors.costo)}
-          helperText={formik.touched.costo && formik.errors.costo}
+          name="costo"
+          isObligatory={true}
+          type="number"
+          placeholder="150"
+          isWrong={formik.touched.costo && Boolean(formik.errors.costo)}
+          errorMessage={formik.touched.costo && formik.errors.costo}
         />
       </Box>
     </CustomDialog>

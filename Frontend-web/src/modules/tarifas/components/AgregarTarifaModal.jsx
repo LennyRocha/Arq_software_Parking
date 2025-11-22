@@ -6,14 +6,17 @@ import tarifaYup from "../../../models/yup/tarifaYup";
 import sweetAlert from "../../../utils/sweetAlert";
 
 export default function AgregarTarifaModal({
+    data,
     showModal,
     tiposVehiculos,
     onClose,
-    onAgregar
+    onAgregar,
+    onActualizar
 }) {
-    const [tipoVehiculo, setTipoVehiculo] = useState("");
-    const [tiempo, setTiempo] = useState("");
-    const [costo, setCosto] = useState("");
+    const esEdicion = data && data.id; // Detectar si es modo edición
+    const [tipoVehiculo, setTipoVehiculo] = useState(data?.tipoVehiculo?.id || data?.tipoVehiculo || "");
+    const [tiempo, setTiempo] = useState(data?.tiempo || "");
+    const [costo, setCosto] = useState(data?.costo || "");
     
     // Estados para errores de validación
     const [errors, setErrors] = useState({
@@ -47,22 +50,29 @@ export default function AgregarTarifaModal({
         });
 
         // Crear objeto tarifa
-        const nuevaTarifa = {
+        const tarifaData = {
             tipoVehiculo: { id: tipoVehiculo ? parseInt(tipoVehiculo) : undefined },
             tiempo: tiempo ? parseInt(tiempo) : undefined,
             costo: costo ? parseFloat(costo) : undefined
         };
 
-        console.log("Datos de tarifa:", nuevaTarifa);
+        // Si es edición, agregar el id
+        if (esEdicion) {
+            tarifaData.id = data.id;
+        }
+
+        console.log("Datos de tarifa:", tarifaData);
 
         try {
             // Validar con Yup
-            await tarifaYup.validate(nuevaTarifa, { abortEarly: false });
+            await tarifaYup.validate(tarifaData, { abortEarly: false });
             
             console.log("Validación exitosa");
             
-            // Si la validación pasa, llamar a la función de agregar
-            const resultado = await onAgregar(nuevaTarifa);
+            // Llamar a la función correspondiente según el modo
+            const resultado = esEdicion 
+                ? await onActualizar(tarifaData)
+                : await onAgregar(tarifaData);
             
             console.log("Resultado:", resultado);
             
@@ -73,7 +83,9 @@ export default function AgregarTarifaModal({
                 setTimeout(() => {
                     sweetAlert({
                         title: "¡Éxito!",
-                        text: "La tarifa se ha agregado correctamente",
+                        text: esEdicion 
+                            ? "La tarifa se ha actualizado correctamente"
+                            : "La tarifa se ha agregado correctamente",
                         icon: "success",
                         confirmText: "Aceptar",
                     });
@@ -84,7 +96,9 @@ export default function AgregarTarifaModal({
                 setTimeout(() => {
                     sweetAlert({
                         title: "Error",
-                        text: resultado.error || "No se pudo agregar la tarifa",
+                        text: resultado.error || (esEdicion 
+                            ? "No se pudo actualizar la tarifa"
+                            : "No se pudo agregar la tarifa"),
                         icon: "error"
                     });
                 }, 300);
@@ -119,12 +133,12 @@ export default function AgregarTarifaModal({
 
     return (
         <CustomDialog
-            titulo="Registrar tarifa"
+            titulo={esEdicion ? "Editar tarifa" : "Registrar tarifa"}
             isOpen={showModal}
             handleClose={handleCancelar}
             isForm={true}
             onSubmit={handleAgregar}
-            textSubmit="Agregar"
+            textSubmit={esEdicion ? "Actualizar" : "Agregar"}
             textCancel="Cancelar"
             maxWidth="xs"
             size="medium"

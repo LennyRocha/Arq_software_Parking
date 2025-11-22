@@ -16,6 +16,7 @@ import {
  * @param {string} props.orderBy - Campo por el que se ordena
  * @param {string} props.orderDirection - Dirección del ordenamiento (asc/desc)
  * @param {string} props.searchText - Texto de búsqueda
+ * @param {string} props.searchPlaceholder - Placeholder para el campo de búsqueda
  * @param {function} props.onOrderByChange - Manejador de cambio de campo de ordenamiento
  * @param {function} props.onOrderDirectionChange - Manejador de cambio de dirección
  * @param {function} props.onSearchChange - Manejador de cambio de texto de búsqueda
@@ -27,6 +28,7 @@ export default function TableFilters({
   orderBy,
   orderDirection,
   searchText,
+  searchPlaceholder = "Buscar",
   onOrderByChange,
   onOrderDirectionChange,
   onSearchChange,
@@ -65,7 +67,8 @@ export default function TableFilters({
       <FormControl size="small" sx={{ minWidth: 150 }}>
         <InputLabel>Buscar</InputLabel>
         <OutlinedInput
-          label="Buscar"
+          label={searchPlaceholder}
+          placeholder={searchPlaceholder}
           value={searchText}
           onChange={(e) => onSearchChange(e.target.value)}
         />
