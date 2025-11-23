@@ -1,20 +1,24 @@
 package utez.edu.mx.backendparking.modules.usuario.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import utez.edu.mx.backendparking.modules.usuario.model.Usuario;
-import utez.edu.mx.backendparking.modules.usuario.service.UsuarioService;
+import utez.edu.mx.backendparking.modules.usuario.Usuario;
+import utez.edu.mx.backendparking.modules.usuario.service.UserService;
 
 @RestController
-@RequestMapping("/usuarios")
+@RequestMapping("/api/users")
 public class UsuarioController {
-    @Autowired
-    private UsuarioService usuarioService;
+
+    private final UserService userService;
+
+    public UsuarioController(UserService userService) {
+        this.userService = userService;
+    }
 
     @GetMapping("/backend/{id}")
     public Usuario getUsuarioForBackend(Long id) {
-        return usuarioService.getOneForBackend(id);
+        return userService.getOneForBackend(id);
     }
+
 }

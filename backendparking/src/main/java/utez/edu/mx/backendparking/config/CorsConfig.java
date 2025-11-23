@@ -21,6 +21,7 @@ public class CorsConfig {
 
         // Orígenes permitidos (frontend)
         corsConfiguration.setAllowedOrigins(Arrays.asList(
+                "http://127.0.0.1:2000",      // Live server
                 "http://localhost:3000",      // React/Next.js
                 "http://localhost:4200",      // Angular
                 "http://localhost:5173",      // Vite

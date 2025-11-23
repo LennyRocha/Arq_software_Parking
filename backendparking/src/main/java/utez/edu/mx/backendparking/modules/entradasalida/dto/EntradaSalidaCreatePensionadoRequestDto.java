@@ -3,7 +3,6 @@ package utez.edu.mx.backendparking.modules.entradasalida.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import utez.edu.mx.backendparking.modules.entradasalida.EntradaSalidaMessages;
-import utez.edu.mx.backendparking.modules.usuario.model.Usuario;
 import utez.edu.mx.backendparking.modules.vehiculo.model.Vehiculo;
 
 public class EntradaSalidaCreatePensionadoRequestDto {

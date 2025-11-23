@@ -67,7 +67,7 @@ export default function TableFilters({
       <FormControl size="small" sx={{ minWidth: 150 }}>
         <InputLabel>Buscar</InputLabel>
         <OutlinedInput
-          label="Buscar"
+          label={searchPlaceholder}
           placeholder={searchPlaceholder}
           value={searchText}
           onChange={(e) => onSearchChange(e.target.value)}

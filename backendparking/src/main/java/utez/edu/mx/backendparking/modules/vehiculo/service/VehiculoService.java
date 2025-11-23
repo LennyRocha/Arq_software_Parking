@@ -7,18 +7,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
 import utez.edu.mx.backendparking.modules.tipovehiculo.model.TipoVehiculo;
-import utez.edu.mx.backendparking.modules.usuario.model.Usuario;
+import utez.edu.mx.backendparking.modules.usuario.Usuario;
 import utez.edu.mx.backendparking.modules.vehiculo.model.Vehiculo;
 import utez.edu.mx.backendparking.modules.vehiculo.model.VehiculoDto;
 import utez.edu.mx.backendparking.modules.vehiculo.repository.VehiculoRepository;
 import utez.edu.mx.backendparking.shared.api.ApiResponse;
 import utez.edu.mx.backendparking.shared.exception.BadRequestException;
-import utez.edu.mx.backendparking.shared.exception.ConflictException;
 import utez.edu.mx.backendparking.shared.exception.ResourceNotFoundException;
 import utez.edu.mx.backendparking.shared.webClient.WebClientConfig;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class VehiculoService  {

@@ -3,7 +3,7 @@
     "name": "ParKing",
     "slug": "parKing",
     "version": "1.0.0",
-    "orientation": "default",
+    "orientation": "portrait",
     "icon": "./img/logo_parking_sin_titulo.png",
     "resizeMode": "contain",
     "userInterfaceStyle": "light",

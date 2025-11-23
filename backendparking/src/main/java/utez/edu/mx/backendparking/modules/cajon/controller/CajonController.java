@@ -1,5 +1,6 @@
 package utez.edu.mx.backendparking.modules.cajon.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +20,8 @@ public class CajonController {
     private CajonService cajonService;
 
     @GetMapping
+    @Operation(summary = "Obtener cajones para el admin",
+            description = "Este endpoint devuelve todos los cajones registrados en páginas para el administrador")
     public ApiResponse<Map<String, Object>> getAllCajones(
             @RequestParam(defaultValue = "") String sort,
             @RequestParam(defaultValue = "") String query,
@@ -30,6 +33,8 @@ public class CajonController {
 
     //Solo para pruebas, luego se quitará
     @GetMapping("/all")
+    @Operation(summary = "Endpoint de pruebas",
+            description = "Endpoint para testear la lista que se devolverá por webSocket")
     public ApiResponse<List<Cajon>> getAllCajones(
             @RequestParam(defaultValue = "0") int piso,
             @RequestParam(defaultValue = "0") int id
@@ -38,42 +43,72 @@ public class CajonController {
     }
 
     @GetMapping("/id/{id}")
+    @Operation(summary = "Obtener un cajón por su id",
+            description = "Este endpoint es utilizado para obtener un cajón en especifico por su id")
     public ApiResponse<Cajon> getCajonById(@PathVariable("id") Long id) {
         return cajonService.getCajonPorId(id);
     }
 
     @GetMapping("/name/{name}")
+    @Operation(summary = "Obtener un cajón por su id",
+            description = "Este endpoint es utilizado para obtener un cajón en especifico por su identificador")
     public ApiResponse<Cajon> getCajonByName(@PathVariable("name") String name) {
         return cajonService.getCajonPorIdentificador(name);
     }
 
     @GetMapping("/location/{ubi}")
+    @Operation(summary = "Obtener un cajón por su id",
+            description = "Este endpoint es utilizado para obtener un cajón en especifico por su ubicación")
     public ApiResponse<Cajon> getCajonByUbicacion(@PathVariable("ubi") String ubi) {
         return cajonService.getCajonPorUbicacion(ubi);
     }
 
     @PostMapping
+    @Operation(summary = "Registrar un cajón",
+            description = "Este endpoint es utilizado para registrar un cajón")
     public ApiResponse<Cajon> crearCajon (@RequestBody CajonDto cajon) {
         return cajonService.createCajon(cajon);
     }
 
     @PostMapping("/varios")
+    @Operation(summary = "Registrar muchos cajones",
+            description = "Este endpoint es utilizado para registrar más de un cajón a la vez")
     public ApiResponse<List<Cajon>> crearCajones (@RequestBody List<CajonDto> cajones) {
         return cajonService.createCajones(cajones);
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Actualizar un cajón",
+            description = "Este endpoint es utilizado para actualizar un cajón")
     public ApiResponse<Cajon> actualizarCajon (@PathVariable Long id, @RequestBody CajonDto cajon) {
         return cajonService.updateCajon(id, cajon);
     }
 
-    @DeleteMapping("/{id}")
-    public ApiResponse<Cajon> deshabilitarCajon (@PathVariable Long id) {
-        return cajonService.deleteCajon(id);
-    }
-
     @PutMapping("/reservar")
+    @Operation(summary = "Reservar cajones para su uso de pensionados",
+            description = "Este endpoint es utilizado para reservar un cierto número de cajones para que los usuarios pensionados los utilicen")
     public ApiResponse<List<Cajon>> reservarCajones(@RequestBody int conteo) {
         return cajonService.setCajonesExclusivos(conteo);
+    }
+
+    @PatchMapping("/ocupar")
+    @Operation(summary = "Ocupar un cajón normal",
+            description = "Este endpoint es utilizado para ocupar un cajón al marcar una entrada o una salida")
+    public ApiResponse<Cajon> ocuparUnCajon(@RequestParam(defaultValue = "true") boolean entrada) {
+        return cajonService.cambiarDisponibilidad(entrada);
+    }
+
+    @PatchMapping("/ocupar/pensionados")
+    @Operation(summary = "Ocupar un cajón exclusivo para pensionados",
+            description = "Este endpoint es utilizado para ocupar un cajón al marcar una entrada o una salida para un usuario pensionado")
+    public ApiResponse<Cajon> ocuparUnCajonPensionados(@RequestParam(defaultValue = "true") boolean entrada) {
+        return cajonService.cambiarDisponibilidadForPensionados(entrada);
+    }
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Deshabilitar un cajón",
+            description = "Este endpoint es utilizado para deshabilitar un cajón")
+    public ApiResponse<Cajon> deshabilitarCajon (@PathVariable Long id) {
+        return cajonService.deleteCajon(id);
     }
 }

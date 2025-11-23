@@ -33,6 +33,8 @@ import CustomModal from "./components/CustomModal";
 import useModalController from "./hooks/useModalController";
 import CustomMultiSteps from "./components/CustomMultiSteps";
 import { CreditCardView } from "react-native-credit-card-input";
+import MainNavigator from "./navigation/MainNavigator";
+import { NavigationContainer } from "@react-navigation/native";
 const MyApp = () => {
   const { theme, toggleTheme } = useCustomThemes();
   const paperTheme = useTheme();
@@ -138,7 +140,7 @@ const MyApp = () => {
             Prueba de Paleta Para aplicación
           </Text>
 
-          <Card
+          {/* <Card
             style={[
               styles.card,
               { backgroundColor: paperTheme.colors.primary },
@@ -168,26 +170,52 @@ const MyApp = () => {
             <Card.Content>
               <Text style={{ color: theme.primary }}>Background (#F0F9F9)</Text>
             </Card.Content>
+          </Card> */}
+
+          <Card
+            style={[
+              styles.card,
+              { backgroundColor: paperTheme.colors.primaryContainer },
+            ]}
+          >
+            <Card.Content>
+              <Text style={{ color: paperTheme.colors.onPrimaryContainer }}>
+                Primary container
+              </Text>
+            </Card.Content>
           </Card>
 
           <Card
             style={[
               styles.card,
-              { backgroundColor: paperTheme.colors.cardSurface },
+              { backgroundColor: paperTheme.colors.secondaryContainer },
             ]}
           >
             <Card.Content>
-              <Text style={{ color: paperTheme.colors.onCardSurface }}>
-                Custom Surface (#C5E4E7)
+              <Text style={{ color: paperTheme.colors.onSecondaryContainer }}>
+                Secondary container
               </Text>
             </Card.Content>
           </Card>
 
-          <Card style={[styles.card, { backgroundColor: theme.other }]}>
+          <Card
+            style={[
+              styles.card,
+              { backgroundColor: paperTheme.colors.tertiaryContainer },
+            ]}
+          >
+            <Card.Content>
+              <Text style={{ color: paperTheme.colors.onTertiaryContainer }}>
+                Tertiary container
+              </Text>
+            </Card.Content>
+          </Card>
+
+          {/* <Card style={[styles.card, { backgroundColor: theme.other }]}>
             <Card.Content>
               <Text style={{ color: theme.background }}>Other (#1E3A3E)</Text>
             </Card.Content>
-          </Card>
+          </Card> */}
 
           <Card
             style={[styles.card, { backgroundColor: theme.surface }]}
@@ -200,10 +228,104 @@ const MyApp = () => {
             </Card.Content>
           </Card>
 
+          <Card
+            style={[
+              styles.card,
+              { backgroundColor: paperTheme.colors.primary },
+            ]}
+          >
+            <Card.Content>
+              <Text style={{ color: paperTheme.colors.onPrimary }}>
+                Primary
+              </Text>
+            </Card.Content>
+          </Card>
+
+          <Card
+            style={[
+              styles.card,
+              { backgroundColor: paperTheme.colors.secondary },
+            ]}
+          >
+            <Card.Content>
+              <Text style={{ color: paperTheme.colors.onSecondary }}>
+                Secondary
+              </Text>
+            </Card.Content>
+          </Card>
+
+          <Card
+            style={[
+              styles.card,
+              { backgroundColor: paperTheme.colors.tertiary },
+            ]}
+          >
+            <Card.Content>
+              <Text style={{ color: paperTheme.colors.onTertiary }}>
+                Tertiary
+              </Text>
+            </Card.Content>
+          </Card>
+
+          <Card
+            style={[styles.card, { backgroundColor: paperTheme.colors.error }]}
+          >
+            <Card.Content>
+              <Text style={{ color: paperTheme.colors.onError }}>Error</Text>
+            </Card.Content>
+          </Card>
+
+          <Card
+            style={[styles.card, { backgroundColor: paperTheme.colors.errorContainer }]}
+          >
+            <Card.Content>
+              <Text style={{ color: paperTheme.colors.onErrorContainer }}>Error</Text>
+            </Card.Content>
+          </Card>
+
+          <Card
+            style={[
+              styles.card,
+              { backgroundColor: paperTheme.colors.surface },
+            ]}
+          >
+            <Card.Content>
+              <Text style={{ color: paperTheme.colors.onSurface }}>
+                Surface
+              </Text>
+            </Card.Content>
+          </Card>
+
+          <Card
+            style={[
+              styles.card,
+              { backgroundColor: paperTheme.colors.surfaceVariant },
+            ]}
+          >
+            <Card.Content>
+              <Text style={{ color: paperTheme.colors.onSurfaceVariant }}>
+                surface Variant
+              </Text>
+            </Card.Content>
+          </Card>
+
+          <Card
+            style={[
+              styles.card,
+              { backgroundColor: paperTheme.colors.cardDark },
+            ]}
+          >
+            <Card.Content>
+              <Text style={{ color: paperTheme.colors.onCardDark }}>
+                Card dark
+              </Text>
+            </Card.Content>
+          </Card>
+
           <Button
             mode="contained"
             style={{ marginTop: 16 }}
-            buttonColor="#FF5252"
+            buttonColor={theme.error}
             onPress={() => {
               toggleTheme();
             }}
@@ -364,11 +486,13 @@ export default function App() {
   // }, []);
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <ThemeProvider>
-        <PaperContext>
-          <MyApp />
-        </PaperContext>
-      </ThemeProvider>
+      <NavigationContainer>
+        <ThemeProvider>
+          <PaperContext>
+            <MainNavigator />
+          </PaperContext>
+        </ThemeProvider>
+      </NavigationContainer>
     </GestureHandlerRootView>
   );
 }

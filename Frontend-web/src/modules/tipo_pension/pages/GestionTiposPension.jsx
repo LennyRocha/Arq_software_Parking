@@ -81,6 +81,14 @@ export default function GestionTiposPension() {
     openDialog();
   };
 
+  // Función para determinar el mensaje vacío
+  const getEmptyMessage = () => {
+    if (buscarTexto.trim() !== "" || ordenarPor !== "id" || ordenDireccion !== "desc") {
+      return "No se encontraron pensiones que coincidan con los criterios de búsqueda";
+    }
+    return "No hay tipos de pensión registrados";
+  };
+
   return (
     <>
       <LoadingBackdrop isOpen={loading} onClose={() => {}} />
@@ -107,6 +115,7 @@ export default function GestionTiposPension() {
             orderOptions={orderOptions}
             orderBy={ordenarPor}
             orderDirection={ordenDireccion}
+            searchPlaceholder={"Nombre, duración o costo"}
             searchText={buscarTexto}
             onOrderByChange={setOrdenarPor}
             onOrderDirectionChange={setOrdenDireccion}
@@ -140,7 +149,7 @@ export default function GestionTiposPension() {
           onRowsPerPageChange={handleChangeRowsPerPage}
           loading={loading}
           error={error}
-          emptyMessage="No hay tipos de pensión disponibles"
+          emptyMessage={getEmptyMessage()}
         />
       </Box>
 
