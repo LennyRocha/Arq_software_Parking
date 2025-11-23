@@ -19,15 +19,20 @@ export function getAxiosErrorMessage(error) {
 
   // 3️⃣ Error con respuesta del servidor
   if (error.response) {
+    const respData = error.response.data;
+
+    // Usamos statusCode si viene en la ApiResponse
+    const statusCode = respData?.statusCode || error.response.status;
+
     // Caso especial: autenticación
-    if (error.response?.data?.status === 403) {
-      return "Error de autentificación";
+    if (statusCode === 403) {
+      return "Error de autenticación";
     }
 
     return (
-      error.response.data?.message ||
-      mensajes[error.response?.status] ||
-      `Error del servidor (código ${error.response?.status})`
+      respData?.message || 
+      mensajes[statusCode] ||
+      `Error del servidor (código ${statusCode})`
     );
   }
 

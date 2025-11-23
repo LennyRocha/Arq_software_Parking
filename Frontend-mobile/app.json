@@ -4,32 +4,48 @@
     "slug": "parKing",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./img/logo_parking_sin_titulo.png",
+    "icon": "./assets/icon.png",
     "resizeMode": "contain",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
+
     "splash": {
-      "image": "./img/logo_parking.png",
+      "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#1E3A3E"
     },
+
     "ios": {
       "supportsTablet": true
     },
+
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./img/logo_parking_sin_titulo.png",
+        "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#1E3A3E",
         "resizeMode": "contain"
       },
-      "edgeToEdgeEnabled": true,
-      "package": "com.anonymous.Frontendmobile"
+      "edgeToEdgeEnabled": false,
+      "package": "mx.edu.utez.parKing",
+
+      "permissions": [
+        "READ_MEDIA_IMAGES",
+        "WRITE_EXTERNAL_STORAGE"
+      ]
     },
+
     "web": {
-      "favicon": "./img/logo_parking_sin_fondo.png"
+      "favicon": "./assets/favicon.png"
     },
+
     "plugins": [
-      "expo-font"
+      "expo-font",
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "Permitir a la app guardar capturas en la galería"
+        }
+      ]
     ]
   }
 }

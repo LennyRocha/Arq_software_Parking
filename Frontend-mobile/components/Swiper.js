@@ -35,6 +35,7 @@ const SwiperView = forwardRef(({
       autoplay={autoplay}
       autoplayTimeout={autoplayTimeout}
       activeDotColor={theme.other}
+      keyboardShouldPersistTaps="handled"
       {...props}
     >
       {slides.map((SlideComponent, index) => (

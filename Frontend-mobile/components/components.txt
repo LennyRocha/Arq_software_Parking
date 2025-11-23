@@ -1,1 +1,0 @@
-#Aquí van componentes globales o de native paper, luego los hago xd
