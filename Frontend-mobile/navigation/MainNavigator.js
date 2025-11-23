@@ -6,9 +6,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ActivityIndicator } from "react-native";
 import { useTheme } from "react-native-paper";
 import { StatusBar } from "react-native";
-import changeNavigationBarColor from "react-native-navigation-bar-color";
-import { hideNavigationBar } from "react-native-navigation-bar-color";
-
 const Stack = createNativeStackNavigator();
 
 export default function MainNavigator() {
@@ -30,33 +27,14 @@ export default function MainNavigator() {
     loadUser();
   }, []);
 
-  useEffect(() => {
-    let mounted = true;
-
-    (async () => {
-      if (Platform.OS !== "android") return;
-      try {
-        const navColor = paper?.colors?.primary ?? "#1E3A3E";
-        const response = await changeNavigationBarColor(navColor);
-        if (mounted) console.log("changeNavigationBarColor ->", response);
-      } catch (e) {
-        console.warn("changeNavigationBarColor failed ->", e);
-      }
-    })();
-
-    return () => {
-      mounted = false;
-    };
-  }, [paper?.colors?.primary]); // re-ejecuta si cambia el color del theme
-
   if (loading) return <ActivityIndicator />;
 
   return (
     <>
       <StatusBar
         barStyle="light-content"
-        backgroundColor={paper.colors.primary}
-        translucent={true}
+        backgroundColor={paper.colors.tertiary}
+        translucent={false}
       />
       <Stack.Navigator
         screenOptions={{

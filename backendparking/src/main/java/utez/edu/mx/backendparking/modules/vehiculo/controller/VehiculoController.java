@@ -12,7 +12,7 @@ import utez.edu.mx.backendparking.shared.api.ApiResponse;
 import java.util.List;
 
 @RestController
-@RequestMapping("/vehiculos")
+@RequestMapping("/vehiculos/api")
 @Tag(name="Vehículos", description = "Endpoints para vehículos")
 public class VehiculoController {
 

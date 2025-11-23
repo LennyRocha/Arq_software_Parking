@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/cajones")
+@RequestMapping("/cajones/api")
 @Tag(name="Cajones", description = "Endpoints REST para cajones")
 public class CajonController {
     @Autowired
