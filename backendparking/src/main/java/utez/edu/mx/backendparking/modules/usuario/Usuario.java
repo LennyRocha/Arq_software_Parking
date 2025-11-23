@@ -1,4 +1,4 @@
-package utez.edu.mx.backendparking.modules.usuario.model;
+package utez.edu.mx.backendparking.modules.usuario;
 
 import utez.edu.mx.backendparking.modules.roles.Roles;
 import jakarta.persistence.*;
@@ -28,8 +28,8 @@ public class Usuario {
 
     @Column(nullable = false)
     private boolean status;
-//El atributo que me faltaba añadir
-     @Column(nullable = false)
+
+    @Column(nullable = false)
     private boolean esPensionado;
 
     @ManyToOne(fetch = FetchType.EAGER)

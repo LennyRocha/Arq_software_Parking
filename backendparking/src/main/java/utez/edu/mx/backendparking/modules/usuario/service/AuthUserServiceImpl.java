@@ -1,4 +1,4 @@
-package utez.edu.mx.backendparking.modules.usuario;
+package utez.edu.mx.backendparking.modules.usuario.service;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -7,11 +7,12 @@ import java.util.logging.Logger;
 import utez.edu.mx.backendparking.security.JWTUtils;
 import utez.edu.mx.backendparking.shared.api.ApiResponse;
 import utez.edu.mx.backendparking.modules.roles.ERole;
-import utez.edu.mx.backendparking.modules.usuario.Repository.UsuarioRepository;
-import utez.edu.mx.backendparking.modules.usuario.Request.UsuarioRequest;
-import utez.edu.mx.backendparking.modules.usuario.model.Usuario;
+import utez.edu.mx.backendparking.modules.usuario.UsuarioRepository;
+import utez.edu.mx.backendparking.modules.usuario.dto.EmpleadoRegisterDto;
+import utez.edu.mx.backendparking.modules.usuario.Usuario;
 import utez.edu.mx.backendparking.modules.roles.Roles;
 import utez.edu.mx.backendparking.modules.roles.Repository.RolesRepository;
+import utez.edu.mx.backendparking.shared.exception.ResourceNotFoundException;
 
 @Service
 public class AuthUserServiceImpl {
@@ -29,19 +30,20 @@ public class AuthUserServiceImpl {
         this.jwtUtils = jwtUtils;
     }
 
-    //METODO PARA CREAR USUARIO CLIENTE
+    //METODO PARA CREAR USUARIO CLIENTE DESDE LANDING PAGE
 
-    public ApiResponse<?> createUser(UsuarioRequest request){
+    public ApiResponse<?> createEmpleado(EmpleadoRegisterDto request){
        try{
           Usuario usuarioExistente = usuarioRepository.findByCorreo(request.getCorreo());
           if(usuarioExistente != null){
               return ApiResponse.error(HttpStatus.BAD_REQUEST, "El usuario ya existe", null);
           }
 
-          Roles rol = rolesRepository.findByName(ERole.CLIENT);
+          Roles rol = rolesRepository.findByName(ERole.CLIENTE_PENSIONADO)
+                  .orElseThrow(()-> new ResourceNotFoundException("Rol cliente pensionado no encontrado"));
           if(rol == null){
               rol = new Roles();
-              rol.setName(ERole.CLIENT);
+              rol.setName(ERole.CLIENTE_PENSIONADO);
               rolesRepository.save(rol);
           }
 
@@ -52,7 +54,7 @@ public class AuthUserServiceImpl {
           nuevoUsuario.setTelefono(request.getTelefono());
           nuevoUsuario.setContra(passwordEncoder.encode(request.getContra()));
           nuevoUsuario.setStatus(true);
-          nuevoUsuario.setEsPensionado(request.isEsPensionado());
+          nuevoUsuario.setEsPensionado(false);
           nuevoUsuario.setRol(rol);
 
           usuarioRepository.save(nuevoUsuario);

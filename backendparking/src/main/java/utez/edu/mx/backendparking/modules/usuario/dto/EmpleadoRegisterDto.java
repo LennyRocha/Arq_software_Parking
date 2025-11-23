@@ -1,13 +1,11 @@
-package utez.edu.mx.backendparking.modules.usuario.Request;
+package utez.edu.mx.backendparking.modules.usuario.dto;
 
-public class UsuarioRequest {
+public class EmpleadoRegisterDto {
     private String nombre;
     private String correo;
     private String contra;
     private String telefono;
     private String apellidos;
-    private String status;
-    private boolean esPensionado;
 
     public String getNombre() {
         return nombre;
@@ -49,19 +47,4 @@ public class UsuarioRequest {
         this.apellidos = apellidos;
     }
 
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public boolean isEsPensionado() {
-        return esPensionado;
-    }
-
-    public void setEsPensionado(boolean esPensionado) {
-        this.esPensionado = esPensionado;
-    }
 }

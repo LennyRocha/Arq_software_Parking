@@ -1,7 +1,7 @@
 import apiToken from "../../../utils/api";
 
 // Obtener todos los tipos de pensión (sin paginado)
-export const fetchTiposPension = () => apiToken.get("/api/pension");
+export const fetchTiposPension = () => apiToken.get("/api/pension/public");
 
 // Obtener tipos de pensión paginados con filtros y ordenamiento
 export const searchTiposPensionPaginados = ({
@@ -17,7 +17,7 @@ export const searchTiposPensionPaginados = ({
     ...(search && { search })
   };
 
-  return apiToken.get("/api/pension/paginados", { params });
+  return apiToken.get("/api/pension/public/paginados", { params });
 };
 
 // Crear un nuevo tipo de pensión

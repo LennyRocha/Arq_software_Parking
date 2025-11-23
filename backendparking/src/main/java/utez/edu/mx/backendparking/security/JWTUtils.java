@@ -1,4 +1,4 @@
-package utez.edu.mx.backendparking.modules.security;
+package utez.edu.mx.backendparking.security;
 
 import java.security.Key;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,7 +25,7 @@ public class JWTUtils {
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder()
-                    .setSigningKey(signatureKey)
+                    .setSigningKey(getSignatureKey())
                     .build()
                     .parseClaimsJws(token);
             return true;
@@ -52,13 +52,11 @@ public class JWTUtils {
         if(signatureKey == null){
             byte[] keyBytes = Decoders.BASE64.decode(secretKey);
             signatureKey = Keys.hmacShaKeyFor(keyBytes);
-            return signatureKey;
-        } else {
-            return signatureKey;
         }
+        return signatureKey;
     }
 
-    // Obtener el rol drl token
+    // Obtener el rol del token
     public String getRoleFromToken(String token) {
         return getClaim(token, claims -> claims.get("role", String.class));
     }

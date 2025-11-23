@@ -1,4 +1,4 @@
-package utez.edu.mx.backendparking.modules.login;
+package utez.edu.mx.backendparking.modules.usuario.dto;
 
 public class LoginRequest {
      private String correo;
