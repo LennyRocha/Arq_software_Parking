@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Box,
   Container,
@@ -25,6 +25,9 @@ import useRegistroPension from "./registro_pension/hooks/useRegistroPension";
 import Step1SeleccionPension from "./registro_pension/components/Step1SeleccionPension";
 import Step2InformacionPersonal from "./registro_pension/components/Step2InformacionPersonal";
 import Step3InformacionVehiculos from "./registro_pension/components/Step3InformacionVehiculos";
+import Step4Pago from "./registro_pension/components/Step4Pago";
+import Step5Confirmacion from "./registro_pension/components/Step5Confirmacion";
+import Swal from "sweetalert2";
 
 export default function RegistroPension() {
   const { id } = useParams();
@@ -41,52 +44,162 @@ export default function RegistroPension() {
     tiposPension,
     loadingTiposPension,
     errorTiposPension,
+    cargarMasTiposPension,
+    paginationInfo,
     formData,
     updateFormData,
     seleccionarTipoPension,
     agregarVehiculo,
     removerVehiculo,
     editarVehiculo,
+    iniciarPago,
+    actualizarDatosMercadoPago,
     handleSubmit,
+    loadingRegistro,
+    errorRegistro,
+    registroExitoso,
+    datosRegistro,
   } = useRegistroPension(tipoPensionInicial);
 
-  const steps = tipoPensionInicial
-    ? ["Información Personal", "Información de Vehículos"]
-    : ["Seleccionar Plan", "Información Personal", "Información de Vehículos"];
+  const steps = [
+    "Seleccionar Plan",
+    "Información Personal",
+    "Información de Vehículos",
+    "Pago",
+    "Confirmación",
+  ];
 
-  const handleNextStep = () => {
-    // Validaciones antes de avanzar
-    if (activeStep === 0 && !tipoPensionInicial && !formData.tipoPension) {
-      alert("Por favor selecciona un plan");
-      return;
+  // Validaciones
+  const validarStep1 = () => {
+    if (!formData.tipoPension) {
+      Swal.fire({
+        icon: "warning",
+        title: "Selecciona un plan",
+        text: "Debes seleccionar un tipo de pensión para continuar",
+      });
+      return false;
     }
-    if (activeStep === (tipoPensionInicial ? 0 : 1)) {
-      if (!formData.nombre || !formData.email || !formData.telefono) {
-        alert("Por favor completa toda la información personal");
-        return;
-      }
+    return true;
+  };
+
+  const validarStep3 = () => {
+    if (formData.vehiculos.length === 0) {
+      Swal.fire({
+        icon: "warning",
+        title: "Agrega un vehículo",
+        text: "Debes registrar al menos un vehículo para continuar",
+      });
+      return false;
     }
+    return true;
+  };
+
+  const handleNextWithValidation = () => {
+    if (activeStep === 0 && !validarStep1()) return;
+    if (activeStep === 2 && !validarStep3()) return;
     handleNext();
   };
 
-  const handleFinalSubmit = async () => {
-    if (formData.vehiculos.length === 0) {
-      alert("Por favor agrega al menos un vehículo");
-      return;
-    }
-    const resultado = await handleSubmit();
-    if (resultado.success) {
-      alert("¡Registro completado con éxito!");
-      navigate("/");
+  const handleStep2Submit = (values) => {
+    updateFormData(values);
+    handleNext();
+  };
+
+  const handlePagoExitoso = async (datosPago) => {
+    console.log('=== PAGO EXITOSO ===', datosPago);
+    
+    // Actualizar datos de Mercado Pago
+    actualizarDatosMercadoPago(datosPago);
+    
+    // Registrar el pensionado en el backend
+    const result = await handleSubmit();
+    
+    if (result.success) {
+      Swal.fire({
+        icon: "success",
+        title: "¡Pago exitoso!",
+        text: "Tu pago ha sido procesado correctamente. Completando registro...",
+        timer: 2000,
+        showConfirmButton: false,
+      });
+      handleNext();
     } else {
-      alert("Error: " + resultado.error);
+      Swal.fire({
+        icon: "error",
+        title: "Error al registrar",
+        text: result.error || "Hubo un problema al completar el registro",
+      });
     }
   };
 
+  const handlePagoError = (error) => {
+    console.error('=== ERROR EN PAGO ===', error);
+    Swal.fire({
+      icon: "error",
+      title: "Error en el pago",
+      text: error || "No se pudo procesar el pago. Intenta nuevamente.",
+    });
+  };
+
+  const handleIniciarPago = async () => {
+    const result = await iniciarPago();
+    if (result.success) {
+      window.location.href = result.initPoint;
+    } else {
+      Swal.fire({
+        icon: "error",
+        title: "Error al iniciar pago",
+        text: result.error,
+      });
+    }
+  };
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const paymentId = urlParams.get("payment_id");
+    const status = urlParams.get("status");
+    const paymentType = urlParams.get("payment_type");
+    const externalReference = urlParams.get("external_reference");
+
+    console.log('=== URL PARAMS DETECTADOS ===');
+    console.log('payment_id:', paymentId);
+    console.log('status:', status);
+    console.log('payment_type:', paymentType);
+    console.log('external_reference:', externalReference);
+
+    // Si viene el status approved (aunque no venga payment_id en sandbox)
+    if (status === "approved") {
+      actualizarDatosMercadoPago({
+        payment_id: paymentId || 'sandbox-test-' + Date.now(),
+        status: status,
+        payment_type: paymentType || 'credit_card',
+        external_reference: externalReference,
+      });
+
+      if (activeStep === 3) {
+        handleNext();
+      }
+
+      handleSubmit().then((result) => {
+        if (result.success) {
+          handleNext();
+        }
+      });
+    } else if (status && status !== "approved") {
+      Swal.fire({
+        icon: "error",
+        title: "Pago no aprobado",
+        text: "Tu pago no fue aprobado. Por favor, intenta nuevamente.",
+      });
+    }
+  }, []);
+
+  const handleIrALogin = () => {
+    navigate("/login");
+  };
+
   const renderStepContent = (step) => {
-    const adjustedStep = tipoPensionInicial ? step + 1 : step;
-    
-    switch (adjustedStep) {
+    switch (step) {
       case 0:
         return (
           <Step1SeleccionPension
@@ -95,13 +208,15 @@ export default function RegistroPension() {
             onSeleccionar={seleccionarTipoPension}
             loading={loadingTiposPension}
             error={errorTiposPension}
+            onLoadMore={cargarMasTiposPension}
+            hasMore={paginationInfo.hasMore}
           />
         );
       case 1:
         return (
           <Step2InformacionPersonal
             formData={formData}
-            onChange={updateFormData}
+            onSubmit={handleStep2Submit}
           />
         );
       case 2:
@@ -113,12 +228,25 @@ export default function RegistroPension() {
             onEditar={editarVehiculo}
           />
         );
+      case 3:
+        return (
+          <Step4Pago
+            formData={formData}
+            onPagoExitoso={handlePagoExitoso}
+            onPagoError={handlePagoError}
+          />
+        );
+      case 4:
+        return (
+          <Step5Confirmacion
+            datosRegistro={datosRegistro}
+            onIrALogin={handleIrALogin}
+          />
+        );
       default:
         return null;
     }
   };
-
-  const isLastStep = activeStep === steps.length - 1;
 
   return (
     <Box sx={{ bgcolor: "background.default", minHeight: "100vh" }}>
@@ -151,14 +279,16 @@ export default function RegistroPension() {
         </IconButton>
       </Box>
 
-      <Container maxWidth="md" sx={{ py: 6 }}>
-        <Button
-          startIcon={<ArrowBackIcon />}
-          onClick={() => navigate("/")}
-          sx={{ mb: 3 }}
-        >
-          Volver
-        </Button>
+      <Container maxWidth="lg" sx={{ py: 6 }}>
+        {activeStep < 4 && (
+          <Button
+            startIcon={<ArrowBackIcon />}
+            onClick={() => (activeStep === 0 ? navigate("/") : handleBack())}
+            sx={{ mb: 3 }}
+          >
+            {activeStep === 0 ? "Volver al inicio" : "Atrás"}
+          </Button>
+        )}
 
         <Card>
           <CardContent sx={{ p: 4 }}>
@@ -173,60 +303,62 @@ export default function RegistroPension() {
               color="text.secondary"
               sx={{ mb: 4, textAlign: "center" }}
             >
-              {tipoPensionInicial
-                ? `Completa tu registro para el plan ${tipoPensionInicial.nombre}`
-                : "Completa los siguientes pasos para adquirir tu pensión"}
+              {activeStep < 4
+                ? "Completa los siguientes pasos para adquirir tu pensión"
+                : "¡Felicidades! Tu registro ha sido completado"}
             </Typography>
 
-            <Stepper activeStep={activeStep} sx={{ mb: 4 }}>
-              {steps.map((label) => (
-                <Step key={label}>
-                  <StepLabel>{label}</StepLabel>
-                </Step>
-              ))}
-            </Stepper>
+            {/* Stepper */}
+            {activeStep < 4 && (
+              <Stepper activeStep={activeStep} sx={{ mb: 4 }}>
+                {steps.slice(0, 4).map((label) => (
+                  <Step key={label}>
+                    <StepLabel>{label}</StepLabel>
+                  </Step>
+                ))}
+              </Stepper>
+            )}
 
-            <Box sx={{ minHeight: "400px" }}>{renderStepContent(activeStep)}</Box>
+            {/* Contenido del step */}
+            <Box sx={{ minHeight: 400 }}>{renderStepContent(activeStep)}</Box>
 
-            <Box
-              sx={{ display: "flex", justifyContent: "space-between", mt: 4 }}
-            >
-              <Button
-                disabled={activeStep === 0}
-                onClick={handleBack}
-                variant="outlined"
+            {/* Botones de navegación */}
+            {activeStep < 4 && (
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  mt: 4,
+                }}
               >
-                Atrás
-              </Button>
-              {isLastStep ? (
-                <Button variant="contained" onClick={handleFinalSubmit}>
-                  Confirmar Registro
+                <Button
+                  disabled={activeStep === 0}
+                  onClick={handleBack}
+                  variant="outlined"
+                >
+                  Atrás
                 </Button>
-              ) : (
-                <Button variant="contained" onClick={handleNextStep}>
-                  Siguiente
-                </Button>
-              )}
-            </Box>
+
+                {activeStep === 1 ? (
+                  <Button
+                    variant="contained"
+                    onClick={() => {
+                      if (window.step2SubmitRef) {
+                        window.step2SubmitRef();
+                      }
+                    }}
+                  >
+                    Siguiente
+                  </Button>
+                ) : activeStep === 3 ? null : (
+                  <Button variant="contained" onClick={handleNextWithValidation}>
+                    Siguiente
+                  </Button>
+                )}
+              </Box>
+            )}
           </CardContent>
         </Card>
-
-        {/* Información del plan seleccionado */}
-        {formData.tipoPension && (
-          <Card sx={{ mt: 4, bgcolor: alpha(theme.palette.primary.main, 0.05) }}>
-            <CardContent>
-              <Typography variant="h6" sx={{ fontWeight: "bold", mb: 1 }}>
-                Plan seleccionado: {formData.tipoPension.nombre}
-              </Typography>
-              <Typography variant="body1">
-                Duración: {formData.tipoPension.duracionDias} días
-              </Typography>
-              <Typography variant="h5" sx={{ fontWeight: "bold", mt: 1 }}>
-                Total: ${formData.tipoPension.costo}/mes
-              </Typography>
-            </CardContent>
-          </Card>
-        )}
       </Container>
     </Box>
   );
