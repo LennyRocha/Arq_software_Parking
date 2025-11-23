@@ -45,7 +45,26 @@ npm install socket.io-client (Por instalar)
 
 #linear gradient
 npm install react-native-linear-gradient
-npx expo install expo-linear-gradient
+npx expo install expo-linear-gradient --esta es la buena
 
 #Async storage
 npm install @react-native-async-storage/async-storage
+
+#Generador de QR
+npx expo install react-native-qrcode-svg@latest
+
+#navigation bar
+npx expo install expo-navigation-bar
+
+#input-mask
+npm install react-native-mask-text
+
+#screenshots
+npm install react-native-view-shot
+npm install @react-native-camera-roll/camera-roll
+npx expo install expo-media-library
+
+
+#webSocket client y stomp
+npm install @stomp/stompjs
+npm install sockjs-client   # si tu backend usa SockJS
