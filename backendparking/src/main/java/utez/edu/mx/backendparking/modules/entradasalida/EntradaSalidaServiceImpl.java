@@ -107,10 +107,8 @@ public class EntradaSalidaServiceImpl implements EntradaSalidaService {
         // Cambiar ultima entrada del usuario y guardar
         usuarioPension.setUltimaEntradaSalida(savedEntradaSalida);
 
-        // Generar UUID único para el código QR si no tiene uno
-        if (usuarioPension.getUuidCodigoQR() == null || usuarioPension.getUuidCodigoQR().isEmpty()) {
-            usuarioPension.setUuidCodigoQR(generarUuidUnico());
-        }
+        // Generar UUID único
+        usuarioPension.setUuidCodigoQR(generarUuidUnico());
 
         usuarioPensionRepository.save(usuarioPension);
 
@@ -360,6 +358,10 @@ public class EntradaSalidaServiceImpl implements EntradaSalidaService {
 
         // 8. Si es marcado, se guardan los datos en la base de datos
         if(guardarDatosBD){
+            // Generar UUID único
+            usuarioPension.setUuidCodigoQR(generarUuidUnico());
+            usuarioPensionRepository.save(usuarioPension);
+
             entradaSalidaRepository.save(entradaSalida);
         }
 

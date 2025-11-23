@@ -1,11 +1,13 @@
 package utez.edu.mx.backendparking.modules.vehiculo.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import utez.edu.mx.backendparking.modules.vehiculo.model.Vehiculo;
 import utez.edu.mx.backendparking.modules.vehiculo.model.VehiculoDto;
+import utez.edu.mx.backendparking.modules.vehiculo.model.VehiculoEstacionadoResponseDto;
 import utez.edu.mx.backendparking.modules.vehiculo.service.VehiculoService;
 import utez.edu.mx.backendparking.shared.api.ApiResponse;
 
@@ -59,5 +61,27 @@ public class VehiculoController {
     @DeleteMapping("/{id}")
     public ApiResponse<Void> deleteVehiculo(@PathVariable Long id) {
         return vehiculoService.deleteVehiculo(id);
+    }
+
+    /**
+     * Verifica si el usuario autenticado tiene un vehículo estacionado actualmente
+     * @return ApiResponse con información del vehículo estacionado si existe
+     */
+    @GetMapping("/estacionado/verificar")
+    @Operation(summary = "Verificar vehículo estacionado",
+               description = "Verifica si el usuario autenticado tiene un vehículo estacionado actualmente en el estacionamiento")
+    public ApiResponse<VehiculoEstacionadoResponseDto> verificarVehiculoEstacionado() {
+        return vehiculoService.verificarVehiculoEstacionado();
+    }
+
+    /**
+     * Obtiene todos los vehículos del usuario autenticado
+     * @return ApiResponse con la lista de vehículos del usuario
+     */
+    @GetMapping("/mis-vehiculos")
+    @Operation(summary = "Obtener mis vehículos",
+               description = "Obtiene todos los vehículos registrados del usuario autenticado")
+    public ApiResponse<List<VehiculoDto>> getMisVehiculos() {
+        return vehiculoService.getMisVehiculos();
     }
 }
