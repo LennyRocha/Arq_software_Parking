@@ -14,11 +14,15 @@ import utez.edu.mx.backendparking.modules.tipovehiculo.model.TipoVehiculo;
 import utez.edu.mx.backendparking.modules.tipovehiculo.repository.TipoVehiculoRepository;
 import utez.edu.mx.backendparking.modules.usuario.Usuario;
 import utez.edu.mx.backendparking.modules.usuario.UsuarioRepository;
+import utez.edu.mx.backendparking.modules.usuariopension.UsuarioPension;
+import utez.edu.mx.backendparking.modules.usuariopension.UsuarioPensionRepository;
 import utez.edu.mx.backendparking.modules.vehiculo.model.Vehiculo;
 import utez.edu.mx.backendparking.modules.vehiculo.repository.VehiculoRepository;
 import utez.edu.mx.backendparking.shared.exception.ResourceNotFoundException;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class InitialDataService {
@@ -30,8 +34,9 @@ public class InitialDataService {
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
     private final VehiculoRepository vehiculoRepository;
+    private final UsuarioPensionRepository usuarioPensionRepository;
 
-    public InitialDataService(TarifaRepository tarifaRepository, TipoVehiculoRepository tipoVehiculoRepository, PensionRepository pensionRepository, RolesRepository roleRepository, UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder, VehiculoRepository vehiculoRepository) {
+    public InitialDataService(TarifaRepository tarifaRepository, TipoVehiculoRepository tipoVehiculoRepository, PensionRepository pensionRepository, RolesRepository roleRepository, UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder, VehiculoRepository vehiculoRepository, UsuarioPensionRepository usuarioPensionRepository) {
         this.tarifaRepository = tarifaRepository;
         this.tipoVehiculoRepository = tipoVehiculoRepository;
         this.pensionRepository = pensionRepository;
@@ -39,6 +44,7 @@ public class InitialDataService {
         this.usuarioRepository = usuarioRepository;
         this.passwordEncoder = passwordEncoder;
         this.vehiculoRepository = vehiculoRepository;
+        this.usuarioPensionRepository = usuarioPensionRepository;
     }
 
     @Transactional
@@ -320,5 +326,72 @@ public class InitialDataService {
         vehiculoRepository.save(vehiculo2);
 
         System.out.println("Vehículos inicializados correctamente para el usuario pensionado.");
+    }
+
+    @Transactional
+    public void inicializarUsuarioPension() {
+        // Buscar el usuario pensionado
+        Usuario pensionado = usuarioRepository.findByCorreo("pensionado@parking.com");
+
+        if (pensionado == null) {
+            System.out.println("No se encontró el usuario pensionado. Inicialice primero los usuarios.");
+            return;
+        }
+
+        // Verificar si el usuario ya tiene una pensión asignada
+        if (usuarioPensionRepository.findByUsuarioIdAndEstatusTrue(pensionado.getId()).isPresent()) {
+            System.out.println("El usuario pensionado ya tiene una pensión activa.");
+            return;
+        }
+
+        // Obtener las pensiones disponibles
+        List<Pension> pensiones = pensionRepository.findAll();
+        if (pensiones.isEmpty()) {
+            System.out.println("No hay pensiones disponibles. Inicialice primero las pensiones.");
+            return;
+        }
+
+        // Seleccionar la pensión "Coche-Premium" (30 días) o la primera disponible
+        Pension pensionSeleccionada = pensiones.stream()
+                .filter(p -> p.getNombre().equalsIgnoreCase("Coche-Premium"))
+                .findFirst()
+                .orElse(pensiones.get(0));
+
+        // Crear el registro de usuario_pension
+        UsuarioPension usuarioPension = new UsuarioPension();
+        usuarioPension.setUsuario(pensionado);
+        usuarioPension.setPension(pensionSeleccionada);
+        usuarioPension.setEstatus(true);
+
+        // Calcular fecha de finalización (hoy + duración de la pensión)
+        LocalDate fechaFinalizacion = LocalDate.now().plusDays(pensionSeleccionada.getDuracionDias());
+        usuarioPension.setFechaFinalizacion(fechaFinalizacion);
+
+        // Generar código QR único (usando el mismo método que el servicio de entrada/salida)
+        String uuidCodigoQR = generarUuidUnico();
+        usuarioPension.setUuidCodigoQR(uuidCodigoQR);
+
+        // No asignamos ultima entrada (se quedará en null)
+        usuarioPension.setUltimaEntradaSalida(null);
+
+        // Guardar el registro
+        usuarioPensionRepository.save(usuarioPension);
+
+        System.out.println("Usuario pensión inicializado correctamente.");
+        System.out.println("Pensión asignada: " + pensionSeleccionada.getNombre());
+        System.out.println("Fecha de finalización: " + fechaFinalizacion);
+        System.out.println("Código QR: " + uuidCodigoQR);
+    }
+
+    /**
+     * Método privado para generar UUID único para código QR
+     * (mismo método que en EntradaSalidaServiceImpl)
+     */
+    private String generarUuidUnico() {
+        String uuid;
+        do {
+            uuid = UUID.randomUUID().toString();
+        } while (usuarioPensionRepository.existsByUuidCodigoQR(uuid));
+        return uuid;
     }
 }

@@ -34,18 +34,26 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
         if (tokenHeader != null && tokenHeader.startsWith("Bearer ")) {
             String token = tokenHeader.substring(7);
 
-            if (jwtUtils.validateToken(token)) {
-                String email = jwtUtils.getEmailFromToken(token);
-                String role = jwtUtils.getRoleFromToken(token);
+            try {
+                if (jwtUtils.validateToken(token)) {
+                    String email = jwtUtils.getEmailFromToken(token);
+                    String role = jwtUtils.getRoleFromToken(token);
 
 
-                GrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + role);
+                    GrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + role);
 
-                Authentication authentication = new UsernamePasswordAuthenticationToken(
-                        email, null, List.of(authority));
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-            } else {
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token inválido");
+                    Authentication authentication = new UsernamePasswordAuthenticationToken(
+                            email, null, List.of(authority));
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                } else {
+                    System.err.println("Token inválido o expirado para la ruta: " + request.getRequestURI());
+                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token inválido");
+                    return;
+                }
+            } catch (Exception e) {
+                System.err.println("Error al procesar el token: " + e.getMessage());
+                e.printStackTrace();
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token inválido: " + e.getMessage());
                 return;
             }
         }

@@ -44,4 +44,7 @@ public class EntradaSalidaMessages {
     public static final String ENDPOINT_ENTRADA_SALIDA_DELETE = "Registro de entrada/salida eliminado correctamente.";
     public static final String ENDPOINT_REPORTE_GANANCIAS_POR_HORA = "Reporte de ganancias por hora generado correctamente.";
     public static final String ENDPOINT_REPORTE_GANANCIAS_TOTALES = "Reporte de ganancias totales generado correctamente.";
+
+    // Mensjase obtención de codigo de entrada/salida
+    public static final String ENDPOINT_CODIGO_ENTRADA_SALIDA = "Código de entrada/salida generado correctamente.";
 }

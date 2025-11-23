@@ -6,6 +6,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import utez.edu.mx.backendparking.modules.entradasalida.dto.EntradaSalidaCreatePensionadoRequestDto;
@@ -19,11 +20,15 @@ import utez.edu.mx.backendparking.modules.tarifa.TarifaMessages;
 import utez.edu.mx.backendparking.modules.tarifa.TarifaRepository;
 import utez.edu.mx.backendparking.modules.tipovehiculo.model.TipoVehiculo;
 import utez.edu.mx.backendparking.modules.tipovehiculo.repository.TipoVehiculoRepository;
+import utez.edu.mx.backendparking.modules.usuario.Usuario;
+import utez.edu.mx.backendparking.modules.usuario.UsuarioRepository;
 import utez.edu.mx.backendparking.modules.usuariopension.UsuarioPension;
 import utez.edu.mx.backendparking.modules.usuariopension.UsuarioPensionMessages;
 import utez.edu.mx.backendparking.modules.usuariopension.UsuarioPensionRepository;
 import utez.edu.mx.backendparking.modules.vehiculo.model.Vehiculo;
+import utez.edu.mx.backendparking.modules.vehiculo.model.VehiculoEstacionadoResponseDto;
 import utez.edu.mx.backendparking.modules.vehiculo.repository.VehiculoRepository;
+import utez.edu.mx.backendparking.shared.api.ApiResponse;
 import utez.edu.mx.backendparking.shared.exception.BadRequestException;
 import utez.edu.mx.backendparking.shared.exception.ResourceNotFoundException;
 
@@ -33,6 +38,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
 
@@ -45,14 +51,16 @@ public class EntradaSalidaServiceImpl implements EntradaSalidaService {
     private final VehiculoRepository vehiculoRepository;
     private final TipoVehiculoRepository tipoVehiculoRepository;
     private final PagoRepository pagoRepository;
+    private final UsuarioRepository usuarioRepository;
 
-    public EntradaSalidaServiceImpl(EntradaSalidaRepository entradaSalidaRepository, TarifaRepository tarifaRepository, UsuarioPensionRepository usuarioPensionRepository, VehiculoRepository vehiculoRepository, TipoVehiculoRepository tipoVehiculoRepository, PagoRepository pagoRepository) {
+    public EntradaSalidaServiceImpl(EntradaSalidaRepository entradaSalidaRepository, TarifaRepository tarifaRepository, UsuarioPensionRepository usuarioPensionRepository, VehiculoRepository vehiculoRepository, TipoVehiculoRepository tipoVehiculoRepository, PagoRepository pagoRepository, UsuarioRepository usuarioRepository) {
         this.entradaSalidaRepository = entradaSalidaRepository;
         this.tarifaRepository = tarifaRepository;
         this.usuarioPensionRepository = usuarioPensionRepository;
         this.vehiculoRepository = vehiculoRepository;
         this.tipoVehiculoRepository = tipoVehiculoRepository;
         this.pagoRepository = pagoRepository;
+        this.usuarioRepository = usuarioRepository;
     }
 
 
@@ -520,6 +528,23 @@ public class EntradaSalidaServiceImpl implements EntradaSalidaService {
 
         // 5. Retornar el Page con los DTOs
         return new PageImpl<>(reporteDtos, pageable, resultadosVisitantes.getTotalElements());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public String searchCodigoEntradaSalida(){
+        // Obtener el usuario autenticado actual
+        //Usuario usuarioActual = SecurityUtils.getCurrentUser();
+        Usuario usuarioActual = usuarioRepository.findById((long)3).get();
+
+        // Buscar si el usuario tiene una pensión activa
+        Optional<UsuarioPension> usuarioPensionOpt = usuarioPensionRepository.findByUsuarioIdAndEstatusTrue(usuarioActual.getId());
+
+        if (usuarioPensionOpt.isEmpty()) {
+            throw new BadRequestException(UsuarioPensionMessages.ERROR_USUARIO_PENSION_NOT_FOUND);
+        }
+
+        return usuarioPensionOpt.get().getUuidCodigoQR();
     }
 
 

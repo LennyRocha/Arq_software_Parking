@@ -1,15 +1,24 @@
 package utez.edu.mx.backendparking.security;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import utez.edu.mx.backendparking.modules.usuario.Usuario;
+import utez.edu.mx.backendparking.modules.usuario.UsuarioRepository;
 
 /**
  * Utilidad para acceder al usuario autenticado actual desde el SecurityContext
  */
 @Component
 public class SecurityUtils {
+
+    private static UsuarioRepository usuarioRepository;
+
+    @Autowired
+    public SecurityUtils(UsuarioRepository usuarioRepository) {
+        SecurityUtils.usuarioRepository = usuarioRepository;
+    }
 
     /**
      * Obtiene el usuario autenticado actual desde el SecurityContext
@@ -25,8 +34,21 @@ public class SecurityUtils {
 
         Object principal = authentication.getPrincipal();
 
+        // Si el principal es un Usuario, devolverlo directamente
         if (principal instanceof Usuario) {
             return (Usuario) principal;
+        }
+
+        // Si el principal es un String (email), buscar el usuario en la base de datos
+        if (principal instanceof String) {
+            String email = (String) principal;
+            Usuario usuario = usuarioRepository.findByCorreo(email);
+
+            if (usuario == null) {
+                throw new RuntimeException("Usuario no encontrado con el email: " + email);
+            }
+
+            return usuario;
         }
 
         throw new RuntimeException("El usuario autenticado no es del tipo esperado");
@@ -55,6 +77,6 @@ public class SecurityUtils {
     public static boolean isAuthenticated() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return authentication != null && authentication.isAuthenticated() &&
-                authentication.getPrincipal() instanceof Usuario;
+                (authentication.getPrincipal() instanceof Usuario || authentication.getPrincipal() instanceof String);
     }
 }
