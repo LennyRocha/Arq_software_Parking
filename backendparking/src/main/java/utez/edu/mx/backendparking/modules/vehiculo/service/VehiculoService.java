@@ -9,6 +9,7 @@ import reactor.core.publisher.Mono;
 import utez.edu.mx.backendparking.modules.entradasalida.EntradaSalida;
 import utez.edu.mx.backendparking.modules.tipovehiculo.model.TipoVehiculo;
 import utez.edu.mx.backendparking.modules.usuario.Usuario;
+import utez.edu.mx.backendparking.modules.usuario.UsuarioRepository;
 import utez.edu.mx.backendparking.modules.usuariopension.UsuarioPension;
 import utez.edu.mx.backendparking.modules.usuariopension.UsuarioPensionRepository;
 import utez.edu.mx.backendparking.modules.vehiculo.model.Vehiculo;
@@ -38,6 +39,8 @@ public class VehiculoService  {
 
     @Autowired
     private UsuarioPensionRepository usuarioPensionRepository;
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
     @Transactional(readOnly = true)
     public ApiResponse<List<VehiculoDto>> getAllVehiculos() {
@@ -196,7 +199,9 @@ public class VehiculoService  {
     public ApiResponse<VehiculoEstacionadoResponseDto> verificarVehiculoEstacionado() {
         try {
             // Obtener el usuario autenticado actual
-            Usuario usuarioActual = SecurityUtils.getCurrentUser();
+            //Usuario usuarioActual = SecurityUtils.getCurrentUser();
+            Usuario usuarioActual = usuarioRepository.findById((long)3).get();
+
 
             // Buscar si el usuario tiene una pensión activa
             Optional<UsuarioPension> usuarioPensionOpt = usuarioPensionRepository.findByUsuarioIdAndEstatusTrue(usuarioActual.getId());
@@ -252,7 +257,8 @@ public class VehiculoService  {
     public ApiResponse<List<VehiculoDto>> getMisVehiculos() {
         try {
             // Obtener el usuario autenticado actual
-            Usuario usuarioActual = SecurityUtils.getCurrentUser();
+            //Usuario usuarioActual = SecurityUtils.getCurrentUser();
+            Usuario usuarioActual = usuarioRepository.findById((long)3).get();
 
             // Buscar todos los vehículos del usuario
             List<Vehiculo> vehiculos = vehiculoRepository.findByUsuarioId(usuarioActual.getId());

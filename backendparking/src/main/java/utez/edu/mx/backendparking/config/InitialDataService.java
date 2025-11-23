@@ -14,6 +14,8 @@ import utez.edu.mx.backendparking.modules.tipovehiculo.model.TipoVehiculo;
 import utez.edu.mx.backendparking.modules.tipovehiculo.repository.TipoVehiculoRepository;
 import utez.edu.mx.backendparking.modules.usuario.Usuario;
 import utez.edu.mx.backendparking.modules.usuario.UsuarioRepository;
+import utez.edu.mx.backendparking.modules.vehiculo.model.Vehiculo;
+import utez.edu.mx.backendparking.modules.vehiculo.repository.VehiculoRepository;
 import utez.edu.mx.backendparking.shared.exception.ResourceNotFoundException;
 
 import java.util.List;
@@ -27,14 +29,16 @@ public class InitialDataService {
     private final RolesRepository roleRepository;
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
+    private final VehiculoRepository vehiculoRepository;
 
-    public InitialDataService(TarifaRepository tarifaRepository, TipoVehiculoRepository tipoVehiculoRepository, PensionRepository pensionRepository, RolesRepository roleRepository, UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
+    public InitialDataService(TarifaRepository tarifaRepository, TipoVehiculoRepository tipoVehiculoRepository, PensionRepository pensionRepository, RolesRepository roleRepository, UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder, VehiculoRepository vehiculoRepository) {
         this.tarifaRepository = tarifaRepository;
         this.tipoVehiculoRepository = tipoVehiculoRepository;
         this.pensionRepository = pensionRepository;
         this.roleRepository = roleRepository;
         this.usuarioRepository = usuarioRepository;
         this.passwordEncoder = passwordEncoder;
+        this.vehiculoRepository = vehiculoRepository;
     }
 
     @Transactional
@@ -84,6 +88,24 @@ public class InitialDataService {
             empleado.setRol(rolEmpleado);
 
             usuarioRepository.save(empleado);
+        }
+
+        // Crear usuario un empleado si no existe
+        if (usuarioRepository.findByCorreo("pensionado@parking.com") == null) {
+            Roles rolPensionado = roleRepository.findByName(ERole.CLIENTE_PENSIONADO)
+                    .orElseThrow(() -> new RuntimeException("Rol Cliente pensionado no encontrado"));
+
+            Usuario pensionado = new Usuario();
+            pensionado.setNombre("Pensionado");
+            pensionado.setApellidos("General");
+            pensionado.setCorreo("pensionado@parking.com");
+            pensionado.setTelefono("7777654321");
+            pensionado.setContra(passwordEncoder.encode("pensionado123")); // Contraseña por defecto
+            pensionado.setStatus(true);
+            pensionado.setEsPensionado(true);
+            pensionado.setRol(rolPensionado);
+
+            usuarioRepository.save(pensionado);
         }
     }
 
@@ -238,5 +260,65 @@ public class InitialDataService {
             pensionRepository.save(camionetaClassic);
             pensionRepository.save(camionetaPremium);
         }
+    }
+
+    @Transactional
+    public void inicializarVehiculos() {
+        // Buscar el usuario pensionado
+        Usuario pensionado = usuarioRepository.findByCorreo("pensionado@parking.com");
+
+        if (pensionado == null) {
+            System.out.println("No se encontró el usuario pensionado. Inicialice primero los usuarios.");
+            return;
+        }
+
+        // Verificar si el usuario ya tiene vehículos
+        List<Vehiculo> vehiculosExistentes = vehiculoRepository.findByUsuarioId(pensionado.getId());
+        if (!vehiculosExistentes.isEmpty()) {
+            System.out.println("El usuario pensionado ya tiene vehículos registrados.");
+            return;
+        }
+
+        // Obtener tipos de vehículo
+        List<TipoVehiculo> tiposVehiculo = tipoVehiculoRepository.findAll();
+        if (tiposVehiculo.isEmpty()) {
+            System.out.println("No hay tipos de vehículo. Inicialice primero los tipos de vehículo.");
+            return;
+        }
+
+        // Buscar tipo Coche y Moto
+        TipoVehiculo tipoCoche = tiposVehiculo.stream()
+                .filter(t -> t.getNombre().equalsIgnoreCase("Coche"))
+                .findFirst()
+                .orElse(tiposVehiculo.get(0));
+
+        TipoVehiculo tipoMoto = tiposVehiculo.stream()
+                .filter(t -> t.getNombre().equalsIgnoreCase("Moto"))
+                .findFirst()
+                .orElse(tiposVehiculo.size() > 1 ? tiposVehiculo.get(1) : tiposVehiculo.get(0));
+
+        // Crear primer vehículo - Coche
+        Vehiculo vehiculo1 = new Vehiculo();
+        vehiculo1.setPlaca("ABC-123");
+        vehiculo1.setModelo("Honda Civic 2020");
+        vehiculo1.setDescripcion("Sedán gris plata");
+        vehiculo1.setEstatus(true);
+        vehiculo1.setTipoVehiculo(tipoCoche);
+        vehiculo1.setUsuario(pensionado);
+
+        // Crear segundo vehículo - Moto
+        Vehiculo vehiculo2 = new Vehiculo();
+        vehiculo2.setPlaca("XYZ-789");
+        vehiculo2.setModelo("Yamaha MT-07 2021");
+        vehiculo2.setDescripcion("Motocicleta deportiva azul");
+        vehiculo2.setEstatus(true);
+        vehiculo2.setTipoVehiculo(tipoMoto);
+        vehiculo2.setUsuario(pensionado);
+
+        // Guardar vehículos
+        vehiculoRepository.save(vehiculo1);
+        vehiculoRepository.save(vehiculo2);
+
+        System.out.println("Vehículos inicializados correctamente para el usuario pensionado.");
     }
 }

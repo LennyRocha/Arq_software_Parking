@@ -17,6 +17,7 @@ public class InitialConfig implements CommandLineRunner {
         initialDataService.inicializarTarifas();
         initialDataService.inicializarPensiones();
         initialDataService.inicializarRolesAndUserAdminAndEmployee();
+        initialDataService.inicializarVehiculos();
     }
 
 }
