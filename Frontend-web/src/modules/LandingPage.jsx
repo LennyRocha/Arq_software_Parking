@@ -7,6 +7,7 @@ import {
   Card,
   CardContent,
   Grid,
+  Link,
   IconButton,
   TablePagination,
   Accordion,
@@ -26,7 +27,7 @@ import {
   Brightness7 as LightModeIcon,
 } from "@mui/icons-material";
 import { useDarkContext } from "../context/DarkContext";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { searchTiposPensionPaginados } from "./tipo_pension/api/TiposPensionApi";
 import LoadingBackdrop from "../components/LoadingBackdrop";
 
