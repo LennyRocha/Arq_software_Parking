@@ -19,7 +19,6 @@ import utez.edu.mx.backendparking.modules.tarifa.TarifaMessages;
 import utez.edu.mx.backendparking.modules.tarifa.TarifaRepository;
 import utez.edu.mx.backendparking.modules.tipovehiculo.model.TipoVehiculo;
 import utez.edu.mx.backendparking.modules.tipovehiculo.repository.TipoVehiculoRepository;
-import utez.edu.mx.backendparking.modules.usuario.model.Usuario;
 import utez.edu.mx.backendparking.modules.usuariopension.UsuarioPension;
 import utez.edu.mx.backendparking.modules.usuariopension.UsuarioPensionMessages;
 import utez.edu.mx.backendparking.modules.usuariopension.UsuarioPensionRepository;

@@ -1,13 +1,20 @@
 package utez.edu.mx.backendparking.config;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import utez.edu.mx.backendparking.modules.pension.Pension;
 import utez.edu.mx.backendparking.modules.pension.PensionRepository;
+import utez.edu.mx.backendparking.modules.roles.ERole;
+import utez.edu.mx.backendparking.modules.roles.Repository.RolesRepository;
+import utez.edu.mx.backendparking.modules.roles.Roles;
 import utez.edu.mx.backendparking.modules.tarifa.Tarifa;
 import utez.edu.mx.backendparking.modules.tarifa.TarifaRepository;
 import utez.edu.mx.backendparking.modules.tipovehiculo.model.TipoVehiculo;
 import utez.edu.mx.backendparking.modules.tipovehiculo.repository.TipoVehiculoRepository;
+import utez.edu.mx.backendparking.modules.usuario.Usuario;
+import utez.edu.mx.backendparking.modules.usuario.UsuarioRepository;
+import utez.edu.mx.backendparking.shared.exception.ResourceNotFoundException;
 
 import java.util.List;
 
@@ -17,11 +24,67 @@ public class InitialDataService {
     private final TarifaRepository tarifaRepository;
     private final TipoVehiculoRepository tipoVehiculoRepository;
     private final PensionRepository pensionRepository;
+    private final RolesRepository roleRepository;
+    private final UsuarioRepository usuarioRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public InitialDataService(TarifaRepository tarifaRepository, TipoVehiculoRepository tipoVehiculoRepository, PensionRepository pensionRepository) {
+    public InitialDataService(TarifaRepository tarifaRepository, TipoVehiculoRepository tipoVehiculoRepository, PensionRepository pensionRepository, RolesRepository roleRepository, UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
         this.tarifaRepository = tarifaRepository;
         this.tipoVehiculoRepository = tipoVehiculoRepository;
         this.pensionRepository = pensionRepository;
+        this.roleRepository = roleRepository;
+        this.usuarioRepository = usuarioRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
+
+    @Transactional
+    public void inicializarRolesAndUserAdminAndEmployee() {
+
+        // Verificar si ya existen roles
+        if (roleRepository.count() == 0) {
+            // Crear todos los roles del enum
+            for (ERole roleName : ERole.values()) {
+                Roles role = new Roles();
+                role.setName(roleName);
+                roleRepository.save(role);
+            }
+        }
+
+        // Crear usuario ADMINISTRADOR si no existe
+        if (usuarioRepository.findByCorreo("admin@parking.com") == null) {
+            Roles rolAdmin = roleRepository.findByName(ERole.ADMINISTRADOR)
+                    .orElseThrow(() -> new ResourceNotFoundException("Rol ADMINISTRADOR no encontrado"));
+
+            Usuario admin = new Usuario();
+            admin.setNombre("Administrador");
+            admin.setApellidos("Del Sistema");
+            admin.setCorreo("admin@parking.com");
+            admin.setTelefono("1234567890");
+            admin.setContra(passwordEncoder.encode("admin123")); // Contraseña por defecto
+            admin.setStatus(true);
+            admin.setEsPensionado(false);
+            admin.setRol(rolAdmin);
+
+            usuarioRepository.save(admin);
+        }
+
+        // Crear usuario EMPLEADO si no existe
+        if (usuarioRepository.findByCorreo("empleado@parking.com") == null) {
+            Roles rolEmpleado = roleRepository.findByName(ERole.EMPLEADO)
+                    .orElseThrow(() -> new RuntimeException("Rol EMPLEADO no encontrado"));
+
+            Usuario empleado = new Usuario();
+            empleado.setNombre("Empleado");
+            empleado.setApellidos("General");
+            empleado.setCorreo("empleado@parking.com");
+            empleado.setTelefono("0987654321");
+            empleado.setContra(passwordEncoder.encode("empleado123")); // Contraseña por defecto
+            empleado.setStatus(true);
+            empleado.setEsPensionado(false);
+            empleado.setRol(rolEmpleado);
+
+            usuarioRepository.save(empleado);
+        }
     }
 
     @Transactional

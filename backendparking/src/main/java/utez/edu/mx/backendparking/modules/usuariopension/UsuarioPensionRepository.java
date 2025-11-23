@@ -2,7 +2,6 @@ package utez.edu.mx.backendparking.modules.usuariopension;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import utez.edu.mx.backendparking.modules.usuario.model.Usuario;
 
 import java.util.Optional;
 
