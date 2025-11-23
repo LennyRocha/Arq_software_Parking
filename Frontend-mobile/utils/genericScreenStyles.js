@@ -7,6 +7,11 @@ const BoxStyles = StyleSheet.create({
     padding: 24,
     gap: 20,
   },
+  containerScroll: {
+    backgroundColor: "transparent",
+    padding: 24,
+    gap: 20,
+  },
   font300: {
     fontFamily: "Exo2_300Light",
   },
@@ -36,6 +41,13 @@ const BoxStyles = StyleSheet.create({
     borderRadius: 5,
     fontWeight: "bold",
   },
+  ButtonBottomRadius: {
+    borderBottomStartRadius: 5,
+    borderBottomEndRadius: 5,
+    borderTopStartRadius: 0,
+    borderTopEndRadius: 0,
+    fontWeight: "bold",
+  },
   flex: {
     flex: 1,
   },
@@ -43,6 +55,10 @@ const BoxStyles = StyleSheet.create({
     textTransform: "uppercase",
     fontFamily: "Exo2_700Bold",
     width: "100%"
+  },
+  buttonTextAuto: {
+    textTransform: "uppercase",
+    fontFamily: "Exo2_700Bold",
   }
 });
 

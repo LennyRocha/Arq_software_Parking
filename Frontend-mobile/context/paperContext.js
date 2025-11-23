@@ -79,10 +79,10 @@ export const UrbanOasisLightTheme = {
     onErrorContainer: "#410002",
     //Background
     //Surface
-    surface: "#EDEAF0",
-    onSurface: "#323035",
-    surfaceVariant: "#FAFAFA",
-    onSurfaceVariant: "#2E2E2E",
+    surfaceVariant: "#EDEAF0",
+    onSurfaceVariant: "#323035",
+    surface: "#FAFAFA",
+    onSurface: "#2E2E2E",
     //Outline
     outline: "#808080",
     //Custom
@@ -92,10 +92,11 @@ export const UrbanOasisLightTheme = {
     success: "#4CAF50",
     info: "#2196F3",
     dark: "#424242",
-    cardSurface: "#A2E6E5",
+    cardSurface: "#C5E4E7",
     onCardSurface: "#397974",
     cardDark: "#FAFDFC",
     onCardDark: "#191C1C",
+    olderBack: "#F0F9F9"
   },
 };
 
@@ -124,10 +125,10 @@ export const UrbanOasisDarkTheme = {
     onErrorContainer: "#FFB4AB",
     //Background
     //Surface
-    surfaceVariant: "#2E2E2E",
-    onSurfaceVariant: "#FAFAFA",
-    surface: "#323035",
-    onSurface: "#EDEAF0",
+    surface: "#2E2E2E",
+    onSurface: "#FAFAFA",
+    surfaceVariant: "#323035",
+    onSurfaceVariant: "#EDEAF0",
     //Outline
     outline: "#b3b3b3",
     //Custom
@@ -137,10 +138,11 @@ export const UrbanOasisDarkTheme = {
     success: "#0B6E00",
     info: "#1976D2",
     dark: "#1E1E1E",
-    cardSurface: "#C5E4E7",
+    cardSurface: "#A2E6E5",
     onCardSurface: "#397974",
     cardDark: "#191C1C",
     onCardDark: "#FAFDFC",
+    olderBack: "#E2F3F3"
   },
 };
 

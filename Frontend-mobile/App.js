@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { View, StyleSheet, StatusBar } from "react-native";
 import {
   Button,
@@ -10,9 +10,8 @@ import {
 import { ThemeProvider } from "./context/useCustomColors";
 import PaperContext from "./context/paperContext";
 import { useCustomThemes } from "./context/useCustomColors";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
 import { useTheme } from "react-native-paper";
-import changeNavigationBarColor from "react-native-navigation-bar-color";
 import {
   useFonts,
   Exo2_400Regular,
@@ -33,9 +32,10 @@ import CustomModal from "./components/CustomModal";
 import useModalController from "./hooks/useModalController";
 import CustomMultiSteps from "./components/CustomMultiSteps";
 import { CreditCardView } from "react-native-credit-card-input";
-import MainNavigator from "./navigation/MainNavigator";
 import { NavigationContainer } from "@react-navigation/native";
-const MyApp = () => {
+import AppWrapper from "./AppWrapper";
+
+export const MyApp = () => {
   const { theme, toggleTheme } = useCustomThemes();
   const paperTheme = useTheme();
   const { visible, config, showAlert, hideAlert } = useCustomAlert();
@@ -486,13 +486,15 @@ export default function App() {
   // }, []);
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <NavigationContainer>
-        <ThemeProvider>
-          <PaperContext>
-            <MainNavigator />
-          </PaperContext>
-        </ThemeProvider>
-      </NavigationContainer>
+      <SafeAreaProvider>
+        <NavigationContainer>
+          <ThemeProvider>
+            <PaperContext>
+              <AppWrapper />
+            </PaperContext>
+          </ThemeProvider>
+        </NavigationContainer>
+      </SafeAreaProvider>
     </GestureHandlerRootView>
   );
 }

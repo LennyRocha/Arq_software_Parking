@@ -1,11 +1,11 @@
 import pensionYup from "./yup/pensionYup";
 export default class Pension {
-  constructor({ id, duracion, estatus, costo, nombre }) {
-    this.id = id;
-    this.duracion = duracion;
-    this.estatus = estatus;
-    this.costo = costo;
-    this.nombre = nombre;
+  constructor({ id, duracionDias, estatus, costo, nombre }) {
+    this._id = id;
+    this._duracionDias = duracionDias;
+    this._estatus = estatus;
+    this._costo = costo;
+    this._nombre = nombre;
   }
 
   static getYup() {
@@ -13,16 +13,16 @@ export default class Pension {
   }
 
   get getId() {
-    return this.id;
+    return this._id;
   }
 
   toJson() {
     return {
-      id: this.id || null,
-      duracion: this.duracion,
-      costo: this.costo,
-      nombre: this.nombre,
-      estatus: this.estatus,
+      id: this._id || null,
+      duracionDias: this._duracionDias,
+      costo: this._costo,
+      nombre: this._nombre,
+      estatus: this._estatus,
     };
   }
 
