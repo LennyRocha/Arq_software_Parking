@@ -39,13 +39,8 @@ public class AuthUserServiceImpl {
               return ApiResponse.error(HttpStatus.BAD_REQUEST, "El usuario ya existe", null);
           }
 
-          Roles rol = rolesRepository.findByName(ERole.CLIENTE_PENSIONADO)
-                  .orElseThrow(()-> new ResourceNotFoundException("Rol cliente pensionado no encontrado"));
-          if(rol == null){
-              rol = new Roles();
-              rol.setName(ERole.CLIENTE_PENSIONADO);
-              rolesRepository.save(rol);
-          }
+          Roles rol = rolesRepository.findByName(ERole.EMPLEADO)
+                  .orElseThrow(()-> new ResourceNotFoundException("Rol empleado no encontrado"));
 
           Usuario nuevoUsuario = new Usuario();
           nuevoUsuario.setNombre(request.getNombre());
