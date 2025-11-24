@@ -3,6 +3,8 @@ package utez.edu.mx.backendparking.config;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import utez.edu.mx.backendparking.modules.historialpagos.Pago;
+import utez.edu.mx.backendparking.modules.historialpagos.PagoRepository;
 import utez.edu.mx.backendparking.modules.pension.Pension;
 import utez.edu.mx.backendparking.modules.pension.PensionRepository;
 import utez.edu.mx.backendparking.modules.roles.ERole;
@@ -35,8 +37,9 @@ public class InitialDataService {
     private final PasswordEncoder passwordEncoder;
     private final VehiculoRepository vehiculoRepository;
     private final UsuarioPensionRepository usuarioPensionRepository;
+    private final PagoRepository pagoRepository;
 
-    public InitialDataService(TarifaRepository tarifaRepository, TipoVehiculoRepository tipoVehiculoRepository, PensionRepository pensionRepository, RolesRepository roleRepository, UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder, VehiculoRepository vehiculoRepository, UsuarioPensionRepository usuarioPensionRepository) {
+    public InitialDataService(TarifaRepository tarifaRepository, TipoVehiculoRepository tipoVehiculoRepository, PensionRepository pensionRepository, RolesRepository roleRepository, UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder, VehiculoRepository vehiculoRepository, UsuarioPensionRepository usuarioPensionRepository, PagoRepository pagoRepository) {
         this.tarifaRepository = tarifaRepository;
         this.tipoVehiculoRepository = tipoVehiculoRepository;
         this.pensionRepository = pensionRepository;
@@ -45,6 +48,7 @@ public class InitialDataService {
         this.passwordEncoder = passwordEncoder;
         this.vehiculoRepository = vehiculoRepository;
         this.usuarioPensionRepository = usuarioPensionRepository;
+        this.pagoRepository = pagoRepository;
     }
 
     @Transactional
@@ -376,6 +380,15 @@ public class InitialDataService {
 
         // Guardar el registro
         usuarioPensionRepository.save(usuarioPension);
+
+        Pago pago=new Pago();
+        pago.setCantidadPago(pensionSeleccionada.getCosto());
+        pago.setUsuarioPension(usuarioPension);
+        pago.setFechaPago(LocalDate.now());
+        pago.setFechaInicio(LocalDate.now());
+        pago.setFechaFin(LocalDate.now().plusDays(pensionSeleccionada.getDuracionDias()));
+        pago.setPension(pensionSeleccionada);
+        pagoRepository.save(pago);
 
         System.out.println("Usuario pensión inicializado correctamente.");
         System.out.println("Pensión asignada: " + pensionSeleccionada.getNombre());

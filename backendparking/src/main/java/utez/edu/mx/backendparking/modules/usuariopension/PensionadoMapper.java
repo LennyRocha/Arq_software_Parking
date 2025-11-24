@@ -53,13 +53,14 @@ public class PensionadoMapper {
     }
 
     public static Pago toPagoEntity(UsuarioPension usuarioPension, Double cantidadPago,
-                                    LocalDate fechaInicio, LocalDate fechaFin) {
+                                    LocalDate fechaInicio, LocalDate fechaFin, Pension pension) {
         Pago pago = new Pago();
         pago.setUsuarioPension(usuarioPension);
         pago.setCantidadPago(cantidadPago);
         pago.setFechaPago(LocalDate.now());
         pago.setFechaInicio(fechaInicio);
         pago.setFechaFin(fechaFin);
+        pago.setPension(pension);
 
         return pago;
     }

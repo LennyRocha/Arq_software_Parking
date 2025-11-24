@@ -1,10 +1,13 @@
 package utez.edu.mx.backendparking.modules.usuariopension;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import utez.edu.mx.backendparking.modules.historialpagos.Pago;
 import utez.edu.mx.backendparking.modules.historialpagos.PagoRepository;
+import utez.edu.mx.backendparking.modules.historialpagos.dto.PagoResponseDto;
 import utez.edu.mx.backendparking.modules.pension.Pension;
 import utez.edu.mx.backendparking.modules.pension.PensionRepository;
 import utez.edu.mx.backendparking.modules.roles.ERole;
@@ -14,9 +17,7 @@ import utez.edu.mx.backendparking.modules.tipovehiculo.model.TipoVehiculo;
 import utez.edu.mx.backendparking.modules.tipovehiculo.repository.TipoVehiculoRepository;
 import utez.edu.mx.backendparking.modules.usuario.Usuario;
 import utez.edu.mx.backendparking.modules.usuario.UsuarioRepository;
-import utez.edu.mx.backendparking.modules.usuariopension.dto.PensionadoRegistrationDto;
-import utez.edu.mx.backendparking.modules.usuariopension.dto.PensionadoResponseDto;
-import utez.edu.mx.backendparking.modules.usuariopension.dto.VehiculoDto;
+import utez.edu.mx.backendparking.modules.usuariopension.dto.*;
 import utez.edu.mx.backendparking.modules.vehiculo.model.Vehiculo;
 import utez.edu.mx.backendparking.modules.vehiculo.repository.VehiculoRepository;
 import utez.edu.mx.backendparking.shared.exception.ConflictException;
@@ -26,6 +27,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -102,7 +104,7 @@ public class PensionadoService {
         usuarioPension = usuarioPensionRepository.save(usuarioPension);
 
         // Crear Pago
-        Pago pago = PensionadoMapper.toPagoEntity(usuarioPension, pension.getCosto(), fechaInicio, fechaFinalizacion);
+        Pago pago = PensionadoMapper.toPagoEntity(usuarioPension, pension.getCosto(), fechaInicio, fechaFinalizacion,pension);
         pago = pagoRepository.save(pago);
 
         return PensionadoMapper.toResponseDto(usuario, usuarioPension, pago, vehiculos);
@@ -122,5 +124,122 @@ public class PensionadoService {
             uuid = UUID.randomUUID().toString();
         } while (usuarioPensionRepository.existsByUuidCodigoQR(uuid));
         return uuid;
+    }
+
+
+    @Transactional(readOnly = true)
+    public Page<UsuarioPensionResponseDto> findAllUsuariosPensionados(Pageable pageable, String search) {
+        Page<UsuarioPension> usuariosPension = usuarioPensionRepository.findAllWithUsuarioAndPension(pageable, search);
+
+        return usuariosPension.map(up -> {
+            // Buscar el costo del último pago según la fecha de finalización
+            Optional<Pago> ultimoPago = pagoRepository.findUltimoPagoPorFechaFinalizacion(up.getId(), up.getFechaFinalizacion());
+            Double costoUltimoPago = ultimoPago.map(Pago::getCantidadPago).orElse(up.getPension().getCosto());
+
+            return new UsuarioPensionResponseDto(up.getId(), up.getUsuario().getCorreo(), up.getPension().getNombre(), up.getFechaFinalizacion(), costoUltimoPago, up.isEstatus(), up.getUuidCodigoQR());
+        });
+    }
+
+    @Transactional(readOnly = true)
+    public Page<PagoResponseDto> findHistorialPagosByUsuarioPension(Long usuarioPensionId, Pageable pageable) {
+        Page<Pago> pagos = pagoRepository.findByUsuarioPensionId(usuarioPensionId, pageable);
+
+        return pagos.map(pago -> new PagoResponseDto(pago.getId(), pago.getCantidadPago(), pago.getFechaPago(), pago.getFechaInicio(), pago.getFechaFin()));
+    }
+
+    @Transactional
+    public void renovarPension(Long usuarioPensionId, RenovarPensionRequestDto dto) {
+        UsuarioPension usuarioPension = usuarioPensionRepository.findById(usuarioPensionId)
+                .orElseThrow(() -> new RuntimeException("Usuario pensión no encontrado"));
+
+        Pension nuevaPension = pensionRepository.findById(dto.getIdPension())
+                .orElseThrow(() -> new RuntimeException("Tipo de pensión no encontrado"));
+
+        LocalDate fechaActual = LocalDate.now();
+
+        // ESCENARIO 3: Si la pensión está desactivada, activar inmediatamente
+        if (!usuarioPension.isEstatus()) {
+            LocalDate fechaInicio = fechaActual;
+            LocalDate fechaFin = fechaInicio.plusDays(nuevaPension.getDuracionDias());
+
+            // Crear pago
+            Pago nuevoPago = new Pago();
+            nuevoPago.setCantidadPago(nuevaPension.getCosto());
+            nuevoPago.setFechaPago(fechaActual);
+            nuevoPago.setFechaInicio(fechaInicio);
+            nuevoPago.setFechaFin(fechaFin);
+            nuevoPago.setUsuarioPension(usuarioPension);
+            nuevoPago.setPension(nuevaPension); // Asociar la pensión al pago
+            pagoRepository.save(nuevoPago);
+
+            // Actualizar usuario pension inmediatamente
+            usuarioPension.setFechaFinalizacion(fechaFin);
+            usuarioPension.setPension(nuevaPension);
+            usuarioPension.setEstatus(true);
+            usuarioPensionRepository.save(usuarioPension);
+
+        } else {
+            // ESCENARIO 2: Pensión activa - pago para futuro (lo manejará el scheduler)
+            LocalDate fechaInicio = usuarioPension.getFechaFinalizacion().plusDays(1);
+            LocalDate fechaFin = fechaInicio.plusDays(nuevaPension.getDuracionDias() - 1);
+
+            Pago nuevoPago = new Pago();
+            nuevoPago.setCantidadPago(nuevaPension.getCosto());
+            nuevoPago.setFechaPago(fechaActual);
+            nuevoPago.setFechaInicio(fechaInicio);
+            nuevoPago.setFechaFin(fechaFin);
+            nuevoPago.setUsuarioPension(usuarioPension);
+            nuevoPago.setPension(nuevaPension); // Asociar la pensión al pago
+            pagoRepository.save(nuevoPago);
+
+            // NO actualizar usuarioPension aquí - lo hará el scheduler cuando llegue la fecha
+        }
+    }
+
+    @Transactional
+    public void actualizarPensionesVencidas() {
+        LocalDate fechaActual = LocalDate.now();
+        System.out.println("INICIANDO SCHEDULER - Fecha actual: " + fechaActual);
+
+        List<UsuarioPension> pensionesVencidas = usuarioPensionRepository.findPensionesVencidas(fechaActual);
+        System.out.println("Pensiones vencidas encontradas: " + pensionesVencidas.size());
+
+        for (UsuarioPension usuarioPension : pensionesVencidas) {
+            System.out.println("Procesando UsuarioPension ID: " + usuarioPension.getId() +
+                    " - Fecha fin: " + usuarioPension.getFechaFinalizacion());
+
+            // VERIFICAR PAGOS
+            List<Pago> todosPagos = pagoRepository.findAllByUsuarioPensionId(usuarioPension.getId());
+            System.out.println("Total pagos para esta pension: " + todosPagos.size());
+            for (Pago pago : todosPagos) {
+                System.out.println("Pago ID: " + pago.getId() +
+                        " - Fecha inicio: " + pago.getFechaInicio() +
+                        " - Fecha fin: " + pago.getFechaFin());
+            }
+
+            // BUSCAR PAGO FUTURO VÁLIDO (con ambas condiciones)
+            Optional<Pago> pagoFuturo = pagoRepository.findPagoFuturoValido(
+                    usuarioPension.getId(),
+                    usuarioPension.getFechaFinalizacion(),
+                    fechaActual);  //  Pasar fecha actual
+
+            System.out.println("Pago futuro válido encontrado: " + pagoFuturo.isPresent());
+
+            if (pagoFuturo.isPresent()) {
+                Pago pago = pagoFuturo.get();
+                System.out.println("Aplicando pago futuro - Fecha inicio: " + pago.getFechaInicio());
+
+                usuarioPension.setFechaFinalizacion(pago.getFechaFin());
+                usuarioPension.setPension(pago.getPension());
+                usuarioPension.setEstatus(true);
+                usuarioPensionRepository.save(usuarioPension);
+                System.out.println("Pension ACTUALIZADA");
+            } else {
+                usuarioPension.setEstatus(false);
+                usuarioPensionRepository.save(usuarioPension);
+                System.out.println("Pension DESACTIVADA");
+            }
+        }
+        System.out.println("SCHEDULER COMPLETADO");
     }
 }
