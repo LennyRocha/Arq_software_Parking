@@ -1,12 +1,14 @@
-package utez.edu.mx.backendparking.modules.usuario.controller;
+package utez.edu.mx.backendparking.modules.usuario.Controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import utez.edu.mx.backendparking.modules.usuario.UsuarioService;
 import utez.edu.mx.backendparking.modules.usuario.Request.UsuarioRequest;
-import utez.edu.mx.backendparking.modules.usuario.model.Usuario;
 import utez.edu.mx.backendparking.shared.api.ApiResponse;
 
 @RestController
@@ -23,10 +25,5 @@ public class UsuarioController {
         return ResponseEntity
             .status(response.getStatus())
             .body(response);
-    }
-
-    @GetMapping("usuarios/backend/{id}")
-    public Usuario getUserForBackend(@PathVariable("id") Long id) {
-        return usuarioService.getUserForBackend(id);
     }
 }
