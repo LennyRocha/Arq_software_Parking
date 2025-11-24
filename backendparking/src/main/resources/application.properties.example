@@ -1,0 +1,26 @@
+spring.application.name=backendparking
+
+spring.jpa.hibernate.ddl-auto=update
+spring.datasource.url=jdbc:mysql://localhost:3306/db_parking
+spring.datasource.username=root
+spring.datasource.password=root
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+spring.jpa.show-sql: true
+
+#JWT
+jwt.secret.key=8e0e54abf838b8dd9b92cc00451c7bc592b12f7d9ea36794b8e6a287700339ad
+jwt.time.expiration=3600000
+
+# ---Para swagger
+springdoc.api-docs.path=/api-docs
+# Ruta de la interfaz web de Swagger UI
+springdoc.swagger-ui.path=/swagger-ui.html
+
+# Mercado Pago - Credenciales
+mercadopago.access.token=TEST-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-xxxxxx-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-xxxxxxxxx
+mercadopago.public.key=TEST-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+
+# URLs de retorno de Mercado Pago
+mercadopago.success.url=http://localhost:5173/registro-pension?status=approved
+mercadopago.failure.url=http://localhost:5173/registro-pension?status=rejected
+mercadopago.pending.url=http://localhost:5173/registro-pension?status=pending

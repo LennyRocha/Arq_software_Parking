@@ -102,7 +102,7 @@ public class PensionadoService {
         usuarioPension = usuarioPensionRepository.save(usuarioPension);
 
         // Crear Pago
-        Pago pago = PensionadoMapper.toPagoEntity(usuarioPension, pension.getCosto(), fechaInicio, fechaFinalizacion,dto);
+        Pago pago = PensionadoMapper.toPagoEntity(usuarioPension, pension.getCosto(), fechaInicio, fechaFinalizacion);
         pago = pagoRepository.save(pago);
 
         return PensionadoMapper.toResponseDto(usuario, usuarioPension, pago, vehiculos);
