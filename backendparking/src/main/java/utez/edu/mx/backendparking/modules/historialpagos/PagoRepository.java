@@ -9,6 +9,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface PagoRepository extends JpaRepository<Pago, Long> {
@@ -75,4 +77,35 @@ public interface PagoRepository extends JpaRepository<Pago, Long> {
         @Param("fechaFinal") LocalDate fechaFinal
     );
 
+    @Query("SELECT p FROM Pago p WHERE p.usuarioPension.id = :usuarioPensionId")
+    Page<Pago> findByUsuarioPensionId(@Param("usuarioPensionId") Long usuarioPensionId, Pageable pageable);
+
+    @Query("""
+        SELECT p FROM Pago p 
+        WHERE p.usuarioPension.id = :usuarioPensionId 
+        AND p.fechaFin = :fechaFinalizacion 
+        ORDER BY p.fechaPago DESC 
+        LIMIT 1
+        """)
+    Optional<Pago> findUltimoPagoPorFechaFinalizacion(@Param("usuarioPensionId") Long usuarioPensionId, @Param("fechaFinalizacion") LocalDate fechaFinalizacion);
+
+    @Query("""
+        SELECT p FROM Pago p 
+        WHERE p.usuarioPension.id = :usuarioPensionId 
+        AND p.fechaInicio > :fechaFinalizacion
+        """)
+    Optional<Pago> findPagoRenovacionPosterior(@Param("usuarioPensionId") Long usuarioPensionId, @Param("fechaFinalizacion") LocalDate fechaFinalizacion);
+
+    Optional<Pago> findFirstByUsuarioPensionIdAndFechaInicioAfterOrderByFechaInicio(Long usuarioPensionId, LocalDate fechaInicio);
+
+    @Query("SELECT p FROM Pago p WHERE p.usuarioPension.id = :usuarioPensionId")
+    List<Pago> findAllByUsuarioPensionId(@Param("usuarioPensionId") Long usuarioPensionId);
+
+    @Query("SELECT p FROM Pago p WHERE p.usuarioPension.id = :usuarioPensionId " +
+            "AND p.fechaInicio > :fechaFinalizacionAnterior " +
+            "AND p.fechaInicio >= :fechaActual " +  // ← NUEVA CONDICIÓN
+            "ORDER BY p.fechaInicio ASC")
+    Optional<Pago> findPagoFuturoValido(@Param("usuarioPensionId") Long usuarioPensionId,
+                                        @Param("fechaFinalizacionAnterior") LocalDate fechaFinalizacionAnterior,
+                                        @Param("fechaActual") LocalDate fechaActual);
 }

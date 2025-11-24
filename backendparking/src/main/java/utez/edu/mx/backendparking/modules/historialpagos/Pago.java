@@ -1,6 +1,7 @@
 package utez.edu.mx.backendparking.modules.historialpagos;
 
 import jakarta.persistence.*;
+import utez.edu.mx.backendparking.modules.pension.Pension;
 import utez.edu.mx.backendparking.modules.usuariopension.UsuarioPension;
 
 import java.time.LocalDate;
@@ -32,6 +33,10 @@ public class Pago {
     @JoinColumn(name = "id_usuario_pension", referencedColumnName = "id")
     private UsuarioPension usuarioPension;
 
+    // NUEVO: Tipo de pensión asociada al pago (OPCIONAL)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "id_pension", referencedColumnName = "id")
+    private Pension pension;
 
     // GETTERS Y SETTERS
     public Long getId() {
@@ -82,4 +87,11 @@ public class Pago {
         this.usuarioPension = usuarioPension;
     }
 
+    public Pension getPension() {
+        return pension;
+    }
+
+    public void setPension(Pension pension) {
+        this.pension = pension;
+    }
 }
