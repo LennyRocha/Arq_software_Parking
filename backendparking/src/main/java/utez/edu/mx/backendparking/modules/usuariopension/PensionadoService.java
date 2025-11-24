@@ -59,8 +59,8 @@ public class PensionadoService {
             throw new ConflictException("Ya existe un usuario con el correo: " + dto.getCorreo());
         }
 
-        // Validar que las placas no estén duplicadas
-        validarPlacasUnicas(dto.getVehiculos());
+        // Validar que las placas no estén duplicadas, NOTA, SE PENSARA que se haga validacion que se pueda repetir en general, pero para pensionados, placas de vehiculos que no esten asignados a un usuario.
+        //validarPlacasUnicas(dto.getVehiculos());
 
         // Obtener y validar la pensión
         Pension pension = pensionRepository.findById(dto.getPensionId())
