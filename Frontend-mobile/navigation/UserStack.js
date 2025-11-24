@@ -25,6 +25,7 @@ import DetallesVehiculo from "../modules/vehiculo/screens/DetallesVehiculo";
 import InputVehiculo from "../modules/vehiculo/screens/InputVehiculo";
 import NuevoVehiculo from "../modules/vehiculo/screens/NuevoVehiculo";
 import SalidaQR from "../modules/salidas/screens/SalidaQR";
+import EntradaQR from "../modules/cajon/screens/EntradaQR";
 
 const Stack = createNativeStackNavigator();
 
@@ -195,7 +196,7 @@ export default function UserStack({ name = "LO", navigation, route }) {
 
       {/* Pantallas secundarias */}
       <Stack.Screen name="perfil" component={PerfilWrapper} />
-      <Stack.Screen name="entradaQR" component={GenericScreen} />
+      <Stack.Screen name="entradaQR" component={EntradaQR} />
       <Stack.Screen name="salidaQR" component={SalidaQR} />
       <Stack.Screen name="detallesCar" component={DetallesVehiculo} />
       <Stack.Screen name="inputCarScreen" component={InputVehiculo} />

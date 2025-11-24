@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/cajones/api")
+@RequestMapping("/api/cajones")
 @Tag(name="Cajones", description = "Endpoints REST para cajones")
 public class CajonController {
     @Autowired
@@ -33,8 +33,8 @@ public class CajonController {
 
     //Solo para pruebas, luego se quitará
     @GetMapping("/all")
-    @Operation(summary = "Endpoint de pruebas",
-            description = "Endpoint para testear la lista que se devolverá por webSocket")
+    @Operation(summary = "Endpoint del webSocket",
+            description = "Endpoint exclsuivo para su uso por webSocket")
     public ApiResponse<List<Cajon>> getAllCajones(
             @RequestParam(defaultValue = "0") int piso,
             @RequestParam(defaultValue = "0") int id

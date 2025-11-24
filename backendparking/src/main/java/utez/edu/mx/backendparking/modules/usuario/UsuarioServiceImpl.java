@@ -10,11 +10,13 @@ import org.modelmapper.ModelMapper;
 
 import utez.edu.mx.backendparking.shared.api.ApiResponse;
 import utez.edu.mx.backendparking.modules.roles.ERole;
-import utez.edu.mx.backendparking.modules.usuario.Repository.UsuarioRepository;
+import utez.edu.mx.backendparking.modules.usuario.repository.UsuarioRepository;
 import utez.edu.mx.backendparking.modules.usuario.Request.UsuarioRequest;
 import utez.edu.mx.backendparking.modules.usuario.model.Usuario;
 import utez.edu.mx.backendparking.modules.roles.Roles;
 import utez.edu.mx.backendparking.modules.roles.Repository.RolesRepository;
+import utez.edu.mx.backendparking.shared.exception.ResourceNotFoundException;
+
 @Service
 public class UsuarioServiceImpl implements UsuarioService {
     private static final Logger log = Logger.getLogger(UsuarioServiceImpl.class.getName());
@@ -78,4 +80,9 @@ public ApiResponse<?> createUser(UsuarioRequest request){
       );
    }
 }
+
+    @Override
+    public Usuario getUserForBackend(Long id) {
+        return usuarioRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("No existe el usuario con id: " + id));
+    }
 }

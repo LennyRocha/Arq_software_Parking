@@ -12,7 +12,7 @@ import utez.edu.mx.backendparking.shared.api.ApiResponse;
 import java.util.List;
 
 @RestController
-@RequestMapping("/vehiculos/api")
+@RequestMapping("/api/vehiculos")
 @Tag(name="Vehículos", description = "Endpoints para vehículos")
 public class VehiculoController {
 
@@ -29,8 +29,8 @@ public class VehiculoController {
             @PathVariable Long userid,
             @RequestParam(required = false) Integer carid,
             @RequestParam(defaultValue = "") String query,
-            @RequestParam(defaultValue = "false") Boolean active,
-            @RequestParam(defaultValue = "false") Boolean placas
+            @RequestParam(required = false) Boolean active,
+            @RequestParam(required = false) Boolean placas
     ) {
         return vehiculoService.getAllVehiculosPerUser(
                 userid,

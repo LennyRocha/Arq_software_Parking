@@ -46,7 +46,13 @@ export default function Estacionados({ navigation }) {
           <Icon source={"clock-time-three-outline"} color={paper.colors.gray} size={24} />
           <Text variant="labelLarge" style={{ fontWeight: "bold", color: paper.colors.gray }}>4 hrs transcurridas</Text>
         </View>
-        <Button mode="contained" style={[BoxStyles.ButtonRadius, { width: "100%" }]} labelStyle={BoxStyles.buttonTextAuto} onPress={() => navigation.navigate("salidaQR", { folio: 2025 }) } >Marcar Salida</Button>
+        <Button
+          theme={{
+            colors: {
+              primary: paper.colors.tertiary,
+            }
+          }}
+          mode="contained" style={[BoxStyles.ButtonRadius, { width: "100%" }]} labelStyle={BoxStyles.buttonTextAuto} onPress={() => navigation.navigate("salidaQR", { folio: 2025 })} >Marcar Salida</Button>
       </View>
     )
   }
@@ -84,7 +90,13 @@ export default function Estacionados({ navigation }) {
         <Icon source={"clock-time-three-outline"} color={paper.colors.gray} size={24} />
         <Text variant="labelLarge" style={{ fontWeight: "bold", color: paper.colors.gray }}>4 hrs transcurridas</Text>
       </View>
-      <Button mode="contained" style={[BoxStyles.ButtonRadius, { width: "100%" }]} labelStyle={BoxStyles.buttonTextAuto} onPress={() => navigation.navigate("salidaQR", { folio: 2020 })} >Marcar Salida</Button>
+      <Button
+        theme={{
+          colors: {
+            primary: paper.colors.tertiary,
+          }
+        }}
+        mode="contained" style={[BoxStyles.ButtonRadius, { width: "100%" }]} labelStyle={BoxStyles.buttonTextAuto} onPress={() => navigation.navigate("salidaQR", { folio: 2020 })} >Marcar Salida</Button>
     </View>
   );
   const Vista2 = () => (
@@ -116,12 +128,18 @@ export default function Estacionados({ navigation }) {
         </Text>
       </View>
       <Text variant="headlineMedium" style={{ fontWeight: "bold", color: paper.colors.tertiary }}>Modelo del vehículo</Text>
-      <Image source={vehiculos["moto"]} style={{ flex: 1, aspectRatio: 9 / 16, resizeMode: "contain", transform: [{ scaleX: -1 }, { scaleY: -1 }]}} />
+      <Image source={vehiculos["moto"]} style={{ flex: 1, aspectRatio: 9 / 16, resizeMode: "contain", transform: [{ scaleX: -1 }, { scaleY: -1 }] }} />
       <View style={{ flexDirection: "row", gap: 8, alignItems: "center" }}>
         <Icon source={"clock-time-three-outline"} color={paper.colors.gray} size={24} />
         <Text variant="labelLarge" style={{ fontWeight: "bold", color: paper.colors.gray }}>4 hrs transcurridas</Text>
       </View>
-      <Button mode="contained" style={[BoxStyles.ButtonRadius, { width: "100%" }]} labelStyle={BoxStyles.buttonTextAuto} onPress={() => navigation.navigate("salidaQR", { folio: 2019 })} >Marcar Salida</Button>
+      <Button
+        theme={{
+          colors: {
+            primary: paper.colors.tertiary,
+          }
+        }}
+        mode="contained" style={[BoxStyles.ButtonRadius, { width: "100%" }]} labelStyle={BoxStyles.buttonTextAuto} onPress={() => navigation.navigate("salidaQR", { folio: 2019 })} >Marcar Salida</Button>
     </View>
   );
 

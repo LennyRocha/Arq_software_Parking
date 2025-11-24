@@ -1,10 +1,8 @@
-import axios from "axios";
 import React from "react";
 import pensionInterface from "./pensionInterface";
 import { getAxiosErrorMessage } from "../../../utils/getAxiosMessage";
 import PensionCard from "../components/PensionCard";
-
-const url = process.env.API_URL;
+import api from "../../../utils/api";
 
 export default function usePensiones(navigation, pressHanlder) {
   const [isLoading, setLoading] = React.useState(false);
@@ -20,7 +18,7 @@ export default function usePensiones(navigation, pressHanlder) {
     setError(null);
     setErrorData(null);
     try {
-      const res = await axios.get(`${url}${pensionInterface.getAll}`);
+      const res = await api.get(`${pensionInterface.getAll}`);
       setData(res.data);
     } catch (err) {
       setError(err);

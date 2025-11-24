@@ -5,7 +5,7 @@ const BoxStyles = StyleSheet.create({
     flex: 1,
     backgroundColor: "transparent",
     padding: 24,
-    gap: 20,
+    gap: 12,
   },
   containerScroll: {
     backgroundColor: "transparent",

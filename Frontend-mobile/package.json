@@ -47,7 +47,7 @@
     "react-native-swiper": "^1.6.0",
     "react-native-vector-icons": "^10.3.0",
     "react-native-view-shot": "^4.0.3",
-    "sockjs-client": "^1.6.1",
+    "socket.io-client": "^4.8.1",
     "yup": "^1.7.1"
   },
   "private": true,

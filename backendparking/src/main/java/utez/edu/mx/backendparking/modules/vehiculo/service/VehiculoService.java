@@ -21,10 +21,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class VehiculoService  {
+public class VehiculoService {
 
-    final String userEndpoint = "http://localhost:8080/usuarios/backend";
-    final String typesEndpoint = "http://localhost:8080/vehiculos/tipos/backend";
+    final String userEndpoint = "http://localhost:8080/api/usuarios/backend";
+    final String typesEndpoint = "http://localhost:8080/api/vehiculos/tipos";
 
     @Autowired
     private VehiculoRepository vehiculoRepository;
@@ -35,66 +35,43 @@ public class VehiculoService  {
     @Transactional(readOnly = true)
     public ApiResponse<List<VehiculoDto>> getAllVehiculos() {
         List<Vehiculo> vehiculos = vehiculoRepository.findAll();
-        List<VehiculoDto> dtos = vehiculos.stream()
-                .map(VehiculoDto::fromEntity)
-                .toList();
+        List<VehiculoDto> dtos = vehiculos.stream().map(VehiculoDto::fromEntity).toList();
         if (vehiculos.isEmpty()) {
-            return ApiResponse.success(HttpStatus.NO_CONTENT,"No hay vehículos disponibles", dtos);
+            return ApiResponse.success(HttpStatus.NO_CONTENT, "No hay vehículos disponibles", dtos);
         }
-        return ApiResponse.success(HttpStatus.OK,"Vehículos disponibles", dtos);
+        return ApiResponse.success(HttpStatus.OK, "Vehículos disponibles", dtos);
     }
 
     @Transactional(readOnly = true, rollbackFor = {Exception.class, BadRequestException.class, ResourceNotFoundException.class})
-    public ApiResponse<List<VehiculoDto>> getAllVehiculosPerUser(
-            Long user_id,
-            Integer vehiculo_id,
-            String query,
-            Boolean getActive,
-            Boolean getWithPlaca
-    ) {
+    public ApiResponse<List<VehiculoDto>> getAllVehiculosPerUser(Long user_id, Integer vehiculo_id, String query, Boolean getActive, Boolean getWithPlaca) {
         try {
             // Validar que el usuario exista
-            Usuario user = webClientConfig.createClient(userEndpoint).get()
-                    .uri("/{id}", user_id)
-                    .retrieve()
-                    .onStatus(HttpStatusCode::is4xxClientError,
-                            resp -> Mono.error(new ResourceNotFoundException("Usuario no encontrado")))
-                    .onStatus(HttpStatusCode::is5xxServerError,
-                            resp -> Mono.error(new BadRequestException("Error en servicio de usuarios")))
-                    .bodyToMono(Usuario.class)
-                    .block();
+            Usuario user = webClientConfig.createClient(userEndpoint).get().uri("/{id}", user_id).retrieve().onStatus(HttpStatusCode::is4xxClientError, resp -> Mono.error(new ResourceNotFoundException("Usuario no encontrado"))).onStatus(HttpStatusCode::is5xxServerError, resp -> Mono.error(new BadRequestException("Error en servicio de usuarios"))).bodyToMono(Usuario.class).block();
 
             // Validar tipo de vehículo si se proporciona
             TipoVehiculo tipoVehiculo = null;
             if (vehiculo_id != null) {
-                tipoVehiculo = webClientConfig.createClient(typesEndpoint).get()
-                        .uri("/{id}", vehiculo_id)
-                        .retrieve()
-                        .onStatus(HttpStatusCode::is4xxClientError,
-                                resp -> Mono.error(new ResourceNotFoundException("Tipo de vehículo no encontrado")))
-                        .onStatus(HttpStatusCode::is5xxServerError,
-                                resp -> Mono.error(new BadRequestException("Error en servicio de vehículos")))
-                        .bodyToMono(TipoVehiculo.class)
-                        .block();
+                tipoVehiculo = webClientConfig.createClient(typesEndpoint).get().uri("/{id}", vehiculo_id).retrieve().onStatus(HttpStatusCode::is4xxClientError, resp -> Mono.error(new ResourceNotFoundException("Tipo de vehículo no encontrado"))).onStatus(HttpStatusCode::is5xxServerError, resp -> Mono.error(new BadRequestException("Error en servicio de vehículos"))).bodyToMono(TipoVehiculo.class).block();
             }
 
             // Normalizar parámetros
             query = (query != null) ? query.trim() : "";
-            boolean filterActive = (getActive != null) ? getActive : false;
-            boolean filterWithPlaca = (getWithPlaca != null) ? getWithPlaca : false;
+            Boolean filterActive = getActive;     // null = no filtrar
+            Boolean filterWithPlaca = getWithPlaca;  // null = no filtrar
 
-            // Obtener todos los vehículos y aplicar filtros
             String finalQuery = query;
+
             List<VehiculoDto> dtos = vehiculoRepository.findAll().stream()
+                    // Por usuario
                     .filter(v -> v.getUsuario().getId().equals(user_id))
+                    // Por tipo de vehículo
                     .filter(v -> vehiculo_id == null || v.getTipoVehiculo().getId().equals(vehiculo_id))
-                    .filter(v -> finalQuery.isEmpty() ||
-                            v.getModelo().toLowerCase().contains(finalQuery.toLowerCase()) ||
-                            (v.getDescripcion() != null && v.getDescripcion().toLowerCase().contains(finalQuery.toLowerCase())))
-                    .filter(v -> v.getEstatus() == filterActive)
-                    .filter(v -> !filterWithPlaca || v.getPlaca() != null)
-                    .map(VehiculoDto::fromEntity)
-                    .toList();
+                    // Por búsqueda (modelo o descripción)
+                    .filter(v -> finalQuery.isEmpty() || v.getModelo().toLowerCase().contains(finalQuery.toLowerCase()) || (v.getDescripcion() != null && v.getDescripcion().toLowerCase().contains(finalQuery.toLowerCase())))
+                    // Filtrar por estatus SOLO si viene en el request
+                    .filter(v -> filterActive == null || v.getEstatus() == filterActive)
+                    // Filtrar por placa solo si está habilitado
+                    .filter(v -> filterWithPlaca == null || (filterWithPlaca && v.getPlaca() != null)).map(VehiculoDto::fromEntity).toList();
 
             if (dtos.isEmpty()) {
                 return ApiResponse.success(HttpStatus.NO_CONTENT, "No tienes vehículos registrados todavía o no coinciden con los filtros aplicados", dtos);
@@ -113,47 +90,32 @@ public class VehiculoService  {
 
     @Transactional(readOnly = true, rollbackFor = ResourceNotFoundException.class)
     public ApiResponse<Vehiculo> getVehiculoById(Long id) {
-        return ApiResponse.success(HttpStatus.OK,"Vehículo obtenido",
-                vehiculoRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Vehículo no encontrado") )
-        );
+        return ApiResponse.success(HttpStatus.OK, "Vehículo obtenido", vehiculoRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Vehículo no encontrado")));
     }
 
     @Transactional(rollbackFor = {Exception.class, BadRequestException.class, ResourceNotFoundException.class})
     public ApiResponse<Vehiculo> createVehiculo(VehiculoDto vDto) {
-        try{
+        try {
             vDto.setEstatus(true);
-            Usuario user = webClientConfig.createClient(userEndpoint).get()
-                    .uri("/{id}",vDto.getIdUsuario())
-                    .retrieve()
-                    .onStatus(HttpStatusCode::is4xxClientError, resp -> Mono.error(new ResourceNotFoundException("Usuario no encontrado")))
-                    .onStatus(HttpStatusCode::is5xxServerError, resp -> Mono.error(new BadRequestException("Error en servicio de usuarios")))
-                    .bodyToMono(Usuario.class)
-                    .block();
-            TipoVehiculo tipoVehiculo = webClientConfig.createClient(typesEndpoint).get()
-                    .uri("/{id}",vDto.getIdTipoVehiculo())
-                    .retrieve()
-                    .onStatus(HttpStatusCode::is4xxClientError, resp -> Mono.error(new ResourceNotFoundException("Tipo de vehículo no encontrado")))
-                    .onStatus(HttpStatusCode::is5xxServerError, resp -> Mono.error(new BadRequestException("Error en servicio de vehículos")))
-                    .bodyToMono(TipoVehiculo.class)
-                    .block();
+            Usuario user = webClientConfig.createClient(userEndpoint).get().uri("/{id}", vDto.getIdUsuario()).retrieve().onStatus(HttpStatusCode::is4xxClientError, resp -> Mono.error(new ResourceNotFoundException("Usuario no encontrado"))).onStatus(HttpStatusCode::is5xxServerError, resp -> Mono.error(new BadRequestException("Error en servicio de usuarios"))).bodyToMono(Usuario.class).block();
+            TipoVehiculo tipoVehiculo = webClientConfig.createClient(typesEndpoint).get().uri("/{id}", vDto.getIdTipoVehiculo()).retrieve().onStatus(HttpStatusCode::is4xxClientError, resp -> Mono.error(new ResourceNotFoundException("Tipo de vehículo no encontrado"))).onStatus(HttpStatusCode::is5xxServerError, resp -> Mono.error(new BadRequestException("Error en servicio de vehículos"))).bodyToMono(TipoVehiculo.class).block();
             Vehiculo vehiculo = vDto.toEntity();
             vehiculo.setUsuario(user);
             vehiculo.setTipoVehiculo(tipoVehiculo);
             vehiculo = vehiculoRepository.save(vehiculo);
-            return ApiResponse.success(HttpStatus.CREATED,"Vehículo registrado correctamente", vehiculo);
-        }
-        catch (ResourceNotFoundException ex) {
+            return ApiResponse.success(HttpStatus.CREATED, "Vehículo registrado correctamente", vehiculo);
+        } catch (ResourceNotFoundException ex) {
             return ApiResponse.error(HttpStatus.NOT_FOUND, ex.getMessage(), null);
         } catch (BadRequestException ex) {
             return ApiResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage(), null);
-        } catch (Exception e){
-            return ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR,e.getMessage(), null);
+        } catch (Exception e) {
+            return ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), null);
         }
     }
 
     @Transactional(rollbackFor = Exception.class)
     public ApiResponse<Vehiculo> updateVehiculo(Long id, VehiculoDto vDto) {
-        try{
+        try {
             Vehiculo vehiculo = vehiculoRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("El vehículo que deseas modificar no existe"));
             vehiculo.setId(id);
             vehiculo.setEstatus(vDto.isEstatus());
@@ -161,23 +123,22 @@ public class VehiculoService  {
             vehiculo.setDescripcion(vDto.getDescripcion());
             vehiculo.setPlaca(vDto.getPlaca());
             vehiculo = vehiculoRepository.save(vehiculo);
-            return ApiResponse.success(HttpStatus.OK,"Vehículo actualizado correctamente", vehiculo);
-        }
-        catch (Exception e){
-            return ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR,e.getMessage(), null);
+            return ApiResponse.success(HttpStatus.OK, "Vehículo actualizado correctamente", vehiculo);
+        } catch (Exception e) {
+            return ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), null);
         }
     }
 
     @Transactional(rollbackFor = Exception.class)
     public ApiResponse<Void> deleteVehiculo(Long id) {
-        try{
+        try {
             Vehiculo vehiculo = vehiculoRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("El vehículo que deseas cambiar su estatua no existe"));
             boolean oldState = vehiculo.getEstatus();
             vehiculo.setEstatus(!vehiculo.getEstatus());
             vehiculo = vehiculoRepository.save(vehiculo);
-            return ApiResponse.success(HttpStatus.OK,"Ha cambiado el estatus de" + vehiculo.getModelo() + " de "+ oldState +" a "+vehiculo.getEstatus(), null);
-        } catch (Exception e){
-            return ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR,e.getMessage(), null);
+            return ApiResponse.success(HttpStatus.OK, "Ha cambiado el estatus de" + vehiculo.getModelo() + " de " + oldState + " a " + vehiculo.getEstatus(), null);
+        } catch (Exception e) {
+            return ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), null);
         }
     }
 }
