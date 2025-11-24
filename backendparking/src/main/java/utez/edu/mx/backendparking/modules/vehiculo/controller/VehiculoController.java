@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import utez.edu.mx.backendparking.modules.vehiculo.model.Vehiculo;
 import utez.edu.mx.backendparking.modules.vehiculo.model.VehiculoDto;
 import utez.edu.mx.backendparking.modules.vehiculo.model.VehiculoEstacionadoResponseDto;
+import utez.edu.mx.backendparking.modules.vehiculo.model.VehiculoResponseDto;
 import utez.edu.mx.backendparking.modules.vehiculo.service.VehiculoService;
 import utez.edu.mx.backendparking.shared.api.ApiResponse;
 
@@ -81,7 +82,7 @@ public class VehiculoController {
     @GetMapping("/mis-vehiculos")
     @Operation(summary = "Obtener mis vehículos",
                description = "Obtiene todos los vehículos registrados del usuario autenticado")
-    public ApiResponse<List<VehiculoDto>> getMisVehiculos() {
+    public ApiResponse<List<VehiculoResponseDto>> getMisVehiculos() {
         return vehiculoService.getMisVehiculos();
     }
 }

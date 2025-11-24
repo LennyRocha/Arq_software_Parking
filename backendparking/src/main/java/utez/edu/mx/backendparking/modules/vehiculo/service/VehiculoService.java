@@ -15,6 +15,7 @@ import utez.edu.mx.backendparking.modules.usuariopension.UsuarioPensionRepositor
 import utez.edu.mx.backendparking.modules.vehiculo.model.Vehiculo;
 import utez.edu.mx.backendparking.modules.vehiculo.model.VehiculoDto;
 import utez.edu.mx.backendparking.modules.vehiculo.model.VehiculoEstacionadoResponseDto;
+import utez.edu.mx.backendparking.modules.vehiculo.model.VehiculoResponseDto;
 import utez.edu.mx.backendparking.modules.vehiculo.repository.VehiculoRepository;
 import utez.edu.mx.backendparking.security.SecurityUtils;
 import utez.edu.mx.backendparking.shared.api.ApiResponse;
@@ -254,7 +255,7 @@ public class VehiculoService  {
      * @return ApiResponse con la lista de vehículos del usuario
      */
     @Transactional(readOnly = true)
-    public ApiResponse<List<VehiculoDto>> getMisVehiculos() {
+    public ApiResponse<List<VehiculoResponseDto>> getMisVehiculos() {
         try {
             // Obtener el usuario autenticado actual
             //Usuario usuarioActual = SecurityUtils.getCurrentUser();
@@ -263,9 +264,9 @@ public class VehiculoService  {
             // Buscar todos los vehículos del usuario
             List<Vehiculo> vehiculos = vehiculoRepository.findByUsuarioId(usuarioActual.getId());
 
-            // Convertir a DTOs
-            List<VehiculoDto> vehiculosDto = vehiculos.stream()
-                    .map(VehiculoDto::fromEntity)
+            // Convertir a VehiculoResponseDto
+            List<VehiculoResponseDto> vehiculosDto = vehiculos.stream()
+                    .map(VehiculoResponseDto::fromEntity)
                     .toList();
 
             if (vehiculosDto.isEmpty()) {
