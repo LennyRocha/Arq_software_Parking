@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Grid, Typography, CircularProgress } from "@mui/material";
 import MainHeader from "../../../components/MainHeader";
 import HeadingDescription from "../../../components/HeadingDescription";
@@ -6,6 +6,7 @@ import LoadingBackdrop from "../../../components/LoadingBackdrop";
 import { useEstacionamientoPensionado } from "../hooks/useEstacionamientoPensionado";
 import { VehiculoEstacionado } from "../components/VehiculoEstacionado";
 import { TarjetaVehiculo } from "../components/TarjetaVehiculo";
+import MarcarEntradaModal from "../components/MarcarEntradaModal";
 import sweetAlert from "../../../utils/sweetAlert";
 
 /**
@@ -59,10 +60,16 @@ const PensionadoEstacionamiento = () => {
     vehiculoEstacionado,
     vehiculosDisponibles,
     datosEntrada,
+    verificacionInicial,
     verificarEstacionamiento,
     marcarEntrada,
     marcarSalida,
   } = useEstacionamientoPensionado();
+
+  // Estado para controlar los modales
+  const [showModalEntrada, setShowModalEntrada] = useState(false);
+  const [showModalSalida, setShowModalSalida] = useState(false);
+  const [vehiculoSeleccionado, setVehiculoSeleccionado] = useState(null);
 
   // Verificar estado al cargar la página
   useEffect(() => {
@@ -71,64 +78,43 @@ const PensionadoEstacionamiento = () => {
 
   /**
    * Maneja la acción de marcar entrada para un vehículo
+   * Abre el modal con el código QR
    */
-  const handleMarcarEntrada = async (vehiculoId) => {
-    const vehiculoSeleccionado = vehiculosDisponibles.find(v => v.id === vehiculoId);
-    
-    const confirmacion = await mostrarAlertaConfirmacion(
-      "¿Marcar entrada?",
-      `¿Deseas marcar la entrada del vehículo ${vehiculoSeleccionado?.modelo || vehiculoSeleccionado?.descripcion}?`,
-      "Sí, marcar entrada",
-      "Cancelar"
-    );
+  const handleMarcarEntrada = (vehiculoId) => {
+    const vehiculo = vehiculosDisponibles.find(v => v.id === vehiculoId);
+    setVehiculoSeleccionado(vehiculo);
+    setShowModalEntrada(true);
+  };
 
-    if (confirmacion.isConfirmed) {
-      const resultado = await marcarEntrada(vehiculoId);
-
-      if (resultado.success) {
-        await mostrarAlertaExito(
-          "Entrada marcada",
-          resultado.message || "La entrada del vehículo ha sido registrada exitosamente"
-        );
-        // Recargar el estado
-        verificarEstacionamiento();
-      } else {
-        mostrarAlertaError(
-          "Error",
-          resultado.error || "No se pudo marcar la entrada del vehículo"
-        );
-      }
-    }
+  /**
+   * Maneja el cierre del modal de marcar entrada
+   * Recarga la página para verificar si se marcó la entrada
+   */
+  const handleCloseModalEntrada = () => {
+    setShowModalEntrada(false);
+    setVehiculoSeleccionado(null);
+    // Recargar el estado para verificar si se marcó la entrada
+    verificarEstacionamiento();
   };
 
   /**
    * Maneja la acción de marcar salida
+   * Abre el modal con el código QR
    */
-  const handleMarcarSalida = async () => {
-    const confirmacion = await mostrarAlertaConfirmacion(
-      "¿Marcar salida?",
-      `¿Deseas marcar la salida del vehículo ${vehiculoEstacionado?.modelo || vehiculoEstacionado?.descripcion}?`,
-      "Sí, marcar salida",
-      "Cancelar"
-    );
+  const handleMarcarSalida = () => {
+    setVehiculoSeleccionado(vehiculoEstacionado);
+    setShowModalSalida(true);
+  };
 
-    if (confirmacion.isConfirmed) {
-      const resultado = await marcarSalida();
-
-      if (resultado.success) {
-        await mostrarAlertaExito(
-          "Salida marcada",
-          resultado.message || "La salida del vehículo ha sido registrada exitosamente"
-        );
-        // Recargar el estado
-        verificarEstacionamiento();
-      } else {
-        mostrarAlertaError(
-          "Error",
-          resultado.error || "No se pudo marcar la salida del vehículo"
-        );
-      }
-    }
+  /**
+   * Maneja el cierre del modal de marcar salida
+   * Recarga la página para verificar si se marcó la salida
+   */
+  const handleCloseModalSalida = () => {
+    setShowModalSalida(false);
+    setVehiculoSeleccionado(null);
+    // Recargar el estado para verificar si se marcó la salida
+    verificarEstacionamiento();
   };
 
   // Mostrar error si existe
@@ -151,15 +137,18 @@ const PensionadoEstacionamiento = () => {
 
       <Box sx={{ p: 3 }}>
         <HeadingDescription
-          titulo="ESTACIONAMIENTO"
-          subtitulo={
-            tieneVehiculoEstacionado
+          title={
+            !verificacionInicial
+              ? "Cargando información..."
+              : tieneVehiculoEstacionado
               ? "ESTACIONAMIENTO - MARCAR SALIDA DE VEHÍCULO"
               : "ESTACIONAMIENTO - ESTACIONAR VEHÍCULO"
           }
-          descripcion={
-            tieneVehiculoEstacionado
-              ? "Actualmente tienes un vehículo estacionado, en este apartado puedes marcar la salida de tu vehículo mediante el código QR."
+          description={
+            !verificacionInicial
+              ? "Por favor espera mientras verificamos tu información..."
+              : tieneVehiculoEstacionado
+              ? "Actualmente tienes un vehículo estacionado, en este apartado puedes marcar la salida de tu vehículo."
               : "En este apartado puedes elegir el vehículo que deseas estacionar."
           }
         />
@@ -211,6 +200,23 @@ const PensionadoEstacionamiento = () => {
           </Box>
         )}
       </Box>
+
+      {/* Modal para marcar entrada con código QR */}
+      <MarcarEntradaModal
+        showModal={showModalEntrada}
+        vehiculo={vehiculoSeleccionado}
+        onClose={handleCloseModalEntrada}
+        tipo="entrada"
+      />
+
+      {/* Modal para marcar salida con código QR */}
+      <MarcarEntradaModal
+        showModal={showModalSalida}
+        vehiculo={vehiculoSeleccionado}
+        onClose={handleCloseModalSalida}
+        tipo="salida"
+        horaEntrada={datosEntrada?.horaEntrada}
+      />
     </>
   );
 };

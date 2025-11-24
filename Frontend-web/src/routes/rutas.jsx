@@ -9,6 +9,7 @@ import PensionadoRouter from "./PensionadoRouter";
 import Pages from "../modules/cajon/pages/Pages";
 import AdminGestionarEntradasSalidas from "../modules/entradas_salidas/pages/AdminGestionarEntradasSalidas";
 import AdminGestionarReportesGanancias from "../modules/entradas_salidas/pages/AdminGestionarReportesGanancias";
+import PensionadoEstacionamiento from "../modules/entradas_salidas/pages/PensionadoEstacionamiento";
 import AdminGestionTarifas from "../modules/tarifas/pages/AdminGestionTarifas";
 import GestionTiposPension from "../modules/tipo_pension/pages/GestionTiposPension";
 import PensionesUsuario from "../modules/tipo_pension/pages/PensionesUsuarios";
@@ -56,8 +57,8 @@ export default function Rutas() {
         {/* Rutas del pensionado */}
         <Route path="/pensionados" element={<PensionadoRouter />}>
           <Route index element={<Pages />} />
-          <Route path="entradas" element={<Pages />} />
-          <Route path="historial" element={<Pages />} />
+          <Route path="entradas" element={<PensionadoEstacionamiento />} />
+          <Route path="historial" element={<PensionadoEstacionamiento />} />
           <Route path="mi_pension" element={<Pages />} />
           <Route path="mis_vehiculos" element={<Pages />} />
         </Route>

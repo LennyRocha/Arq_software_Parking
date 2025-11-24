@@ -16,13 +16,22 @@ const vehiculoImagenes = {
 
 /**
  * Formatea la fecha a DD/MM/YYYY
+ * Maneja correctamente las fechas que vienen del backend como LocalDate
  */
 const formatearFecha = (fecha) => {
   if (!fecha) return "";
+  
+  // Si la fecha viene como string "YYYY-MM-DD" (LocalDate de Java)
+  if (typeof fecha === 'string' && fecha.includes('-')) {
+    const [anio, mes, dia] = fecha.split('-');
+    return `${dia.padStart(2, "0")}/${mes.padStart(2, "0")}/${anio}`;
+  }
+  
+  // Si viene como Date object, usar UTC para evitar problemas de zona horaria
   const date = new Date(fecha);
-  const dia = String(date.getDate()).padStart(2, "0");
-  const mes = String(date.getMonth() + 1).padStart(2, "0");
-  const anio = date.getFullYear();
+  const dia = String(date.getUTCDate()).padStart(2, "0");
+  const mes = String(date.getUTCMonth() + 1).padStart(2, "0");
+  const anio = date.getUTCFullYear();
   return `${dia}/${mes}/${anio}`;
 };
 
@@ -49,8 +58,25 @@ const calcularTiempoEstacionado = (fechaEntrada, horaEntrada) => {
   try {
     const ahora = new Date();
     const [horas, minutos, segundos] = horaEntrada.split(":");
-    const fechaHoraEntrada = new Date(fechaEntrada);
-    fechaHoraEntrada.setHours(parseInt(horas), parseInt(minutos), parseInt(segundos || 0));
+    
+    // Parsear correctamente la fecha sin problemas de zona horaria
+    let fechaHoraEntrada;
+    if (typeof fechaEntrada === 'string' && fechaEntrada.includes('-')) {
+      // Si viene como "YYYY-MM-DD" (LocalDate de Java)
+      const [anio, mes, dia] = fechaEntrada.split('-');
+      fechaHoraEntrada = new Date(
+        parseInt(anio), 
+        parseInt(mes) - 1, 
+        parseInt(dia),
+        parseInt(horas), 
+        parseInt(minutos), 
+        parseInt(segundos || 0)
+      );
+    } else {
+      // Si viene como Date object
+      fechaHoraEntrada = new Date(fechaEntrada);
+      fechaHoraEntrada.setHours(parseInt(horas), parseInt(minutos), parseInt(segundos || 0));
+    }
 
     const diferenciaMilisegundos = ahora - fechaHoraEntrada;
     const totalMinutos = Math.floor(diferenciaMilisegundos / 1000 / 60);
@@ -58,7 +84,13 @@ const calcularTiempoEstacionado = (fechaEntrada, horaEntrada) => {
     const hrsTranscurridas = Math.floor(totalMinutos / 60);
     const minTranscurridos = totalMinutos % 60;
 
-    return `${hrsTranscurridas}h transcurridas`;
+    if (hrsTranscurridas === 0) {
+      return `${minTranscurridos} min transcurridos`;
+    } else if (minTranscurridos === 0) {
+      return `${hrsTranscurridas} hrs transcurridas`;
+    } else {
+      return `${hrsTranscurridas} hrs, ${minTranscurridos} min transcurridos`;
+    }
   } catch (error) {
     return "0 hrs, 0 min";
   }

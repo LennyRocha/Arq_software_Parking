@@ -17,6 +17,7 @@ export const useEstacionamientoPensionado = () => {
   const [vehiculoEstacionado, setVehiculoEstacionado] = useState(null);
   const [vehiculosDisponibles, setVehiculosDisponibles] = useState([]);
   const [datosEntrada, setDatosEntrada] = useState(null); // Almacena toda la info de entrada
+  const [verificacionInicial, setVerificacionInicial] = useState(false); // Indica si ya se hizo la primera verificación
 
   /**
    * Verificar si el usuario tiene un vehículo estacionado
@@ -35,20 +36,28 @@ export const useEstacionamientoPensionado = () => {
         if (data.tieneVehiculoEstacionado) {
           setVehiculoEstacionado(data.vehiculo);
           // Guardar los datos completos de la entrada si vienen en el response
-          setDatosEntrada(data.entradaSalida || null);
+          setDatosEntrada( { 
+            fechaEntrada: data.fechaEntrada,
+            horaEntrada: data.horaEntrada,
+            folio: data.folio
+           } 
+            || null);
         } else {
           // Si no tiene vehículo estacionado, cargar vehículos disponibles
           await cargarVehiculosDisponibles();
         }
         
+        setVerificacionInicial(true);
         return { success: true };
       } else {
         setError("No se pudo verificar el estacionamiento");
+        setVerificacionInicial(true);
         return { success: false, error: "No se pudo verificar el estacionamiento" };
       }
     } catch (err) {
       const errorMessage = getAxiosErrorMessage(err);
       setError(errorMessage);
+      setVerificacionInicial(true);
       return { success: false, error: errorMessage };
     } finally {
       setLoading(false);
@@ -147,6 +156,7 @@ export const useEstacionamientoPensionado = () => {
     vehiculoEstacionado,
     vehiculosDisponibles,
     datosEntrada,
+    verificacionInicial,
     
     // Funciones
     verificarEstacionamiento,
