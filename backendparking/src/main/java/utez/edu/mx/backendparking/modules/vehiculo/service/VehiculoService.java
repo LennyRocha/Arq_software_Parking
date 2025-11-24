@@ -203,7 +203,6 @@ public class VehiculoService  {
             //Usuario usuarioActual = SecurityUtils.getCurrentUser();
             Usuario usuarioActual = usuarioRepository.findById((long)3).get();
 
-
             // Buscar si el usuario tiene una pensión activa
             Optional<UsuarioPension> usuarioPensionOpt = usuarioPensionRepository.findByUsuarioIdAndEstatusTrue(usuarioActual.getId());
 
@@ -211,7 +210,7 @@ public class VehiculoService  {
                 return ApiResponse.success(
                     HttpStatus.OK,
                     "No tienes una pensión activa",
-                    new VehiculoEstacionadoResponseDto(false, null, "No tienes una pensión activa")
+                    new VehiculoEstacionadoResponseDto(false,null, null, null, null, "No tienes una pensión activa")
                 );
             }
 
@@ -223,7 +222,7 @@ public class VehiculoService  {
                 return ApiResponse.success(
                     HttpStatus.OK,
                     "No tienes ningún vehículo estacionado actualmente",
-                    new VehiculoEstacionadoResponseDto(false, null, "No tienes ningún vehículo estacionado actualmente")
+                    new VehiculoEstacionadoResponseDto(false, null, null, null, null, "No tienes ningún vehículo estacionado actualmente")
                 );
             }
 
@@ -235,13 +234,16 @@ public class VehiculoService  {
                 return ApiResponse.success(
                     HttpStatus.OK,
                     "Tienes un vehículo estacionado actualmente",
-                    new VehiculoEstacionadoResponseDto(true, vehiculoDto, "Tienes un vehículo estacionado actualmente")
+                    new VehiculoEstacionadoResponseDto(true, ultimaEntrada.getFecha(),
+                            ultimaEntrada.getHoraEntrada(),
+                            ultimaEntrada.getFolioTicket().toString(),
+                            vehiculoDto, "Tienes un vehículo estacionado actualmente")
                 );
             } else {
                 return ApiResponse.success(
                     HttpStatus.OK,
                     "No tienes ningún vehículo estacionado actualmente",
-                    new VehiculoEstacionadoResponseDto(false, null, "No tienes ningún vehículo estacionado actualmente")
+                    new VehiculoEstacionadoResponseDto(false, null, null, null, null, "No tienes ningún vehículo estacionado actualmente")
                 );
             }
 
