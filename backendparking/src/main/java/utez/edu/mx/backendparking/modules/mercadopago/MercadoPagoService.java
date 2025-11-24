@@ -38,9 +38,9 @@ public class MercadoPagoService {
 
     public PreferenciaResponse crearPreferencia(PreferenciaRequest request) throws MPException, MPApiException {
         logger.info("Iniciando creación de preferencia para pensionId: {}", request.getPensionId());
-        logger.info("URLs configuradas - Success: {}, Failure: {}, Pending: {}", 
-            successUrl, failureUrl, pendingUrl);
-        
+        logger.info("URLs configuradas - Success: {}, Failure: {}, Pending: {}",
+                successUrl, failureUrl, pendingUrl);
+
         // Buscar la pensión por ID
         Pension pension = pensionRepository.findById(request.getPensionId())
                 .orElseThrow(() -> {
@@ -52,15 +52,15 @@ public class MercadoPagoService {
 
         // Validar que las URLs de retorno estén configuradas
         if (successUrl == null || successUrl.isEmpty()) {
-            throw new RuntimeException("La URL de éxito no está configurada. Verifica mercadopago.success.url en application.properties");
+            throw new RuntimeException("La URL de éxito no está configurada");
         }
         if (failureUrl == null || failureUrl.isEmpty()) {
-            throw new RuntimeException("La URL de fallo no está configurada. Verifica mercadopago.failure.url en application.properties");
+            throw new RuntimeException("La URL de fallo no está configurada");
         }
         if (pendingUrl == null || pendingUrl.isEmpty()) {
-            throw new RuntimeException("La URL de pendiente no está configurada. Verifica mercadopago.pending.url en application.properties");
+            throw new RuntimeException("La URL de pendiente no está configurada");
         }
-        
+
         logger.info("URLs validadas correctamente");
 
         // Crear el item de la preferencia
@@ -68,7 +68,7 @@ public class MercadoPagoService {
                 .id(pension.getId().toString())
                 .title("Pensión parKing - " + pension.getNombre())
                 .description("Estacionamiento por " + pension.getDuracionDias() + " días")
-                .pictureUrl("https://via.placeholder.com/150") //  cambiar esto por nuestro logo
+                .pictureUrl("https://via.placeholder.com/150")
                 .categoryId("parking")
                 .quantity(1)
                 .currencyId("MXN")
@@ -78,54 +78,59 @@ public class MercadoPagoService {
         List<PreferenceItemRequest> items = new ArrayList<>();
         items.add(itemRequest);
 
-        // Configurar URLs de retorno
-        PreferenceBackUrlsRequest backUrls = PreferenceBackUrlsRequest.builder()
-                .success(successUrl)
-                .failure(failureUrl)
-                .pending(pendingUrl)
-                .build();
-        
-        logger.info("BackUrls creado - Success: {}, Failure: {}, Pending: {}", 
-            backUrls.getSuccess(), backUrls.getFailure(), backUrls.getPending());
-
         // Configurar payer (comprador)
         PreferencePayerRequest payer = PreferencePayerRequest.builder()
                 .name(request.getUsuarioNombre())
                 .email(request.getUsuarioEmail())
                 .build();
 
-        // Crear la preferencia (sin autoReturn por ahora para evitar el conflicto)
+        // Configurar URLs de retorno - IMPORTANTE: Debe ir ANTES de crear PreferenceRequest
+        PreferenceBackUrlsRequest backUrls = PreferenceBackUrlsRequest.builder()
+                .success(successUrl)
+                .failure(failureUrl)
+                .pending(pendingUrl)
+                .build();
+
+        logger.info("BackUrls creado - Success: {}, Failure: {}, Pending: {}",
+                successUrl, failureUrl, pendingUrl);
+
+        // Crear la preferencia - EL ORDEN DE LOS PARÁMETROS IMPORTA
         PreferenceRequest preferenceRequest = PreferenceRequest.builder()
+                .backUrls(backUrls)  // ← PRIMERO las backUrls
                 .items(items)
-                .backUrls(backUrls)
-                // .autoReturn("approved")  // Comentado temporalmente - causa conflicto con MP
                 .payer(payer)
                 .externalReference("pension-" + pension.getId())
                 .statementDescriptor("PARKING " + pension.getNombre())
                 .build();
 
-        // Crear el cliente y enviar la preferencia
         logger.info("Enviando preferencia a Mercado Pago...");
-        logger.info("ExternalReference: {}, StatementDescriptor: {}", 
-            "pension-" + pension.getId(), "PARKING " + pension.getNombre());
-        
+        logger.info("ExternalReference: {}, StatementDescriptor: {}",
+                "pension-" + pension.getId(), "PARKING " + pension.getNombre());
+
         PreferenceClient client = new PreferenceClient();
         Preference preference = client.create(preferenceRequest);
 
         logger.info("Preferencia creada con éxito - ID: {}", preference.getId());
-        logger.info("Init Point (producción): {}", preference.getInitPoint());
-        logger.info("Sandbox Init Point (pruebas): {}", preference.getSandboxInitPoint());
+        logger.info("Init Point: {}", preference.getInitPoint());
+        logger.info("Sandbox Init Point: {}", preference.getSandboxInitPoint());
 
-        // Retornar la respuesta
+        // Verificar que las backUrls se guardaron
+        if (preference.getBackUrls() != null) {
+            logger.info("✓ BackUrls configuradas correctamente en la preferencia");
+            logger.info("  - Success: {}", preference.getBackUrls().getSuccess());
+        } else {
+            logger.warn("✗ BackUrls NO se configuraron en la preferencia");
+        }
+
         PreferenciaResponse response = new PreferenciaResponse(
-            preference.getId(), 
-            preference.getInitPoint(), 
-            preference.getSandboxInitPoint()
+                preference.getId(),
+                preference.getInitPoint(),
+                preference.getSandboxInitPoint()
         );
-        
-        logger.info("Response que se enviará - ID: {}, InitPoint: {}, SandboxInitPoint: {}", 
-            response.getId(), response.getInitPoint(), response.getSandboxInitPoint());
-        
+
+        logger.info("Response que se enviará - ID: {}, InitPoint: {}, SandboxInitPoint: {}",
+                response.getId(), response.getInitPoint(), response.getSandboxInitPoint());
+
         return response;
     }
 }

@@ -37,12 +37,6 @@ export default function useRegistroPension(tipoPensionInicial = null) {
     
     // Paso 3: Vehículos
     vehiculos: [],
-
-    // Paso 4: Datos de Mercado Pago
-    idPagoMercadoPago: null,
-    estadoPagoMercadoPago: null,
-    metodoPago: null,
-    referenciaMercadopago: null,
   });
 
   // Estado para el proceso de registro
@@ -112,10 +106,6 @@ export default function useRegistroPension(tipoPensionInicial = null) {
       telefono: "",
       contra: "",
       vehiculos: [],
-      idPagoMercadoPago: null,
-      estadoPagoMercadoPago: null,
-      metodoPago: null,
-      referenciaMercadopago: null,
     });
     setRegistroExitoso(false);
     setErrorRegistro(null);
@@ -210,16 +200,7 @@ export default function useRegistroPension(tipoPensionInicial = null) {
     }
   };
 
-  // Actualizar datos de Mercado Pago después del pago
-  const actualizarDatosMercadoPago = (datosPago) => {
-    setFormData((prev) => ({
-      ...prev,
-      idPagoMercadoPago: datosPago.payment_id,
-      estadoPagoMercadoPago: datosPago.status,
-      metodoPago: datosPago.payment_type,
-      referenciaMercadopago: datosPago.external_reference,
-    }));
-  };
+  // Función removida - ya no se necesitan datos de MP
 
   // Enviar formulario completo
   const handleSubmit = async () => {
@@ -241,11 +222,6 @@ export default function useRegistroPension(tipoPensionInicial = null) {
           modelo: v.modelo,
           descripcion: v.descripcion,
         })),
-        // Datos de Mercado Pago (opcionales)
-        idPagoMercadoPago: formData.idPagoMercadoPago,
-        estadoPagoMercadoPago: formData.estadoPagoMercadoPago,
-        metodoPago: formData.metodoPago,
-        referenciaMercadopago: formData.referenciaMercadopago,
       };
 
       const response = await registrarPensionado(payload);
@@ -298,7 +274,6 @@ export default function useRegistroPension(tipoPensionInicial = null) {
 
     // Proceso de pago
     iniciarPago,
-    actualizarDatosMercadoPago,
 
     // Envío del formulario
     handleSubmit,

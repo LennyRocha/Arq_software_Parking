@@ -34,12 +34,6 @@ public class PensionadoRegistrationDto {
     @NotEmpty(message = "Debe registrar al menos un vehículo")
     private List<VehiculoDto> vehiculos;
 
-    // Campos de Mercado Pago - OPCIONALES
-    private String idPagoMercadoPago;
-    private String estadoPagoMercadoPago;
-    private String metodoPago;
-    private String referenciaMercadopago;
-
     public Long getPensionId() {
         return pensionId;
     }
@@ -94,37 +88,5 @@ public class PensionadoRegistrationDto {
 
     public void setVehiculos(List<VehiculoDto> vehiculos) {
         this.vehiculos = vehiculos;
-    }
-
-    public String getIdPagoMercadoPago() {
-        return idPagoMercadoPago;
-    }
-
-    public void setIdPagoMercadoPago(String idPagoMercadoPago) {
-        this.idPagoMercadoPago = idPagoMercadoPago;
-    }
-
-    public String getEstadoPagoMercadoPago() {
-        return estadoPagoMercadoPago;
-    }
-
-    public void setEstadoPagoMercadoPago(String estadoPagoMercadoPago) {
-        this.estadoPagoMercadoPago = estadoPagoMercadoPago;
-    }
-
-    public String getMetodoPago() {
-        return metodoPago;
-    }
-
-    public void setMetodoPago(String metodoPago) {
-        this.metodoPago = metodoPago;
-    }
-
-    public String getReferenciaMercadopago() {
-        return referenciaMercadopago;
-    }
-
-    public void setReferenciaMercadopago(String referenciaMercadopago) {
-        this.referenciaMercadopago = referenciaMercadopago;
     }
 }

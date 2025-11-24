@@ -53,7 +53,6 @@ export default function RegistroPension() {
     removerVehiculo,
     editarVehiculo,
     iniciarPago,
-    actualizarDatosMercadoPago,
     handleSubmit,
     loadingRegistro,
     errorRegistro,
@@ -105,46 +104,90 @@ export default function RegistroPension() {
     handleNext();
   };
 
-  const handlePagoExitoso = async (datosPago) => {
-    console.log('=== PAGO EXITOSO ===', datosPago);
+  // Funciones removidas - ya no se necesitan con Checkout Pro simplificado
+  
+  const procesarRegistroAprobado = (datosGuardados) => {
+    const { formData: savedFormData } = JSON.parse(datosGuardados);
     
-    // Actualizar datos de Mercado Pago
-    actualizarDatosMercadoPago(datosPago);
-    
-    // Registrar el pensionado en el backend
-    const result = await handleSubmit();
-    
-    if (result.success) {
-      Swal.fire({
-        icon: "success",
-        title: "¡Pago exitoso!",
-        text: "Tu pago ha sido procesado correctamente. Completando registro...",
-        timer: 2000,
-        showConfirmButton: false,
-      });
-      handleNext();
-    } else {
-      Swal.fire({
-        icon: "error",
-        title: "Error al registrar",
-        text: result.error || "Hubo un problema al completar el registro",
+    // Restaurar formData
+    if (savedFormData) {
+      Object.keys(savedFormData).forEach(key => {
+        if (!formData[key] || (Array.isArray(formData[key]) && formData[key].length === 0)) {
+          updateFormData({ [key]: savedFormData[key] });
+        }
       });
     }
-  };
-
-  const handlePagoError = (error) => {
-    console.error('=== ERROR EN PAGO ===', error);
+    
+    // Limpiar localStorage
+    localStorage.removeItem('registroPensionEnProgreso');
+    
+    // Limpiar URL
+    window.history.replaceState({}, document.title, window.location.pathname);
+    
+    // Mostrar mensaje de procesamiento
     Swal.fire({
-      icon: "error",
-      title: "Error en el pago",
-      text: error || "No se pudo procesar el pago. Intenta nuevamente.",
+      icon: "info",
+      title: "Procesando tu registro...",
+      text: "Por favor espera un momento.",
+      allowOutsideClick: false,
+      showConfirmButton: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
     });
+    
+    // Realizar el registro
+    setTimeout(() => {
+      handleSubmit().then((result) => {
+        if (result.success) {
+          Swal.fire({
+            icon: "success",
+            title: "¡Pago exitoso!",
+            text: "Tu registro ha sido completado exitosamente.",
+            timer: 3000,
+            showConfirmButton: false,
+          }).then(() => {
+            // Avanzar al paso de confirmación
+            for(let i = activeStep; i < 4; i++) {
+              handleNext();
+            }
+          });
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: "Error al registrar",
+            text: result.error || "Hubo un problema al completar el registro. Por favor contacta a soporte.",
+          });
+        }
+      });
+    }, 1000);
   };
-
+  
   const handleIniciarPago = async () => {
     const result = await iniciarPago();
     if (result.success) {
-      window.location.href = result.initPoint;
+      // Guardar el estado actual en localStorage
+      localStorage.setItem('registroPensionEnProgreso', JSON.stringify({
+        activeStep: 3,
+        formData: formData,
+        preferenceId: result.id,
+        timestamp: Date.now()
+      }));
+      
+      // ABRIR en NUEVA VENTANA - NO redirigir
+      window.open(result.initPoint, '_blank');
+      
+      // Mostrar mensaje
+      Swal.fire({
+        icon: "info",
+        title: "Completa tu pago",
+        html: `
+          <p>Se abrió Mercado Pago en una nueva ventana.</p>
+          <p><strong>Después de pagar, regresa aquí y haz clic en "Ya pagué".</strong></p>
+        `,
+        confirmButtonText: "Entendido",
+      });
+      
     } else {
       Swal.fire({
         icon: "error",
@@ -154,42 +197,69 @@ export default function RegistroPension() {
     }
   };
 
+  const handleVerificarPago = () => {
+    console.log("=== VERIFICAR PAGO LLAMADO ===");
+    const datosGuardados = localStorage.getItem('registroPensionEnProgreso');
+    console.log("Datos guardados:", datosGuardados);
+    
+    if (!datosGuardados) {
+      Swal.fire({
+        icon: "warning",
+        title: "No hay pago pendiente",
+        text: "No encontramos un pago en proceso.",
+      });
+      return;
+    }
+
+    Swal.fire({
+      icon: "question",
+      title: "¿Completaste el pago?",
+      text: "Confirma que ya realizaste el pago en Mercado Pago",
+      showCancelButton: true,
+      confirmButtonText: "Sí, ya pagué",
+      cancelButtonText: "Cancelar",
+    }).then((result) => {
+      console.log("Resultado confirmación:", result);
+      if (result.isConfirmed) {
+        console.log("Usuario confirmó pago, procesando...");
+        procesarRegistroAprobado(datosGuardados);
+      }
+    });
+  };
+
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
-    const paymentId = urlParams.get("payment_id");
     const status = urlParams.get("status");
-    const paymentType = urlParams.get("payment_type");
-    const externalReference = urlParams.get("external_reference");
+    const collection_status = urlParams.get("collection_status");
 
     console.log('=== URL PARAMS DETECTADOS ===');
-    console.log('payment_id:', paymentId);
     console.log('status:', status);
-    console.log('payment_type:', paymentType);
-    console.log('external_reference:', externalReference);
+    console.log('collection_status:', collection_status);
 
-    // Si viene el status approved (aunque no venga payment_id en sandbox)
-    if (status === "approved") {
-      actualizarDatosMercadoPago({
-        payment_id: paymentId || 'sandbox-test-' + Date.now(),
-        status: status,
-        payment_type: paymentType || 'credit_card',
-        external_reference: externalReference,
-      });
-
-      if (activeStep === 3) {
-        handleNext();
-      }
-
-      handleSubmit().then((result) => {
-        if (result.success) {
-          handleNext();
-        }
-      });
-    } else if (status && status !== "approved") {
+    const datosGuardados = localStorage.getItem('registroPensionEnProgreso');
+    
+    // Si viene de Mercado Pago con pago aprobado
+    if ((status === "approved" || collection_status === "approved") && datosGuardados) {
+      procesarRegistroAprobado(datosGuardados);
+      
+    } else if (status === "rejected" || collection_status === "rejected") {
+      localStorage.removeItem('registroPensionEnProgreso');
+      window.history.replaceState({}, document.title, window.location.pathname);
+      
       Swal.fire({
         icon: "error",
-        title: "Pago no aprobado",
-        text: "Tu pago no fue aprobado. Por favor, intenta nuevamente.",
+        title: "Pago rechazado",
+        text: "Intenta nuevamente.",
+      });
+      
+    } else if (status === "pending" || collection_status === "pending") {
+      localStorage.removeItem('registroPensionEnProgreso');
+      window.history.replaceState({}, document.title, window.location.pathname);
+      
+      Swal.fire({
+        icon: "info",
+        title: "Pago pendiente",
+        text: "Te notificaremos cuando se confirme.",
       });
     }
   }, []);
@@ -232,8 +302,10 @@ export default function RegistroPension() {
         return (
           <Step4Pago
             formData={formData}
-            onPagoExitoso={handlePagoExitoso}
-            onPagoError={handlePagoError}
+            onIniciarPago={handleIniciarPago}
+            onVerificarPago={handleVerificarPago}
+            loading={loadingRegistro}
+            error={errorRegistro}
           />
         );
       case 4:
