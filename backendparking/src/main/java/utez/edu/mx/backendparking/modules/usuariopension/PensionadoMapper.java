@@ -53,28 +53,13 @@ public class PensionadoMapper {
     }
 
     public static Pago toPagoEntity(UsuarioPension usuarioPension, Double cantidadPago,
-                                    LocalDate fechaInicio, LocalDate fechaFin,
-                                    PensionadoRegistrationDto dto) {
+                                    LocalDate fechaInicio, LocalDate fechaFin) {
         Pago pago = new Pago();
         pago.setUsuarioPension(usuarioPension);
         pago.setCantidadPago(cantidadPago);
         pago.setFechaPago(LocalDate.now());
         pago.setFechaInicio(fechaInicio);
         pago.setFechaFin(fechaFin);
-
-        // Campos de Mercado Pago (opcionales)
-        if (dto.getIdPagoMercadoPago() != null) {
-            pago.setIdPagoMercadoPago(dto.getIdPagoMercadoPago());
-        }
-        if (dto.getEstadoPagoMercadoPago() != null) {
-            pago.setEstadoPagoMercadoPago(dto.getEstadoPagoMercadoPago());
-        }
-        if (dto.getMetodoPago() != null) {
-            pago.setMetodoPago(dto.getMetodoPago());
-        }
-        if (dto.getReferenciaMercadopago() != null) {
-            pago.setReferenciaMercadopago(dto.getReferenciaMercadopago());
-        }
 
         return pago;
     }

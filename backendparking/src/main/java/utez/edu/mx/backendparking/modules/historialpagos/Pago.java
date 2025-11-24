@@ -27,20 +27,6 @@ public class Pago {
     @Column(name= "fecha_fin", nullable = false)
     private LocalDate fechaFin;
 
-    // CAMPOS PROVENIENTES DE MERCADO PAGO
-    @Column(name = "id_pago_mercado_pago")
-    private String idPagoMercadoPago; // ID único del pago en Mercado Pago
-
-    @Column(name = "estado_pago_mercado_pago")
-    private String estadoPagoMercadoPago; // "approved", "rejected", etc.
-
-    @Column(name = "metodo_pago")
-    private String metodoPago; // "credit_card", "debit_card", etc.
-
-    @Column(name = "referencia_mercadopago")
-    private String referenciaMercadopago; // Referencia o ID de la transacción
-
-
     // ATRIBUTOS DE RELACION
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_usuario_pension", referencedColumnName = "id")
@@ -96,35 +82,4 @@ public class Pago {
         this.usuarioPension = usuarioPension;
     }
 
-    public String getIdPagoMercadoPago() {
-        return idPagoMercadoPago;
-    }
-
-    public void setIdPagoMercadoPago(String idPagoMercadoPago) {
-        this.idPagoMercadoPago = idPagoMercadoPago;
-    }
-
-    public String getEstadoPagoMercadoPago() {
-        return estadoPagoMercadoPago;
-    }
-
-    public void setEstadoPagoMercadoPago(String estadoPagoMercadoPago) {
-        this.estadoPagoMercadoPago = estadoPagoMercadoPago;
-    }
-
-    public String getMetodoPago() {
-        return metodoPago;
-    }
-
-    public void setMetodoPago(String metodoPago) {
-        this.metodoPago = metodoPago;
-    }
-
-    public String getReferenciaMercadopago() {
-        return referenciaMercadopago;
-    }
-
-    public void setReferenciaMercadopago(String referenciaMercadopago) {
-        this.referenciaMercadopago = referenciaMercadopago;
-    }
 }
