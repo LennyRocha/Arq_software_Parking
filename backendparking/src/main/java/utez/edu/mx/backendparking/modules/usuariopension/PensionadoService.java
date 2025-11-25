@@ -130,14 +130,37 @@ public class PensionadoService {
     @Transactional(readOnly = true)
     public Page<UsuarioPensionResponseDto> findAllUsuariosPensionados(Pageable pageable, String search) {
         Page<UsuarioPension> usuariosPension = usuarioPensionRepository.findAllWithUsuarioAndPension(pageable, search);
+        LocalDate fechaActual = LocalDate.now();
 
         return usuariosPension.map(up -> {
             // Buscar el costo del último pago según la fecha de finalización
             Optional<Pago> ultimoPago = pagoRepository.findUltimoPagoPorFechaFinalizacion(up.getId(), up.getFechaFinalizacion());
             Double costoUltimoPago = ultimoPago.map(Pago::getCantidadPago).orElse(up.getPension().getCosto());
 
-            return new UsuarioPensionResponseDto(up.getId(), up.getUsuario().getCorreo(), up.getPension().getNombre(), up.getFechaFinalizacion(), costoUltimoPago, up.isEstatus(), up.getUuidCodigoQR());
+            // Calcular cuándo iniciaría la PRÓXIMA renovación
+            LocalDate fechaInicioProxima = calcularFechaInicioProximaRenovacion(up, fechaActual);
+            LocalDate fechaFinProxima = fechaInicioProxima.plusDays(up.getPension().getDuracionDias() - 1);
+
+            return new UsuarioPensionResponseDto(
+                    up.getId(), up.getUsuario().getCorreo(), up.getPension().getNombre(),
+                    up.getFechaFinalizacion(), costoUltimoPago, up.isEstatus(), up.getUuidCodigoQR(),
+                    fechaInicioProxima, fechaFinProxima
+            );
         });
+    }
+
+    private LocalDate calcularFechaInicioProximaRenovacion(UsuarioPension usuarioPension, LocalDate fechaActual) {
+        // Buscar si hay pagos futuros ya registrados
+        Optional<LocalDate> maxFechaFinFutura = pagoRepository.findMaxFechaFinFutura(
+                usuarioPension.getId(), fechaActual);
+
+        if (maxFechaFinFutura.isPresent()) {
+            // Si ya hay pagos futuros, la próxima renovación inicia al día siguiente del último pago
+            return maxFechaFinFutura.get().plusDays(1);
+        } else {
+            // Si no hay pagos futuros, inicia al día siguiente de la fecha final actual
+            return usuarioPension.getFechaFinalizacion().plusDays(1);
+        }
     }
 
     @Transactional(readOnly = true)
@@ -157,43 +180,38 @@ public class PensionadoService {
 
         LocalDate fechaActual = LocalDate.now();
 
-        // ESCENARIO 3: Si la pensión está desactivada, activar inmediatamente
         if (!usuarioPension.isEstatus()) {
+            // ESCENARIO 3: Pensión desactivada - activar inmediatamente
             LocalDate fechaInicio = fechaActual;
             LocalDate fechaFin = fechaInicio.plusDays(nuevaPension.getDuracionDias());
 
-            // Crear pago
-            Pago nuevoPago = new Pago();
-            nuevoPago.setCantidadPago(nuevaPension.getCosto());
-            nuevoPago.setFechaPago(fechaActual);
-            nuevoPago.setFechaInicio(fechaInicio);
-            nuevoPago.setFechaFin(fechaFin);
-            nuevoPago.setUsuarioPension(usuarioPension);
-            nuevoPago.setPension(nuevaPension); // Asociar la pensión al pago
-            pagoRepository.save(nuevoPago);
+            crearPago(usuarioPension, nuevaPension, fechaActual, fechaInicio, fechaFin);
 
-            // Actualizar usuario pension inmediatamente
             usuarioPension.setFechaFinalizacion(fechaFin);
             usuarioPension.setPension(nuevaPension);
             usuarioPension.setEstatus(true);
             usuarioPensionRepository.save(usuarioPension);
 
         } else {
-            // ESCENARIO 2: Pensión activa - pago para futuro (lo manejará el scheduler)
-            LocalDate fechaInicio = usuarioPension.getFechaFinalizacion().plusDays(1);
+            // ESCENARIO 2: Pensión activa - calcular desde el ÚLTIMO pago futuro
+            LocalDate fechaInicio = calcularFechaInicioProximaRenovacion(usuarioPension, fechaActual);
             LocalDate fechaFin = fechaInicio.plusDays(nuevaPension.getDuracionDias() - 1);
 
-            Pago nuevoPago = new Pago();
-            nuevoPago.setCantidadPago(nuevaPension.getCosto());
-            nuevoPago.setFechaPago(fechaActual);
-            nuevoPago.setFechaInicio(fechaInicio);
-            nuevoPago.setFechaFin(fechaFin);
-            nuevoPago.setUsuarioPension(usuarioPension);
-            nuevoPago.setPension(nuevaPension); // Asociar la pensión al pago
-            pagoRepository.save(nuevoPago);
-
-            // NO actualizar usuarioPension aquí - lo hará el scheduler cuando llegue la fecha
+            crearPago(usuarioPension, nuevaPension, fechaActual, fechaInicio, fechaFin);
+            // NO actualizar usuarioPension aquí - lo hará el scheduler
         }
+    }
+
+    private void crearPago(UsuarioPension usuarioPension, Pension pension, LocalDate fechaPago,
+                           LocalDate fechaInicio, LocalDate fechaFin) {
+        Pago nuevoPago = new Pago();
+        nuevoPago.setCantidadPago(pension.getCosto());
+        nuevoPago.setFechaPago(fechaPago);
+        nuevoPago.setFechaInicio(fechaInicio);
+        nuevoPago.setFechaFin(fechaFin);
+        nuevoPago.setUsuarioPension(usuarioPension);
+        nuevoPago.setPension(pension);
+        pagoRepository.save(nuevoPago);
     }
 
     @Transactional

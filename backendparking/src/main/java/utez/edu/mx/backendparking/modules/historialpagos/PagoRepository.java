@@ -108,4 +108,8 @@ public interface PagoRepository extends JpaRepository<Pago, Long> {
     Optional<Pago> findPagoFuturoValido(@Param("usuarioPensionId") Long usuarioPensionId,
                                         @Param("fechaFinalizacionAnterior") LocalDate fechaFinalizacionAnterior,
                                         @Param("fechaActual") LocalDate fechaActual);
+
+    @Query("SELECT MAX(p.fechaFin) FROM Pago p WHERE p.usuarioPension.id = :usuarioPensionId AND p.fechaInicio > :fechaActual")
+    Optional<LocalDate> findMaxFechaFinFutura(@Param("usuarioPensionId") Long usuarioPensionId,
+                                              @Param("fechaActual") LocalDate fechaActual);
 }
