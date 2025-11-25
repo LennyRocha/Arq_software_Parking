@@ -12,7 +12,7 @@ import AdminGestionarReportesGanancias from "../modules/entradas_salidas/pages/A
 import PensionadoEstacionamiento from "../modules/entradas_salidas/pages/PensionadoEstacionamiento";
 import AdminGestionTarifas from "../modules/tarifas/pages/AdminGestionTarifas";
 import GestionTiposPension from "../modules/tipo_pension/pages/GestionTiposPension";
-import PensionesUsuario from "../modules/tipo_pension/pages/PensionesUsuarios";
+import PensionesUsuario from "../modules/usuario_pension/pages/PensionesUsuarios";
 
 const Err = () => <h1>404 - Not Found!</h1>;
 
@@ -50,7 +50,7 @@ export default function Rutas() {
         {/* Rutas del empleado */}
         <Route path="/empleado" element={<EmpleadoRouter />}>
           <Route index element={<AdminGestionarEntradasSalidas />} />
-          <Route path="pensiones" element={<Pages />} />
+          <Route path="pensiones" element={<PensionesUsuario />} />
           <Route path="cajones" element={<Pages />} />
           <Route path="nuevo_pensionado" element={<Pages />} />
         </Route>

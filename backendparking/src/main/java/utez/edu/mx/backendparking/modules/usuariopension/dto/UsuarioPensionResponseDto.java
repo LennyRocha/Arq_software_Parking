@@ -11,9 +11,12 @@ public class UsuarioPensionResponseDto {
     private boolean estatus;
     private String uuidCodigoQR;
 
+    private LocalDate fechaInicioProximaRenovacion;
+    private LocalDate fechaFinProximaRenovacion;
+
     public UsuarioPensionResponseDto() {}
 
-    public UsuarioPensionResponseDto(Long id, String correo, String nombrePension, LocalDate fechaFinalizacion, Double costoUltimoPago, boolean estatus, String uuidCodigoQR) {
+    public UsuarioPensionResponseDto(Long id, String correo, String nombrePension, LocalDate fechaFinalizacion, Double costoUltimoPago, boolean estatus, String uuidCodigoQR, LocalDate fechaInicioProximaRenovacion, LocalDate fechaFinProximaRenovacion) {
         this.id = id;
         this.correo = correo;
         this.nombrePension = nombrePension;
@@ -21,6 +24,8 @@ public class UsuarioPensionResponseDto {
         this.costoUltimoPago = costoUltimoPago;
         this.estatus = estatus;
         this.uuidCodigoQR = uuidCodigoQR;
+        this.fechaInicioProximaRenovacion = fechaInicioProximaRenovacion;
+        this.fechaFinProximaRenovacion = fechaFinProximaRenovacion;
     }
 
     // Getters y Setters
@@ -78,5 +83,21 @@ public class UsuarioPensionResponseDto {
 
     public void setUuidCodigoQR(String uuidCodigoQR) {
         this.uuidCodigoQR = uuidCodigoQR;
+    }
+
+    public LocalDate getFechaInicioProximaRenovacion() {
+        return fechaInicioProximaRenovacion;
+    }
+
+    public void setFechaInicioProximaRenovacion(LocalDate fechaInicioProximaRenovacion) {
+        this.fechaInicioProximaRenovacion = fechaInicioProximaRenovacion;
+    }
+
+    public LocalDate getFechaFinProximaRenovacion() {
+        return fechaFinProximaRenovacion;
+    }
+
+    public void setFechaFinProximaRenovacion(LocalDate fechaFinProximaRenovacion) {
+        this.fechaFinProximaRenovacion = fechaFinProximaRenovacion;
     }
 }
