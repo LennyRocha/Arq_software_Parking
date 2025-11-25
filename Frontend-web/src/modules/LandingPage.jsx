@@ -7,6 +7,7 @@ import {
   Card,
   CardContent,
   Grid,
+  Link,
   IconButton,
   TablePagination,
   Accordion,
@@ -189,6 +190,10 @@ export default function LandingPage() {
           </Box>
         </Container>
       </Box>
+
+      <Link href="/admin">Ir al Menu admin</Link>
+      <Link href="/empleado">Ir al Menu Empleado</Link>
+      <Link href="/pensionados">Ir al Menu Pensionados</Link>
 
       {/* Features Section */}
       <Container maxWidth="lg" sx={{ py: 8 }}>

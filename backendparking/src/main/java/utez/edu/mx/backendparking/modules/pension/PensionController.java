@@ -45,21 +45,21 @@ public class PensionController {
         return ResponseEntity.ok(ApiResponse.success(HttpStatus.OK, PensionMessages.ENDPOINT_TIPOPENSION_PUT, pension));
     }
 
-    @PutMapping("private/{id}/status")
+    @PutMapping("/private/{id}/status")
     @Operation(summary = "Cambiar estatus de tipo de pensión", description = "Cambiar estatus de un tipo de pensión existente en el sistema")
     public ResponseEntity<ApiResponse<Void>> changeStatus(@PathVariable Long id) {
         pensionService.changeStatus(id);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(HttpStatus.OK, PensionMessages.ENDPOINT_TIPOPENSION_PUT_CHANGE_STATUS, null));
     }
 
-    @GetMapping
+    @GetMapping("/public")
     @Operation(summary = "Get para selects frontend",description="Obtener tipo de pensión para selects de frontend. Sin paginado")
     public ResponseEntity<ApiResponse<List<PensionResponseDto>>> findAll() {
         List<PensionResponseDto> pensiones = pensionService.findAll();
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(HttpStatus.OK, PensionMessages.ENDPOINT_TIPOPENSION_GET_ALL, pensiones));
     }
 
-    @GetMapping("/paginados")
+    @GetMapping("/public/paginados")
     @Operation(summary = "Obtener pensiones paginadas", description = "Obtener lista de pensiones con paginación, ordenamiento y búsqueda.")
     @Parameter(name = "page", description = "Número de página (0 por defecto)", example = "0")
     @Parameter(name = "size", description = "Tamaño de la página osea resultados (10 por defecto)", example = "10")

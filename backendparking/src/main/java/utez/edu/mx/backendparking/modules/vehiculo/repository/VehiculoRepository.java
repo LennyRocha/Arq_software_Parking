@@ -12,5 +12,9 @@ import utez.edu.mx.backendparking.modules.vehiculo.model.Vehiculo;
 public interface VehiculoRepository extends JpaRepository<Vehiculo, Long>{
 
     boolean existsByPlacaAndIdNot(String placa, Long id);
+    boolean existsByPlaca(String placa);
+
+    // Método para buscar todos los vehículos de un usuario
+    List<Vehiculo> findByUsuarioId(Long usuarioId);
 
 }

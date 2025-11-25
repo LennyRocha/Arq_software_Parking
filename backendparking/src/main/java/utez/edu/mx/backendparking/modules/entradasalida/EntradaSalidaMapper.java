@@ -3,7 +3,7 @@ package utez.edu.mx.backendparking.modules.entradasalida;
 import utez.edu.mx.backendparking.modules.entradasalida.dto.EntradaSalidaCreatePensionadoRequestDto;
 import utez.edu.mx.backendparking.modules.entradasalida.dto.EntradaSalidaCreateVisitanteRequestDto;
 import utez.edu.mx.backendparking.modules.entradasalida.dto.EntradaSalidaResponseDto;
-import utez.edu.mx.backendparking.modules.usuario.model.Usuario;
+import utez.edu.mx.backendparking.modules.usuario.Usuario;
 
 import java.time.LocalTime;
 

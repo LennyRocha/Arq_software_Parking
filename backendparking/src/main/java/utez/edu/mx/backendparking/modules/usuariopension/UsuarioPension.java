@@ -4,7 +4,7 @@ package utez.edu.mx.backendparking.modules.usuariopension;
 import jakarta.persistence.*;
 import utez.edu.mx.backendparking.modules.entradasalida.EntradaSalida;
 import utez.edu.mx.backendparking.modules.pension.Pension;
-import utez.edu.mx.backendparking.modules.usuario.model.Usuario;
+import utez.edu.mx.backendparking.modules.usuario.Usuario;
 
 import java.time.LocalDate;
 

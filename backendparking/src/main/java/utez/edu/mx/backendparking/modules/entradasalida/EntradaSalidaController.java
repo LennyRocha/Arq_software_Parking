@@ -168,4 +168,14 @@ public class EntradaSalidaController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.success(HttpStatus.OK, EntradaSalidaMessages.ENDPOINT_ENTRADA_SALIDA_PUT_UPDATE, entradaSalida));
     }
+
+    @GetMapping("/solicitar-codigo")
+    @Operation(summary = "Solicitar código de entrada/salida",
+            description = "Genera y retorna un nuevo código único para una entrada/salida para el usuario pensionado.")
+    public ResponseEntity<ApiResponse<String>> solicitarCodigoEntradaSalida() {
+        String codigo = entradaSalidaService.searchCodigoEntradaSalida();
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.success(HttpStatus.OK, EntradaSalidaMessages.ENDPOINT_CODIGO_ENTRADA_SALIDA, codigo));
+    }
+
 }

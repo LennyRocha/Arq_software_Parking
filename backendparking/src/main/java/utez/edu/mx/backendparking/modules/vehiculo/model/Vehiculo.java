@@ -1,9 +1,8 @@
 package utez.edu.mx.backendparking.modules.vehiculo.model;
 
-import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import utez.edu.mx.backendparking.modules.tipovehiculo.model.TipoVehiculo;
-import utez.edu.mx.backendparking.modules.usuario.model.Usuario;
+import utez.edu.mx.backendparking.modules.usuario.Usuario;
 
 @Entity
 @Table(name = "vehiculo")
