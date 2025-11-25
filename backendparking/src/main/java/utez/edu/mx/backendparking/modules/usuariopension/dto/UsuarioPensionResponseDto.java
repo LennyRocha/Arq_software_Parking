@@ -84,4 +84,20 @@ public class UsuarioPensionResponseDto {
     public void setUuidCodigoQR(String uuidCodigoQR) {
         this.uuidCodigoQR = uuidCodigoQR;
     }
+
+    public LocalDate getFechaInicioProximaRenovacion() {
+        return fechaInicioProximaRenovacion;
+    }
+
+    public void setFechaInicioProximaRenovacion(LocalDate fechaInicioProximaRenovacion) {
+        this.fechaInicioProximaRenovacion = fechaInicioProximaRenovacion;
+    }
+
+    public LocalDate getFechaFinProximaRenovacion() {
+        return fechaFinProximaRenovacion;
+    }
+
+    public void setFechaFinProximaRenovacion(LocalDate fechaFinProximaRenovacion) {
+        this.fechaFinProximaRenovacion = fechaFinProximaRenovacion;
+    }
 }
