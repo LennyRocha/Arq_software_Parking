@@ -5,6 +5,7 @@ import utez.edu.mx.backendparking.modules.pension.Pension;
 import utez.edu.mx.backendparking.modules.usuariopension.UsuarioPension;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 // ESTA ES LA TABLA DE HISTORIAL DE PAGOS REALIZADOS
 @Entity
@@ -22,11 +23,15 @@ public class Pago {
     @Column(name= "fecha_pago", nullable = false)
     private LocalDate fechaPago;
 
+    @Column(name= "hora_pago", nullable = false)
+    private LocalTime horaPago;
+
     @Column(name= "fecha_inicio", nullable = false)
     private LocalDate fechaInicio;
 
     @Column(name= "fecha_fin", nullable = false)
     private LocalDate fechaFin;
+
 
     // ATRIBUTOS DE RELACION
     @ManyToOne(fetch = FetchType.EAGER)
@@ -61,6 +66,14 @@ public class Pago {
 
     public void setFechaPago(LocalDate fechaPago) {
         this.fechaPago = fechaPago;
+    }
+
+    public LocalTime getHoraPago() {
+        return horaPago;
+    }
+
+    public void setHoraPago(LocalTime horaPago) {
+        this.horaPago = horaPago;
     }
 
     public LocalDate getFechaInicio() {

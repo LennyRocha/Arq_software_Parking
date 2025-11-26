@@ -90,8 +90,7 @@ const EditarEntradaSalidaModal = ({
                     text: "¿Estás seguro de actualizar los datos de esta entrada?",
                     icon: "question",
                     showCancelButton: true,
-                    confirmButtonText: "Sí, actualizar",
-                    cancelButtonText: "Cancelar",
+                    reverseButtons: true
                 });
 
                 if (result.isConfirmed) {

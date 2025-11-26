@@ -23,6 +23,7 @@ import utez.edu.mx.backendparking.modules.vehiculo.repository.VehiculoRepository
 import utez.edu.mx.backendparking.shared.exception.ResourceNotFoundException;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -385,6 +386,7 @@ public class InitialDataService {
         pago.setCantidadPago(pensionSeleccionada.getCosto());
         pago.setUsuarioPension(usuarioPension);
         pago.setFechaPago(LocalDate.now());
+        pago.setHoraPago(LocalTime.now());
         pago.setFechaInicio(LocalDate.now());
         pago.setFechaFin(LocalDate.now().plusDays(pensionSeleccionada.getDuracionDias()));
         pago.setPension(pensionSeleccionada);
