@@ -25,6 +25,7 @@ import utez.edu.mx.backendparking.shared.exception.ResourceNotFoundException;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -210,6 +211,8 @@ public class PensionadoService {
         nuevoPago.setFechaInicio(fechaInicio);
         nuevoPago.setFechaFin(fechaFin);
         nuevoPago.setUsuarioPension(usuarioPension);
+        nuevoPago.setHoraPago(LocalTime.now());
+
         nuevoPago.setPension(pension);
         pagoRepository.save(nuevoPago);
     }
