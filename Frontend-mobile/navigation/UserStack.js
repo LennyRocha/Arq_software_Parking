@@ -26,6 +26,7 @@ import InputVehiculo from "../modules/vehiculo/screens/InputVehiculo";
 import NuevoVehiculo from "../modules/vehiculo/screens/NuevoVehiculo";
 import SalidaQR from "../modules/salidas/screens/SalidaQR";
 import EntradaQR from "../modules/cajon/screens/EntradaQR";
+import { useSnackBar } from "../context/SnackBarContext";
 
 const Stack = createNativeStackNavigator();
 
@@ -66,7 +67,7 @@ function HomeWithTabs({ navigation }) {
     },
   ];
 
- const  renderScene = BottomNavigation.SceneMap({
+  const renderScene = BottomNavigation.SceneMap({
     home: () => <Inicio navigation={navigation} />,
     cars: () => <Vehiculos navigation={navigation} />,
     parking: () => <Estacionados navigation={navigation} />,
@@ -97,6 +98,7 @@ export default function UserStack({ name = "LO", navigation, route }) {
   const ruta = route;
   const mainRoutes = ["home", "cars", "parking", "suscriptions"];
   const paper = useTheme();
+  const { closeSheet } = useSnackBar();
 
   function PerfilWrapper(props) {
     return <Perfil {...props} dad={parent} ruta={ruta} />;
@@ -153,7 +155,7 @@ export default function UserStack({ name = "LO", navigation, route }) {
                   ]}
                 />
                 <TouchableRipple
-                  onPress={() => navigation.navigate("perfil")}
+                  onPress={() => { navigation.navigate("perfil"); closeSheet() }}
                   rippleColor="rgba(0, 0, 0, .32)"
                   style={{
                     borderRadius: 21,

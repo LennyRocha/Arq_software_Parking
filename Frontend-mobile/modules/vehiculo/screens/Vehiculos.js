@@ -13,7 +13,7 @@ export default function Vehiculos({ navigation }) {
   const paper = useTheme();
   const [isFocused, setIsFocused] = React.useState(false);
 
-  const { getVehiculos, data, isLoading, errorData, restoreValues, restartCall, query, setQuery, idCar, setIdCar, active, setActive, conPlacas, setConPlacas } = useVehiculos(1);
+  const { getVehiculos, data, isLoading, errorData, restoreValues, restartCall, query, setQuery, idCar, setIdCar, active, setActive, conPlacas, setConPlacas } = useVehiculos(3);
   const { data: list, error: errorTipos, load } = useTiposVehiculos();
 
   //Control del dialog de filtros

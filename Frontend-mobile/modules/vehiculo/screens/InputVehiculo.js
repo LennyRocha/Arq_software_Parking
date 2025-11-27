@@ -1,14 +1,15 @@
 import { View, KeyboardAvoidingView, Platform } from "react-native";
 import React from "react";
 import { Text, TextInput, HelperText, useTheme, Button } from "react-native-paper";
-import { MaskedTextInput } from "react-native-mask-text";
 import BoxStyles from "../../../utils/genericScreenStyles";
+import usePutVehiculos from "../hooks/usePutVehiculos";
 
-export default function InputVehiculo({ route }) {
+export default function InputVehiculo({ navigation, route }) {
   const paper = useTheme();
   const [longitud, setLongitud] = React.useState(0);
   const [longReal, setLongReal] = React.useState(0);
-  const { campo, label } = route.params;
+  const { campo, label, data } = route.params;
+  const { isLoading, errorData, preSubmit, defaultValues, vehicleYup, visible, hideAlert, config } = usePutVehiculos(navigation, data, campo)
   const [field, setField] = React.useState("");
   React.useEffect(() => {
     switch (campo) {

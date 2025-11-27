@@ -40,8 +40,7 @@ export default function useVehiculos(idUser) {
         texto: getAxiosErrorMessage(err),
         detalles: err
       }
-      setErrorData(errorObject)
-      console.log(process.env.API_URL,JSON.stringify(err));
+      setErrorData(errorObject);
     } finally {
       setLoading(false);
     }

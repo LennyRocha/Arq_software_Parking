@@ -16,8 +16,7 @@ export default function Pensiones({ navigation }) {
   const { data, isLoading, error, errorData, renderedList, restartCall } = usePensiones(navigation, goTo);
   const paper = useTheme();
   if (isLoading) return <LoadingView />;
-  if (errorData) console.log(errorData)
-  if (error) return <ErrorAxios error={error} callback={restartCall} />
+  if (errorData?.tipo === "Error de Axios") return <ErrorAxios error={errorData.detalles} callback={restartCall} />;
   return (
     <ScrollRefreshingView refreshHandler={restartCall} style={{ flex: 1 }} contentContainerStyle={{ padding: 24, gap: 12, flexGrow: 1 }}>
       {data?.data.length === 0 ? <EmptyListView message={"No hay pensiones registradas"} icon={"folder-off"} /> :

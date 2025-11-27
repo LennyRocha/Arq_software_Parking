@@ -5,12 +5,14 @@ import { useTheme, List, Switch, Avatar, IconButton } from "react-native-paper";
 import { useCustomThemes } from "../../../context/useCustomColors";
 import { ScrollView } from "react-native-gesture-handler";
 import { date } from "yup";
+import useDeleteVehiculos from "../hooks/useDeleteVehiculos";
 
 const { width, height } = Dimensions.get("screen")
 
 export default function DetallesVehiculo({ navigation, route }) {
   const { vehic, tipo } = route.params;
   const value = tipo.nombre.toLowerCase();
+  const { isLoading, errorData, preSubmit, visible, hideAlert, config } = useDeleteVehiculos(navigation, vehic);
   console.log(vehic, tipo)
   const paper = useTheme();
   const { mode } = useCustomThemes();
@@ -28,7 +30,7 @@ export default function DetallesVehiculo({ navigation, route }) {
   return (
     <LinearGradient style={{ flex: 1 }} colors={[mode === "dark" ? paper.colors.surfaceVariant : paper.colors.olderBack, paper.colors.background]} >
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ backgroundColor: "transparent", padding: 24, justifyContent: "center", alignItems: "center", gap: 12 }}>
-        <Image source={vehiculo} style={{  aspectRatio:  value === "moto" ? 16 / 10 : 16/9, flex: 1, maxWidth: width, height: 175}} resizeMethod="scale" resizeMode="stretch" />
+        <Image source={vehiculo} style={{ aspectRatio: value === "moto" ? 16 / 10 : 16 / 9, flex: 1, maxWidth: width, height: 175 }} resizeMethod="scale" resizeMode="stretch" />
         <List.Item
           title="Modelo:"
           description={vehic.modelo}

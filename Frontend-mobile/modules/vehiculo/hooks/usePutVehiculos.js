@@ -6,17 +6,29 @@ import Vehicle from "../../../models/Vehicle";
 import api from "../../../utils/api";
 import { useCustomAlert } from "../../../utils/useCustomAlert";
 
-export default function usePostVehiculos(navigation) {
+export default function usePutVehiculos(navigation, vehiculo, campo) {
     const [isLoading, setLoading] = React.useState(false);
     const [errorData, setErrorData] = React.useState(null);
 
     const { visible, config, showAlert, hideAlert } = useCustomAlert();
 
+    const preSubmit = async (data) => {
+        showAlert({
+            icon: "question",
+            title: "¡Confirmación!",
+            message: `Estas por modificar el campo ${campo}. ¿Deseas continuar?`,
+            confirmText: "Actualizar",
+            cancelText: "Cancelar",
+            onConfirm: async () => onSubmit(data),
+            externalDismiss: false,
+        })
+    }
+
     const onSubmit = async (data) => {
         if (isLoading) return;
 
         const vehic = new Vehicle({
-            id: null,
+            id: vehiculo.id,
             id_user: data.id_user,
             id_type: data.id_type,
             placa: data.placa,
@@ -30,7 +42,7 @@ export default function usePostVehiculos(navigation) {
         setLoading(true);
         setErrorData(null);
         try {
-            const res = await api.post(`${vehiculoInterface.postIt()}`, vehic.toJson());
+            const res = await api.put(`${vehiculoInterface.byId(vehiculo.id)}`, vehic.toJson());
             showAlert({
                 icon: "success",
                 title: "¡Éxito!",
@@ -49,7 +61,7 @@ export default function usePostVehiculos(navigation) {
             setErrorData(errorObject)
             showAlert({
                 icon: "error",
-                title: "¡Error al registrar vehículo!",
+                title: "¡Error al actualizar el vehículo!",
                 message: getAxiosErrorMessage(err),
                 showCancelButton: false,
                 confirmText: "Aceptar",
@@ -63,12 +75,12 @@ export default function usePostVehiculos(navigation) {
 
     const defaultValues = React.useMemo(() => ({
         id_user: 3,
-        modelo: "",
-        id_type: 1,
-        placa: "",
-        desc: "",
-        estatus: true
-    }), []);
+        modelo: vehiculo.modelo,
+        id_type: vehiculo.tipoVehiculo.id,
+        placa: vehiculo.placa,
+        desc: vehiculo.descripcion,
+        estatus: vehiculo.estatus
+    }), [vehiculo]);
 
-    return { isLoading, errorData, onSubmit, defaultValues, vehicleYup, visible, hideAlert, config };
+    return { isLoading, errorData, preSubmit, defaultValues, vehicleYup, visible, hideAlert, config };
 }

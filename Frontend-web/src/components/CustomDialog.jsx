@@ -1,10 +1,10 @@
 /**
  * CustomDialog - Componente de diálogo personalizado reutilizable
- * 
+ *
  * @description
  * Componente que muestra un diálogo modal personalizado con Material-UI.
  * Soporta modo formulario y modo confirmación, con estilos adaptados al tema oscuro/claro.
- * 
+ *
  * @example
  * // Uso como diálogo de confirmación
  * <CustomDialog
@@ -17,7 +17,7 @@
  * >
  *   <Typography>¿Estás seguro de realizar esta acción?</Typography>
  * </CustomDialog>
- * 
+ *
  * @example
  * // Uso como formulario
  * <CustomDialog
@@ -33,7 +33,7 @@
  *   <TextField label="Nombre" />
  *   <TextField label="Email" />
  * </CustomDialog>
- * 
+ *
  * @param {string} titulo - Título del diálogo
  * @param {boolean} isOpen - Estado de apertura del diálogo
  * @param {React.ReactNode} children - Contenido del diálogo
@@ -78,13 +78,15 @@ export default function CustomDialog({
   textConfirm = "Confirm",
   showActions = true,
   fullWidth = true, // changed default to true
-  maxWidth = "sm",  // changed default to "sm"
+  maxWidth = "sm", // changed default to "sm"
   containerStyle = {},
   handleClose,
   keyForClose = true,
-  allowOutsideClick = true
+  allowOutsideClick = true,
+  tituloLeft = false,
+  showCancel = true,
 }) {
-    const { isDarkMode } = useDarkContext();
+  const { isDarkMode } = useDarkContext();
 
   const doNothing = (e) => {
     e?.preventDefault?.();
@@ -113,29 +115,29 @@ export default function CustomDialog({
       fullWidth={fullWidth}
       maxWidth={maxWidth}
       open={isOpen}
-      onClose={(event, reason) =>{
-        if (reason === 'backdropClick' && !allowOutsideClick) return;
+      onClose={(event, reason) => {
+        if (reason === "backdropClick" && !allowOutsideClick) return;
         handleClose();
-      }} 
+      }}
       aria-labelledby={titleId}
       disableEscapeKeyDown={keyForClose}
       PaperProps={{
         sx: {
           borderRadius: 2,
-          padding: 2
-        }
+          padding: 2,
+        },
       }}
     >
       <DialogTitle
         id={titleId}
         sx={{
-          textAlign: "center",
+          textAlign: tituloLeft ? "left" : "center",
           color: "var(--primary)",
           fontWeight: "bold",
           fontSize: "2rem",
           paddingBottom: 3,
           position: "relative",
-          paddingTop: 2
+          paddingTop: 2,
         }}
       >
         {titulo}
@@ -161,7 +163,7 @@ export default function CustomDialog({
             flexDirection: "column",
             gap: 2,
             width: "100%",
-            ...containerStyle
+            ...containerStyle,
           }}
         >
           {children}
@@ -169,9 +171,11 @@ export default function CustomDialog({
       </DialogContent>
       {showActions && (
         <DialogActions>
-          <Button onClick={handleCancel} variant="contained" color="inherit">
-            {textCancel}
-          </Button>
+          {showCancel && (
+            <Button onClick={handleCancel} variant="contained" color="inherit">
+              {textCancel}
+            </Button>
+          )}
           {isForm ? (
             <Button type="submit" variant="contained" onClick={onSubmit}>
               {textSubmit}

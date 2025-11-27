@@ -29,7 +29,7 @@ import java.util.Optional;
 @Service
 public class VehiculoService {
 
-    final String userEndpoint = "http://localhost:8080/api/usuarios/backend";
+    final String userEndpoint = "http://localhost:8080/api/users/backend";
     final String typesEndpoint = "http://localhost:8080/api/vehiculos/tipos";
 
     @Autowired
@@ -72,9 +72,7 @@ public class VehiculoService {
 
             String finalQuery = query;
 
-            List<VehiculoDto> dtos = vehiculoRepository.findAll().stream()
-                    // Por usuario
-                    .filter(v -> v.getUsuario().getId().equals(user_id))
+            List<VehiculoDto> dtos = vehiculoRepository.findByUsuarioId(user_id).stream()
                     // Por tipo de vehículo
                     .filter(v -> vehiculo_id == null || v.getTipoVehiculo().getId().equals(vehiculo_id))
                     // Por búsqueda (modelo o descripción)

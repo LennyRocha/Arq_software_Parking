@@ -3,6 +3,8 @@ package utez.edu.mx.backendparking.config;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import utez.edu.mx.backendparking.modules.cajon.model.Cajon;
+import utez.edu.mx.backendparking.modules.cajon.repository.CajonRepository;
 import utez.edu.mx.backendparking.modules.historialpagos.Pago;
 import utez.edu.mx.backendparking.modules.historialpagos.PagoRepository;
 import utez.edu.mx.backendparking.modules.pension.Pension;
@@ -38,8 +40,9 @@ public class InitialDataService {
     private final VehiculoRepository vehiculoRepository;
     private final UsuarioPensionRepository usuarioPensionRepository;
     private final PagoRepository pagoRepository;
+    private final CajonRepository cajonRepository;
 
-    public InitialDataService(TarifaRepository tarifaRepository, TipoVehiculoRepository tipoVehiculoRepository, PensionRepository pensionRepository, RolesRepository roleRepository, UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder, VehiculoRepository vehiculoRepository, UsuarioPensionRepository usuarioPensionRepository, PagoRepository pagoRepository) {
+    public InitialDataService(TarifaRepository tarifaRepository, TipoVehiculoRepository tipoVehiculoRepository, PensionRepository pensionRepository, RolesRepository roleRepository, UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder, VehiculoRepository vehiculoRepository, UsuarioPensionRepository usuarioPensionRepository, PagoRepository pagoRepository, CajonRepository cajonRepository) {
         this.tarifaRepository = tarifaRepository;
         this.tipoVehiculoRepository = tipoVehiculoRepository;
         this.pensionRepository = pensionRepository;
@@ -49,6 +52,7 @@ public class InitialDataService {
         this.vehiculoRepository = vehiculoRepository;
         this.usuarioPensionRepository = usuarioPensionRepository;
         this.pagoRepository = pagoRepository;
+        this.cajonRepository = cajonRepository;
     }
 
     @Transactional
@@ -406,5 +410,116 @@ public class InitialDataService {
             uuid = UUID.randomUUID().toString();
         } while (usuarioPensionRepository.existsByUuidCodigoQR(uuid));
         return uuid;
+    }
+
+    /**
+     * Método para crear los cajones del estacionamiento
+     */
+    @Transactional
+    public void inicializarCajones() {
+
+        // Verificar si ya existen cajones
+        if (cajonRepository.count() > 0) {
+            System.out.println("Los cajones ya fueron inicializados previamente.");
+            return;
+        }
+
+        // Obtener tipos de vehículo
+        List<TipoVehiculo> tipos = tipoVehiculoRepository.findAll();
+        if (tipos.isEmpty()) {
+            System.out.println("No hay tipos de vehículo. Inicialice primero Tipos de Vehículo.");
+            return;
+        }
+
+        TipoVehiculo coche = tipos.stream()
+                .filter(t -> t.getNombre().equalsIgnoreCase("Coche"))
+                .findFirst().orElse(null);
+
+        TipoVehiculo moto = tipos.stream()
+                .filter(t -> t.getNombre().equalsIgnoreCase("Moto"))
+                .findFirst().orElse(null);
+
+        TipoVehiculo camioneta = tipos.stream()
+                .filter(t -> t.getNombre().equalsIgnoreCase("Camioneta"))
+                .findFirst().orElse(null);
+
+        // Crear cajones de ejemplo
+        Cajon c1 = new Cajon(null, "A1", "Cerca de entrada principal", true, false, 1, true, coche);
+        c1.setTipoVehiculo(coche);
+
+        Cajon c2 = new Cajon(null, "A2", "Zona media del piso 1", true, false, 1, true, coche);
+        c2.setTipoVehiculo(coche);
+
+        Cajon c3 = new Cajon(null, "M1", "Cerca de escalera piso 2", true, false, 2, true, coche);
+        c3.setTipoVehiculo(moto);
+
+        Cajon c4 = new Cajon(null, "C1", "Zona amplia piso 1", true, true, 1, true, camioneta);
+        c4.setTipoVehiculo(camioneta);
+
+        Cajon c5 = new Cajon(null, "B1", "Zona amplia piso 2", true, false, 2, true, camioneta);
+        c4.setTipoVehiculo(camioneta);
+
+        Cajon c6 = new Cajon(null, "C4", "Zona amplia piso 3", true, false, 3, true, camioneta);
+        c4.setTipoVehiculo(camioneta);
+
+        Cajon c7 = new Cajon(null, "C2", "Cerca de la entrada trasera", true, true, 1, true, moto);
+        c4.setTipoVehiculo(camioneta);
+
+        Cajon c8 = new Cajon(null, "M2", "Zona amplia piso 1, a la izquierda", true, false, 1, true, moto);
+        c4.setTipoVehiculo(camioneta);
+
+        Cajon c9 = new Cajon(null, "A3", "Zona media del piso 1", true, false, 1, true, coche);
+        c9.setTipoVehiculo(coche);
+
+        Cajon c10 = new Cajon(null, "A4", "Cerca de salida piso 1", true, false, 1, true, coche);
+        c10.setTipoVehiculo(coche);
+
+        Cajon c11 = new Cajon(null, "B2", "Zona izquierda piso 2", true, false, 2, true, coche);
+        c11.setTipoVehiculo(coche);
+
+        Cajon c12 = new Cajon(null, "B3", "Zona derecha piso 2", true, false, 2, true, coche);
+        c12.setTipoVehiculo(coche);
+
+        Cajon c13 = new Cajon(null, "M3", "Cerca de elevador piso 1", true, false, 1, true, moto);
+        c13.setTipoVehiculo(moto);
+
+        Cajon c14 = new Cajon(null, "M4", "Zona lateral piso 2", true, false, 2, true, moto);
+        c14.setTipoVehiculo(moto);
+
+        Cajon c15 = new Cajon(null, "C3", "Zona amplia piso 3", true, false, 3, true, camioneta);
+        c15.setTipoVehiculo(camioneta);
+
+        Cajon c16 = new Cajon(null, "C5", "Cerca de salida piso 3", true, false, 3, true, camioneta);
+        c16.setTipoVehiculo(camioneta);
+
+        Cajon c17 = new Cajon(null, "D1", "Zona premium piso 1", true, true, 1, true, coche);
+        c17.setTipoVehiculo(coche);
+
+        Cajon c18 = new Cajon(null, "D2", "Zona premium piso 2", true, true, 2, true, coche);
+        c18.setTipoVehiculo(coche);
+
+
+        // Guardar
+        cajonRepository.save(c1);
+        cajonRepository.save(c2);
+        cajonRepository.save(c3);
+        cajonRepository.save(c4);
+        cajonRepository.save(c5);
+        cajonRepository.save(c6);
+        cajonRepository.save(c7);
+        cajonRepository.save(c8);
+        cajonRepository.save(c9);
+        cajonRepository.save(c10);
+        cajonRepository.save(c11);
+        cajonRepository.save(c12);
+        cajonRepository.save(c13);
+        cajonRepository.save(c14);
+        cajonRepository.save(c15);
+        cajonRepository.save(c16);
+        cajonRepository.save(c17);
+        cajonRepository.save(c18);
+
+
+        System.out.println("Cajones inicializados exitosamente");
     }
 }

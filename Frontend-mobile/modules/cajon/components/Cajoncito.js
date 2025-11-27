@@ -13,7 +13,7 @@ export default function Cajoncito({ cajon }) {
 
   const setBackground = () => {
     if (!cajon.disponible) {
-      return paper.colors.surface;
+      return "transparent";
     } else if (cajon.paraPensionados && cajon.estatus) {
       return paper.colors.tertiary;
     } else if (cajon.disponible && !cajon.paraPensionados && !cajon.estatus) {
@@ -26,7 +26,7 @@ export default function Cajoncito({ cajon }) {
 
   const setBorder = () => {
     if (!cajon.disponible) {
-      return "transparent";
+      return paper.colors.surfaceVariant;
     } else if (cajon.paraPensionados && cajon.estatus) {
       return paper.colors.tertiary;
     } else if (cajon.disponible && !cajon.paraPensionados && !cajon.estatus) {
@@ -34,7 +34,7 @@ export default function Cajoncito({ cajon }) {
     } else if (!cajon.estatus) {
       return paper.colors.dark;
     }
-    return "transparent";
+    return  paper.colors.tertiary;
   };
 
   const tipo = cajon.tipoVehiculo?.nombre?.toLowerCase();
@@ -43,8 +43,7 @@ export default function Cajoncito({ cajon }) {
     <View
       style={{
         borderRadius: 6,
-        flex: 1,
-        height: 50,
+        height: 40,
         backgroundColor: setBackground(),
         borderWidth: 1,
         borderColor: setBorder(),
@@ -53,14 +52,13 @@ export default function Cajoncito({ cajon }) {
         overflow: "hidden"
       }}
     >
-      {cajon.disponible ? (
-        <Text>{cajon.name}</Text>
-      ) : (
+      {!cajon.disponible && (
         <Image
           source={vehiculos[tipo]}
           style={{
-            width: "100%",
-            height: "100%",
+            width: "100%", 
+            height: undefined,
+            aspectRatio: 1,
             transform: [{ rotate: "90deg" }],
             resizeMode: "contain",
           }}

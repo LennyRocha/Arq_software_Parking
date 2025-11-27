@@ -103,7 +103,7 @@ public class CajonService {
             } else {
                 cajones = cajonRepository.findAll();
             }
-            if(cajones.isEmpty()) return ApiResponse.success(HttpStatus.NO_CONTENT,causa.isBlank() ? "No hay cajones disponibles para esa combinación" : causa, cajones);
+            if(cajones.isEmpty()) return ApiResponse.success(HttpStatus.NO_CONTENT,causa.isBlank() ? "No hay cajones disponibles" : causa, cajones);
             return ApiResponse.success(HttpStatus.OK, "Cajones recuperados", cajones);
         } catch (Exception e) {
             return ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR,e.getMessage(), null);
