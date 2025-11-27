@@ -22,14 +22,16 @@ public interface PagoRepository extends JpaRepository<Pago, Long> {
             COALESCE(SUM(p.cantidad_pago), 0) as gananciasPensionados
         FROM (
             SELECT DISTINCT 
-                es.fecha as fecha,
-                EXTRACT(HOUR FROM es.hora_salida) as hora
-            FROM entrada_salida es
-            WHERE es.fecha BETWEEN :fechaInicial AND :fechaFinal
-                AND es.hora_salida IS NOT NULL
+                p.fecha_pago as fecha,
+                EXTRACT(HOUR FROM p.hora_pago) as hora
+            FROM pago p
+            WHERE p.fecha_pago BETWEEN :fechaInicial AND :fechaFinal
+                AND p.hora_pago IS NOT NULL
         ) fecha_hora
         LEFT JOIN pago p 
-            ON p.fecha_pago = fecha_hora.fecha
+            ON p.fecha_pago = fecha_hora.fecha 
+            AND EXTRACT(HOUR FROM p.hora_pago) = fecha_hora.hora
+            AND p.cantidad_pago IS NOT NULL
         GROUP BY fecha_hora.fecha, fecha_hora.hora
         ORDER BY fecha_hora.fecha DESC, fecha_hora.hora DESC
         """,
@@ -47,14 +49,16 @@ public interface PagoRepository extends JpaRepository<Pago, Long> {
             COALESCE(SUM(p.cantidad_pago), 0) as gananciasPensionados
         FROM (
             SELECT DISTINCT 
-                es.fecha as fecha,
-                EXTRACT(HOUR FROM es.hora_salida) as hora
-            FROM entrada_salida es
-            WHERE es.fecha BETWEEN :fechaInicial AND :fechaFinal
-                AND es.hora_salida IS NOT NULL
+                p.fecha_pago as fecha,
+                EXTRACT(HOUR FROM p.hora_pago) as hora
+            FROM pago p
+            WHERE p.fecha_pago BETWEEN :fechaInicial AND :fechaFinal
+                AND p.hora_pago IS NOT NULL
         ) fecha_hora
         LEFT JOIN pago p 
-            ON p.fecha_pago = fecha_hora.fecha
+            ON p.fecha_pago = fecha_hora.fecha 
+            AND EXTRACT(HOUR FROM p.hora_pago) = fecha_hora.hora
+            AND p.cantidad_pago IS NOT NULL
         GROUP BY fecha_hora.fecha, fecha_hora.hora
         ORDER BY fecha_hora.fecha ASC, fecha_hora.hora ASC
         """,
