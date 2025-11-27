@@ -25,6 +25,7 @@ import utez.edu.mx.backendparking.shared.exception.ResourceNotFoundException;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -210,6 +211,8 @@ public class PensionadoService {
         nuevoPago.setFechaInicio(fechaInicio);
         nuevoPago.setFechaFin(fechaFin);
         nuevoPago.setUsuarioPension(usuarioPension);
+        nuevoPago.setHoraPago(LocalTime.now());
+
         nuevoPago.setPension(pension);
         pagoRepository.save(nuevoPago);
     }
@@ -259,5 +262,34 @@ public class PensionadoService {
             }
         }
         System.out.println("SCHEDULER COMPLETADO");
+    }
+
+    @Transactional(readOnly = true)
+    public UsuarioPensionResponseDto findPensionByUsuarioId(Long usuarioId) {
+        UsuarioPension usuarioPension = usuarioPensionRepository.findMostRecentByUsuarioId(usuarioId)
+                .orElseThrow(() -> new ResourceNotFoundException("No se encontró una pensión para el usuario"));
+
+        LocalDate fechaActual = LocalDate.now();
+        
+        // Buscar el costo del último pago según la fecha de finalización
+        Optional<Pago> ultimoPago = pagoRepository.findUltimoPagoPorFechaFinalizacion(usuarioPension.getId(), usuarioPension.getFechaFinalizacion());
+        Double costoUltimoPago = ultimoPago.map(Pago::getCantidadPago)
+                .orElse(usuarioPension.getPension().getCosto());
+
+        // Calcular cuándo iniciaría la PRÓXIMA renovación
+        LocalDate fechaInicioProxima = calcularFechaInicioProximaRenovacion(usuarioPension, fechaActual);
+        LocalDate fechaFinProxima = fechaInicioProxima.plusDays(usuarioPension.getPension().getDuracionDias() - 1);
+
+        return new UsuarioPensionResponseDto(
+                usuarioPension.getId(), 
+                usuarioPension.getUsuario().getCorreo(), 
+                usuarioPension.getPension().getNombre(),
+                usuarioPension.getFechaFinalizacion(), 
+                costoUltimoPago, 
+                usuarioPension.isEstatus(), 
+                usuarioPension.getUuidCodigoQR(),
+                fechaInicioProxima, 
+                fechaFinProxima
+        );
     }
 }
