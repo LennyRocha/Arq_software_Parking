@@ -38,4 +38,13 @@ public interface UsuarioPensionRepository extends JpaRepository<UsuarioPension, 
 
     @Query("SELECT up FROM UsuarioPension up WHERE up.usuario.id = :usuarioId")
     List<UsuarioPension> findByUsuarioId(@Param("usuarioId") Long usuarioId);
+
+
+    @Query("""
+        SELECT up FROM UsuarioPension up 
+        WHERE up.usuario.id = :usuarioId 
+        ORDER BY up.fechaFinalizacion DESC 
+        LIMIT 1
+        """)
+    Optional<UsuarioPension> findMostRecentByUsuarioId(@Param("usuarioId") Long usuarioId);
 }

@@ -25,6 +25,7 @@ import utez.edu.mx.backendparking.modules.vehiculo.repository.VehiculoRepository
 import utez.edu.mx.backendparking.shared.exception.ResourceNotFoundException;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -313,7 +314,7 @@ public class InitialDataService {
 
         // Crear primer vehículo - Coche
         Vehiculo vehiculo1 = new Vehiculo();
-        vehiculo1.setPlaca("ABC-123");
+        vehiculo1.setPlaca("yyy-123");
         vehiculo1.setModelo("Honda Civic 2020");
         vehiculo1.setDescripcion("Sedán gris plata");
         vehiculo1.setEstatus(true);
@@ -322,7 +323,7 @@ public class InitialDataService {
 
         // Crear segundo vehículo - Moto
         Vehiculo vehiculo2 = new Vehiculo();
-        vehiculo2.setPlaca("XYZ-789");
+        vehiculo2.setPlaca("zzz-789");
         vehiculo2.setModelo("Yamaha MT-07 2021");
         vehiculo2.setDescripcion("Motocicleta deportiva azul");
         vehiculo2.setEstatus(true);
@@ -389,6 +390,7 @@ public class InitialDataService {
         pago.setCantidadPago(pensionSeleccionada.getCosto());
         pago.setUsuarioPension(usuarioPension);
         pago.setFechaPago(LocalDate.now());
+        pago.setHoraPago(LocalTime.now());
         pago.setFechaInicio(LocalDate.now());
         pago.setFechaFin(LocalDate.now().plusDays(pensionSeleccionada.getDuracionDias()));
         pago.setPension(pensionSeleccionada);

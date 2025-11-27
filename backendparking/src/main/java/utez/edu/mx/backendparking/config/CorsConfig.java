@@ -24,7 +24,8 @@ public class CorsConfig {
                 "http://127.0.0.1:2000",      // Live server
                 "http://localhost:3000",      // React/Next.js
                 "http://localhost:4200",      // Angular
-                "http://localhost:5173",      // Vite
+                "http://localhost:5173",
+                 "http://localhost:5174",      // Vite
                 "http://localhost:8081",      // Vue u Expo
                 "http://localhost:5000"       // Servidor con Socket.io
         ));

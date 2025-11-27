@@ -17,17 +17,15 @@ import LocalParkingIcon from "@mui/icons-material/LocalParking";
 import PeopleIcon from "@mui/icons-material/People";
 import DirectionsCar from "@mui/icons-material/DirectionsCar";
 import FolderSharedIcon from "@mui/icons-material/FolderShared";
-import PersonIcon from "@mui/icons-material/Person";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 
 //Material Design Icons Js
 import Icon from "@mdi/react";
-import { mdiAccountTie } from "@mdi/js";
-import { mdiCash } from "@mdi/js";
 import { mdiAccountCreditCard } from "@mdi/js";
 import { mdiFileChart } from "@mdi/js";
 import { mdiCarCog } from "@mdi/js";
+import { mdiCash } from "@mdi/js";
 
 //Logo
 import logo from "../img/logo_parking_hd_no_titulo.png";
@@ -61,7 +59,6 @@ export default function AdminRouter() {
   const path = location.pathname;
   const goTo = useNavigate();
   const [openPension, setOpenPension] = React.useState(false);
-  const [openUsers, setOpenUsers] = React.useState(false);
   const [openReports, setOpenReports] = React.useState(true);
 
   const [selectedIndex, setSelectedIndex] = React.useState(0);
@@ -85,14 +82,8 @@ export default function AdminRouter() {
       case path.includes("cajones"):
         setSelectedIndex(5);
         break;
-      case path.includes("gestion_empleados"):
+      case path.includes("gestion_usuarios"):
         setSelectedIndex(6);
-        break;
-      case path.includes("gestion_pensionados"):
-        setSelectedIndex(7);
-        break;
-      case path.includes("gestion_vehiculos"):
-        setSelectedIndex(8);
         break;
       default:
         setSelectedIndex(0);
@@ -103,9 +94,6 @@ export default function AdminRouter() {
     switch (opt) {
       case "pension":
         setOpenPension(!openPension);
-        break;
-      case "users":
-        setOpenUsers(!openUsers);
         break;
       case "reports":
         setOpenReports(!openReports);
@@ -369,63 +357,27 @@ export default function AdminRouter() {
           <ListItemText primary="Cajones" />
         </ListItemButton>
 
-        <ListItemButton onClick={() => handleClick("users")}>
+        <ListItemButton
+          onClick={() => goTo("/admin/gestion_usuarios")}
+          selected={selectedIndex === 6}
+          sx={{
+            borderRadius: "5px",
+            "&.Mui-selected": {
+              backgroundColor: "var(--other)",
+              color: "#ffffff",
+            },
+          }}
+          className="side-item"
+        >
           <ListItemIcon>
-            <PeopleIcon className="gray" />
+            <PeopleIcon
+              className={`side-icon ${
+                selectedIndex === 6 ? "color-white " : "gray"
+              }`}
+            />
           </ListItemIcon>
           <ListItemText primary="Usuarios" />
-          {openUsers ? <ExpandLess /> : <ExpandMore />}
         </ListItemButton>
-        <Collapse in={openUsers} timeout="auto" unmountOnExit>
-          <List component="div" disablePadding>
-            <ListItemButton
-              sx={{
-                pl: 4,
-                borderRadius: "5px",
-                "&.Mui-selected": {
-                  backgroundColor: "var(--other)",
-                  color: "#ffffff",
-                },
-              }}
-              onClick={() => goTo("/admin/gestion_empleados")}
-              selected={selectedIndex === 6}
-              className="side-item"
-            >
-              <ListItemIcon>
-                <Icon
-                  path={mdiAccountTie}
-                  size={1}
-                  className={`side-icon ${
-                    selectedIndex === 6 ? "color-white " : "gray"
-                  }`}
-                />
-              </ListItemIcon>
-              <ListItemText primary="Empleados" />
-            </ListItemButton>
-            <ListItemButton
-              sx={{
-                pl: 4,
-                borderRadius: "5px",
-                "&.Mui-selected": {
-                  backgroundColor: "var(--other)",
-                  color: "#ffffff",
-                },
-              }}
-              onClick={() => goTo("/admin/gestion_pensionados")}
-              selected={selectedIndex === 7}
-              className="side-item"
-            >
-              <ListItemIcon>
-                <PersonIcon
-                  className={`side-icon ${
-                    selectedIndex === 7 ? "color-white " : "gray"
-                  }`}
-                />
-              </ListItemIcon>
-              <ListItemText primary="Pensionados" />
-            </ListItemButton>
-          </List>
-        </Collapse>
 
         <ListItemButton
           onClick={() => goTo("/admin/gestion_vehiculos")}

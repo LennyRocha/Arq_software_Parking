@@ -210,7 +210,7 @@ export default function AgregarEntradaModal({
                                     onChange={(e) => setModelo(e.target.value)}
                                     isObligatory={true}
                                     type="text"
-                                    placeholder="Mustang"
+                                    placeholder="Ej: Civic 2020"
                                     isWrong={!!errors.modelo}
                                     errorMessage={errors.modelo}
                                 />
@@ -224,7 +224,7 @@ export default function AgregarEntradaModal({
                                     onChange={(e) => setPlaca(e.target.value)}
                                     isObligatory={true}
                                     type="text"
-                                    placeholder="30"
+                                    placeholder="ABC-123"
                                     isWrong={!!errors.placa}
                                     errorMessage={errors.placa}
                                 />
@@ -238,7 +238,7 @@ export default function AgregarEntradaModal({
                         value={descripcion}
                         onChange={(e) => setDescripcion(e.target.value)}
                         isObligatory={true}
-                        placeholder="Entró en un carrazo último modelo"
+                        placeholder="Ej: Sedán negro"
                         rows={3}
                         isWrong={!!errors.descripcion}
                         errorMessage={errors.descripcion}

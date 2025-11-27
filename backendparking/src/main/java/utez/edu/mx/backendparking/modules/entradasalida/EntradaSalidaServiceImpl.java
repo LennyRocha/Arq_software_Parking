@@ -472,22 +472,15 @@ public class EntradaSalidaServiceImpl implements EntradaSalidaService {
         // 2. Crear el objeto Pageable para la paginación en BD
         Pageable pageable = PageRequest.of(page, size);
 
-        // 3. Obtener resultados paginados de visitantes y pensionados según el orden
-        Page<Object[]> resultadosVisitantes;
-        Page<Object[]> resultadosPensionados;
+        // 3. Obtener resultados paginados combinados según el orden
+        Page<Object[]> resultadosCombinados;
 
         if ("asc".equalsIgnoreCase(sortOrder)) {
-            resultadosVisitantes = entradaSalidaRepository.findReporteGananciasPorHoraAsc(
-                fechaInicialFinal, fechaFinalFinal, pageable
-            );
-            resultadosPensionados = pagoRepository.findGananciasPensionadosPorHoraAsc(
+            resultadosCombinados = entradaSalidaRepository.findReporteGananciasCombinadasPorHoraAsc(
                 fechaInicialFinal, fechaFinalFinal, pageable
             );
         } else {
-            resultadosVisitantes = entradaSalidaRepository.findReporteGananciasPorHoraDesc(
-                fechaInicialFinal, fechaFinalFinal, pageable
-            );
-            resultadosPensionados = pagoRepository.findGananciasPensionadosPorHoraDesc(
+            resultadosCombinados = entradaSalidaRepository.findReporteGananciasCombinadasPorHoraDesc(
                 fechaInicialFinal, fechaFinalFinal, pageable
             );
         }
@@ -496,24 +489,13 @@ public class EntradaSalidaServiceImpl implements EntradaSalidaService {
         final LocalDate rangoInicial = fechaInicialFinal;
         final LocalDate rangoFinal = fechaFinalFinal;
 
-        // 4. Combinar los resultados de visitantes y pensionados
+        // 4. Convertir los resultados a DTOs
         List<ReporteGananciasResponseDto> reporteDtos = new ArrayList<>();
-        List<Object[]> visitantesContent = resultadosVisitantes.getContent();
-        List<Object[]> pensionadosContent = resultadosPensionados.getContent();
 
-        for (int i = 0; i < visitantesContent.size(); i++) {
-            Object[] rowVisitantes = visitantesContent.get(i);
-
-            LocalDate fechaRegistro = ((java.sql.Date) rowVisitantes[0]).toLocalDate();
-            int hora = ((Number) rowVisitantes[1]).intValue();
-            Double gananciasVisitantes = ((Number) rowVisitantes[2]).doubleValue();
-
-            // Buscar las ganancias de pensionados para la misma fecha y hora
-            Double gananciasPensionados = 0.0;
-            if (i < pensionadosContent.size()) {
-                Object[] rowPensionados = pensionadosContent.get(i);
-                gananciasPensionados = ((Number) rowPensionados[2]).doubleValue();
-            }
+        for (Object[] row : resultadosCombinados.getContent()) {
+            int hora = ((Number) row[1]).intValue();
+            Double gananciasVisitantes = ((Number) row[2]).doubleValue();
+            Double gananciasPensionados = ((Number) row[3]).doubleValue();
 
             ReporteGananciasResponseDto dto = new ReporteGananciasResponseDto();
             dto.setFechaInicial(rangoInicial);
@@ -527,7 +509,7 @@ public class EntradaSalidaServiceImpl implements EntradaSalidaService {
         }
 
         // 5. Retornar el Page con los DTOs
-        return new PageImpl<>(reporteDtos, pageable, resultadosVisitantes.getTotalElements());
+        return new PageImpl<>(reporteDtos, pageable, resultadosCombinados.getTotalElements());
     }
 
     @Override

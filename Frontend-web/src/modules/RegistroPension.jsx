@@ -123,6 +123,8 @@ export default function RegistroPension() {
     
     // Limpiar URL
     window.history.replaceState({}, document.title, window.location.pathname);
+
+    
     
     // Mostrar mensaje de procesamiento
     Swal.fire({

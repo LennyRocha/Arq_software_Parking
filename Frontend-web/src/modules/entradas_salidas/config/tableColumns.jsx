@@ -40,7 +40,7 @@ export const entradasSalidasColumns = ({ onView, onEdit }) => [
     label: "Fecha",
     render: (row) => {
       if (row.fecha) {
-        const fecha = new Date(row.fecha);
+        const fecha = new Date(row.fecha + 'T00:00:00');
         return fecha.toLocaleDateString('es-MX', {
           day: '2-digit',
           month: '2-digit',
@@ -49,6 +49,7 @@ export const entradasSalidasColumns = ({ onView, onEdit }) => [
       }
       return "-";
     }
+
   },
   {
     field: "horaEntradaSalida",
@@ -127,8 +128,8 @@ export const reporteGananciasColumns = ({ onView }) => [
     label: "Fecha",
     render: (row) => {
       if (row.fechaInicial) {
-        const fecha = new Date(row.fechaInicial);
-        return fecha.toLocaleDateString('es-MX', {
+        const fecha = new Date(row.fechaInicial + 'T00:00:00');
+        return fecha.toLocaleDateString('es-MX' , {
           day: '2-digit',
           month: '2-digit',
           year: 'numeric'
