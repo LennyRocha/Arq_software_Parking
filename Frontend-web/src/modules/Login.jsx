@@ -1,4 +1,7 @@
 import React, { useState } from "react";
+import api from "../utils/api"; 
+import { saveAllStorage } from "../utils/AuthService";
+
 import {
   Box,
   Container,
@@ -43,20 +46,55 @@ export default function Login() {
     });
   };
 
+
+
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    
-    // Aquí irá la lógica de autenticación
-    console.log("Datos de login:", formData);
-    
-    // Simulación de login - reemplazar con lógica real
-    setTimeout(() => {
+  e.preventDefault();
+  setLoading(true);
+
+  try {
+    const response = await api.post("/api/auth/public/login", {
+      correo: formData.email,
+      contra: formData.password,
+    });
+
+    const apiResponse = response.data;
+
+    if (!apiResponse.success) {
+      alert(apiResponse.message || "Credenciales incorrectas");
       setLoading(false);
-      // Redirigir según el rol del usuario
-      navigate("/admin"); // o /empleado, /pensionados
-    }, 1000);
-  };
+      return;
+    }
+
+    const { token, expiration, user } = apiResponse.data;
+
+    saveAllStorage(token, expiration, user);
+
+    switch (user.role) {
+      case "ADMINISTRADOR":
+        navigate("/admin");
+        break;
+      case "EMPLEADO":
+        navigate("/empleado");
+        break;
+      case "CLIENTE_PENSIONADO":
+        navigate("/pensionados");
+        break;
+      default:
+        navigate("/");
+    }
+
+  } catch (error) {
+    console.error("Error en login:", error);
+console.log("datos enviados:", formData.email, formData.password);
+
+    alert("Error al iniciar sesión");
+  }
+
+  setLoading(false);
+};
+
+
 
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
