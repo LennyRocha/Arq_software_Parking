@@ -31,6 +31,7 @@ export default function Inicio({ navigation }) {
     piso,
     idCar,
     availableCount,
+    message
   } = useCajones();
 
   React.useEffect(() => {
@@ -184,10 +185,39 @@ export default function Inicio({ navigation }) {
           />
           <HelperText type="info" variant="labelSmall" style={{ textAlign: "left", paddingHorizontal: 0 }}>Piso</HelperText>
           <View style={{ width: "100%", flexDirection: "row", alignItems: "center", gap: 4, marginBottom: 8 }}>
-            <Button style={{ borderRadius: 5, flex: 1 }} compact mode={piso === 0 ? "contained" : "elevated"} onPress={() => setPiso(0)}>Todos</Button>
-            <Button style={{ borderRadius: 5, flex: 1 }} compact mode={piso === 1 ? "contained" : "elevated"} onPress={() => setPiso(1)}>Piso 1</Button>
-            <Button style={{ borderRadius: 5, flex: 1 }} compact mode={piso === 2 ? "contained" : "elevated"} onPress={() => setPiso(2)}>Piso 2</Button>
-            <Button style={{ borderRadius: 5, flex: 1 }} compact mode={piso === 3 ? "contained" : "elevated"} onPress={() => setPiso(3)}>Piso 3</Button>
+            <Button
+              style={{
+                borderRadius: 5,
+                flex: 1,
+                backgroundColor: piso === 0 ? paper.colors.primary : paper.colors.cardSurface,
+              }}
+              labelStyle={{ color: piso === 0 ? paper.colors.onPrimary : paper.colors.onCardSurface }}
+              compact
+              mode={piso === 0 ? "contained" : "elevated"}
+              onPress={() => setPiso(0)}
+            >
+              Todos
+            </Button>
+            <Button style={{
+              borderRadius: 5,
+              flex: 1,
+              backgroundColor: piso === 1 ? paper.colors.primary : paper.colors.cardSurface,
+            }}
+              labelStyle={{ color: piso === 1 ? paper.colors.onPrimary : paper.colors.onCardSurface }}
+              compact mode={piso === 1 ? "contained" : "elevated"}
+              onPress={() => setPiso(1)}>Piso 1</Button>
+            <Button style={{
+              borderRadius: 5,
+              flex: 1,
+              backgroundColor: piso === 2 ? paper.colors.primary : paper.colors.cardSurface,
+            }}
+              labelStyle={{ color: piso === 2 ? paper.colors.onPrimary : paper.colors.onCardSurface }} compact mode={piso === 2 ? "contained" : "elevated"} onPress={() => setPiso(2)}>Piso 2</Button>
+            <Button style={{
+              borderRadius: 5,
+              flex: 1,
+              backgroundColor: piso === 3 ? paper.colors.primary : paper.colors.cardSurface,
+            }}
+              labelStyle={{ color: piso === 3 ? paper.colors.onPrimary : paper.colors.onCardSurface }} compact mode={piso === 3 ? "contained" : "elevated"} onPress={() => setPiso(3)}>Piso 3</Button>
           </View>
           <View style={{ width: "100%", flexDirection: "row", alignItems: "center" }}>
             <Text variant="bodyLarge">Cajones disponibles: {availableCount}</Text>

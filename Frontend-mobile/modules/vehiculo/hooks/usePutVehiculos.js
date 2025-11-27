@@ -6,9 +6,14 @@ import Vehicle from "../../../models/Vehicle";
 import api from "../../../utils/api";
 import { useCustomAlert } from "../../../utils/useCustomAlert";
 
-export default function usePutVehiculos(navigation, vehiculo, campo) {
+export default function usePutVehiculos(navigation, vehiculo, campo, onReturn) {
     const [isLoading, setLoading] = React.useState(false);
     const [errorData, setErrorData] = React.useState(null);
+
+    const [car, setCar] = React.useState({});
+    React.useEffect(() => {
+        setCar(vehiculo);
+    }, [vehiculo])
 
     const { visible, config, showAlert, hideAlert } = useCustomAlert();
 
@@ -20,7 +25,9 @@ export default function usePutVehiculos(navigation, vehiculo, campo) {
             confirmText: "Actualizar",
             cancelText: "Cancelar",
             onConfirm: async () => onSubmit(data),
-            externalDismiss: false,
+            onCancel: async () => { },
+            showCancelButton: true,
+            externalDismiss: true,
         })
     }
 
@@ -43,13 +50,18 @@ export default function usePutVehiculos(navigation, vehiculo, campo) {
         setErrorData(null);
         try {
             const res = await api.put(`${vehiculoInterface.byId(vehiculo.id)}`, vehic.toJson());
+            setCar(res.data.data);
             showAlert({
                 icon: "success",
                 title: "¡Éxito!",
                 message: res.data.message,
                 showCancelButton: false,
                 confirmText: "Aceptar",
-                onConfirm: () => navigation.goBack(),
+                onConfirm: () => {
+                    onReturn(res.data.data);
+                    navigation.goBack();
+                    navigation.goBack();
+                },
                 externalDismiss: false,
             })
         } catch (err) {
@@ -75,12 +87,12 @@ export default function usePutVehiculos(navigation, vehiculo, campo) {
 
     const defaultValues = React.useMemo(() => ({
         id_user: 3,
-        modelo: vehiculo.modelo,
-        id_type: vehiculo.tipoVehiculo.id,
-        placa: vehiculo.placa,
-        desc: vehiculo.descripcion,
-        estatus: vehiculo.estatus
-    }), [vehiculo]);
+        modelo: car.modelo,
+        id_type: car.idTipoVehiculo,
+        placa: car.placa,
+        desc: car.descripcion,
+        estatus: car.estatus
+    }), [vehiculo, car]);
 
     return { isLoading, errorData, preSubmit, defaultValues, vehicleYup, visible, hideAlert, config };
 }

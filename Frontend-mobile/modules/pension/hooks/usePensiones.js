@@ -41,7 +41,7 @@ export default function usePensiones(navigation, pressHanlder) {
     data?.data.map((item) => {
       if (!item.status) return;
       return (
-        <PensionCard key={item.id} pension={item} onPress={pressHanlder} />
+        <PensionCard key={item.id} pension={item} onPress={() => pressHanlder(item)} />
       )
     })
   ), [data]);

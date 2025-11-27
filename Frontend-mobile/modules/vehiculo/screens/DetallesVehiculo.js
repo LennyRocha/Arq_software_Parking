@@ -1,19 +1,22 @@
 import { Image, Dimensions, View } from "react-native";
 import React from "react";
 import { LinearGradient } from "expo-linear-gradient";
-import { useTheme, List, Switch, Avatar, IconButton } from "react-native-paper";
+import { useTheme, List, Switch, Avatar, IconButton, ActivityIndicator } from "react-native-paper";
 import { useCustomThemes } from "../../../context/useCustomColors";
 import { ScrollView } from "react-native-gesture-handler";
-import { date } from "yup";
+import { CustomAlert } from "../../../utils/customAlert";
 import useDeleteVehiculos from "../hooks/useDeleteVehiculos";
 
 const { width, height } = Dimensions.get("screen")
 
 export default function DetallesVehiculo({ navigation, route }) {
   const { vehic, tipo } = route.params;
+  const [vehicle, setVehiculo] = React.useState({});
+  React.useEffect(() => {
+    setVehiculo(vehic)
+  }, [])
   const value = tipo.nombre.toLowerCase();
-  const { isLoading, errorData, preSubmit, visible, hideAlert, config } = useDeleteVehiculos(navigation, vehic);
-  console.log(vehic, tipo)
+  const { isLoading, errorData, preSubmit, visible, hideAlert, config, newStatus } = useDeleteVehiculos(navigation, vehicle);
   const paper = useTheme();
   const { mode } = useCustomThemes();
   const vehiculos = {
@@ -21,11 +24,15 @@ export default function DetallesVehiculo({ navigation, route }) {
     coche: require('../../../img/coche_view_small.png'),
     camioneta: require('../../../img/camioneta_view_small.png'),
   }
-  const [isSwitchOn, setIsSwitchOn] = React.useState(vehic.estatus);
+  const [isSwitchOn, setIsSwitchOn] = React.useState(vehicle.estatus);
 
   const vehiculo = vehiculos[value];
 
-  const onToggleSwitch = () => setIsSwitchOn(!isSwitchOn);
+  const onToggleSwitch = async () => {
+    await preSubmit((estadoActualizado) => {
+      setIsSwitchOn(estadoActualizado);
+    });
+  };
 
   return (
     <LinearGradient style={{ flex: 1 }} colors={[mode === "dark" ? paper.colors.surfaceVariant : paper.colors.olderBack, paper.colors.background]} >
@@ -33,7 +40,7 @@ export default function DetallesVehiculo({ navigation, route }) {
         <Image source={vehiculo} style={{ aspectRatio: value === "moto" ? 16 / 10 : 16 / 9, flex: 1, maxWidth: width, height: 175 }} resizeMethod="scale" resizeMode="stretch" />
         <List.Item
           title="Modelo:"
-          description={vehic.modelo}
+          description={vehicle.modelo}
           titleStyle={{ fontWeight: "600", color: paper.colors.primary }}
           left={props => (
             <IconButton
@@ -41,13 +48,17 @@ export default function DetallesVehiculo({ navigation, route }) {
               icon="pencil"
               iconColor={paper.colors.primary}
               style={{ margin: 0, padding: 0 }}
-              onPress={() => navigation.navigate("inputCarScreen", { campo: "Modificar modelo", label: "Nuevo modelo:", data: vehic })}
+              onPress={() => navigation.navigate("inputCarScreen", {
+                campo: "Modificar modelo", label: "Nuevo modelo:", data: vehicle, onReturn: (vehic) => {
+                  setVehiculo(vehic);
+                },
+              })}
             />
           )}
         />
         <List.Item
           title="Placa:"
-          description={vehic.placa ? vehic.placa : "Sin placa"}
+          description={vehicle.placa ? vehicle.placa : "Sin placa"}
           titleStyle={{ fontWeight: "600", color: paper.colors.primary }}
           left={props => (
             <IconButton
@@ -55,13 +66,17 @@ export default function DetallesVehiculo({ navigation, route }) {
               icon="pencil"
               iconColor={paper.colors.primary}
               style={{ margin: 0, padding: 0 }}
-              onPress={() => navigation.navigate("inputCarScreen", { campo: "Modificar placa", label: "Nueva placa:", data: vehic })}
+              onPress={() => navigation.navigate("inputCarScreen", {
+                campo: "Modificar placa", label: "Nueva placa:", data: vehicle, onReturn: (vehic) => {
+                  setVehiculo(vehic);
+                },
+              })}
             />
           )}
         />
         <List.Item
           title="Descripción:"
-          description={vehic.descripcion}
+          description={vehicle.descripcion}
           titleStyle={{ fontWeight: "600", color: paper.colors.primary }}
           left={props => (
             <IconButton
@@ -69,7 +84,11 @@ export default function DetallesVehiculo({ navigation, route }) {
               icon="pencil"
               iconColor={paper.colors.primary}
               style={{ margin: 0, padding: 0 }}
-              onPress={() => navigation.navigate("inputCarScreen", { campo: "Modificar descripción", label: "Nueva descripción:", data: vehic })}
+              onPress={() => navigation.navigate("inputCarScreen", {
+                campo: "Modificar descripción", label: "Nueva descripción:", data: vehicle, onReturn: (vehic) => {
+                  setVehiculo(vehic);
+                },
+              })}
             />
           )}
         />
@@ -82,7 +101,7 @@ export default function DetallesVehiculo({ navigation, route }) {
           />
           <List.Item
             title="Estado"
-            description={vehic.estatus ? "Activo" : "Inactivo"}
+            description={vehicle.estatus ? "Activo" : "Inactivo"}
             titleStyle={{ fontWeight: "600", color: paper.colors.primary }}
             style={{ flex: 1 }}
           />
@@ -106,10 +125,12 @@ export default function DetallesVehiculo({ navigation, route }) {
           description="Por el momento ño se puede"
           descriptionStyle={{ color: paper.colors.error }}
           right={props => (
-            <Switch {...props} value={isSwitchOn} onValueChange={onToggleSwitch} color={paper.colors.primary} />
+            isLoading ? <ActivityIndicator {...props} size={"small"} /> :
+              <Switch {...props} value={isSwitchOn} onValueChange={onToggleSwitch} color={paper.colors.primary} />
           )}
         />
       </ScrollView>
+      <CustomAlert visible={visible} hideAlert={hideAlert} config={config} />
     </LinearGradient>
   );
 }

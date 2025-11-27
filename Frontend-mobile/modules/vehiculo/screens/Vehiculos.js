@@ -8,6 +8,7 @@ import useVehiculos from '../hooks/useVehículos';
 import LoadingView from '../../../components/LoadingView'
 import ErrorAxios from '../../errores/screens/ErroresScreens';
 import useTiposVehiculos from '../hooks/useTiposVehiculos';
+import { useFocusEffect } from '@react-navigation/native';
 
 export default function Vehiculos({ navigation }) {
   const paper = useTheme();
@@ -29,9 +30,20 @@ export default function Vehiculos({ navigation }) {
 
   const [refreshing, setRefreshing] = React.useState(false);
 
+
+  useFocusEffect(
+    React.useCallback(() => {
+      getVehiculos();
+
+      return () => {
+        // opcional: cleanup cuando la pantalla pierde foco
+      };
+    }, [])
+  );
+
   const onRefresh = async () => {
     setRefreshing(true);
-    await getVehiculos();   // tu función para recargar datos
+    await getVehiculos();
     setRefreshing(false);
   };
 
@@ -40,51 +52,7 @@ export default function Vehiculos({ navigation }) {
   if (!data || isLoading || load) return <LoadingView />;
 
   return (
-    <View style={{ flex: 1, padding: 24, gap: 8 }}>
-      <Text variant='titleLarge' style={{ fontWeight: "bold", color: paper.colors.primary }} >Mis vehículos</Text>
-      <View style={{ flexDirection: "row", width: "100%", alignItems: "center", gap: 4 }}>
-        <TextInput
-          label={"Modelo o descripción"}
-          mode='outlined'
-          style={{ flex: 1, height: 50 }}
-          value={query}
-          onChangeText={(text) => setQuery(text)}
-          contentStyle={{ padding: 0, marginVertical: 0, alignSelf: "flex-start" }}
-          onFocus={() => setIsFocused(true)}
-          onBlur={() => setIsFocused(false)}
-          left={
-            <TextInput.Icon
-              icon="car-search"
-              color={isFocused ? paper.colors.primary : paper.colors.onSurfaceVariant}
-              onPress={() => {
-                getVehiculos();
-                setQuery("");
-                setIsFocused(false);
-              }
-              }
-            />
-          }
-        />
-        <TouchableRipple
-          style={{
-            height: 50,
-            width: 50,
-            borderRadius: 5,
-            borderWidth: 2,
-            marginTop: 6,
-            borderColor: paper.colors.primary,
-            justifyContent: "center",
-            alignItems: "center",
-            margin: 0,
-            padding: 0,
-            backgroundColor: "transparent"
-          }}
-          rippleColor={paper.colors.primary}
-          onPress={showDialog}
-        >
-          <Icon source="filter-variant" size={24} color={paper.colors.primary} />
-        </TouchableRipple>
-      </View>
+    <View style={{ flex: 1 }}>
       <FlatList
         data={data.data}
         keyboardShouldPersistTaps="handled"
@@ -96,17 +64,66 @@ export default function Vehiculos({ navigation }) {
         renderItem={({ item }) => (
           <VehiculoCard navigation={navigation} vehiculo={item} list={list} />
         )}
-        ItemSeparatorComponent={() => (
-          <View style={{ height: 8 }} />
-        )}
+        ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
         columnWrapperStyle={{ gap: 8 }}
-        contentContainerStyle={{ flexGrow: 1, padding: 2 }}
+        contentContainerStyle={{ padding: 24, gap: 8, flexGrow: 1 }}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
             colors={[paper.colors.primary]}
           />
+        }
+        ListHeaderComponent={
+          <>
+            <Text variant='titleLarge' style={{ fontWeight: "bold", color: paper.colors.primary }} >
+              Mis vehículos
+            </Text>
+
+            <View style={{ flexDirection: "row", width: "100%", alignItems: "center", gap: 4 }}>
+              <TextInput
+                label={"Modelo o descripción"}
+                mode='outlined'
+                style={{ flex: 1, height: 50 }}
+                value={query}
+                onChangeText={(text) => setQuery(text)}
+                contentStyle={{ padding: 0, marginVertical: 0, alignSelf: "flex-start" }}
+                onFocus={() => setIsFocused(true)}
+                onBlur={() => setIsFocused(false)}
+                left={
+                  <TextInput.Icon
+                    icon="car-search"
+                    color={isFocused ? paper.colors.primary : paper.colors.onSurfaceVariant}
+                    onPress={async () => {
+                      await getVehiculos();
+                      setQuery("");
+                      setIsFocused(false);
+                    }
+                    }
+                  />
+                }
+              />
+              <TouchableRipple
+                style={{
+                  height: 50,
+                  width: 50,
+                  borderRadius: 5,
+                  borderWidth: 2,
+                  marginTop: 6,
+                  borderColor: paper.colors.primary,
+                  justifyContent: "center",
+                  alignItems: "center",
+                  margin: 0,
+                  padding: 0,
+                  backgroundColor: "transparent"
+                }}
+                rippleColor={paper.colors.primary}
+                onPress={showDialog}
+              >
+                <Icon source="filter-variant" size={24} color={paper.colors.primary} />
+              </TouchableRipple>
+            </View>
+          </>
         }
       />
       <FAB
@@ -130,10 +147,11 @@ export default function Vehiculos({ navigation }) {
   )
 }
 
-const DialogFilter = ({ visible, hideDialog, restoreValues }) => {
-  const [checkedActive, setCheckedActive] = React.useState(false);
-  const [checkedPlaca, setCheckedPlaca] = React.useState(false);
-  const [value, setValue] = React.useState("todos");
+const DialogFilter = ({ visible, hideDialog, restoreValues, active, setActive, setConPlacas, conPlacas, idCar, setIdCar, onApply }) => {
+  async function sendFilter() {
+    await onApply();
+    hideDialog();
+  }
 
   return (
     <Portal>
@@ -141,49 +159,50 @@ const DialogFilter = ({ visible, hideDialog, restoreValues }) => {
         <Dialog.Title>Filtros</Dialog.Title>
         <Dialog.Content style={{ gap: 12 }}>
           <Text variant='labelLarge'>Tipo de vehículo</Text>
-          <RadioButton.Group onValueChange={setValue} value={value}>
+          <RadioButton.Group onValueChange={setIdCar} value={idCar}>
             <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <RadioButton value="todos" />
+              <RadioButton value={0} />
               <Text>Todos</Text>
             </View>
 
             <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <RadioButton value="coche" />
+              <RadioButton value={1} />
               <Text>Coche</Text>
             </View>
 
             <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <RadioButton value="camioneta" />
+              <RadioButton value={2} />
               <Text>Camioneta</Text>
             </View>
 
             <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <RadioButton value="moto" />
+              <RadioButton value={3} />
               <Text>Moto</Text>
             </View>
           </RadioButton.Group>
           <View style={{ flexDirection: "row", width: "100%", justifyContent: "space-between", alignItems: "center" }}>
             <Text variant='labelLarge'>Vehículos activos</Text>
             <Checkbox
-              status={checkedActive ? "checked" : "unchecked"}
-              onPress={() => setCheckedActive(!checkedActive)}
+              status={active ? "checked" : "unchecked"}
+              onPress={() => setActive(!active)}
             />
           </View>
           <View style={{ flexDirection: "row", width: "100%", justifyContent: "space-between", alignItems: "center" }}>
             <Text variant='labelLarge'>Vehículos con placa</Text>
             <Checkbox
-              status={checkedPlaca ? "checked" : "unchecked"}
-              onPress={() => setCheckedPlaca(!checkedPlaca)}
+              status={conPlacas ? "checked" : "unchecked"}
+              onPress={() => setConPlacas(!conPlacas)}
             />
           </View>
         </Dialog.Content>
         <Dialog.Actions>
           <Button onPress={hideDialog} style={{ borderRadius: 5 }}>Cerrar</Button>
-          <Button onPress={() => {
+          <Button onPress={async () => {
             restoreValues();
+            await onApply();
             hideDialog();
           }} style={{ borderRadius: 5 }}>Limpiar filtros</Button>
-          <Button onPress={hideDialog} style={{ borderRadius: 5 }}>Aplicar</Button>
+          <Button onPress={async () => sendFilter()} style={{ borderRadius: 5 }} >Aplicar</Button>
         </Dialog.Actions>
       </Dialog>
     </Portal>

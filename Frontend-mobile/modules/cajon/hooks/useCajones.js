@@ -1,6 +1,6 @@
 import React from 'react'
-import useWebSocket from './useWebSocket'
 import { useSnackBar } from '../../../context/SnackBarContext';
+import { useWebSocket } from './useWebSocket';
 
 export default function useCajones() {
     const { showSnack } = useSnackBar();
@@ -9,6 +9,7 @@ export default function useCajones() {
     const [piso, setPiso] = React.useState(0);
     const [idCar, setIdCar] = React.useState(0);
     const [data, setData] = React.useState(null);
+    const [message, setMessage] = React.useState(null);
 
     const [loading, setLoading] = React.useState(false);
     const [availableCount, setAvailableCount] = React.useState(0);
@@ -32,6 +33,7 @@ export default function useCajones() {
             setLoading(false);
             const valorDisp = data.data.filter((c) => c.disponible === true);
             setAvailableCount(valorDisp.length);
+            setMessage(data.message)
         });
 
         sendParams(piso, idCar);
@@ -46,5 +48,5 @@ export default function useCajones() {
         setPiso(0);
         sendParams(piso, idCar);
     }
-    return { data, loading, sendParams, restartValues, setPiso, setIdCar, piso, idCar, availableCount }
+    return { data, loading, sendParams, restartValues, setPiso, setIdCar, piso, idCar, availableCount, message }
 }

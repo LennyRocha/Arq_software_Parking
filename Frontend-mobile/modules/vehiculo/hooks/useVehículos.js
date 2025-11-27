@@ -30,7 +30,7 @@ export default function useVehiculos(idUser) {
     setErrorData(null);
 
     try {
-      const res = await api.get( 
+      const res = await api.get(
         vehiculoInterface.getAllByUser(idUser, query, idCar, active, conPlacas)
       );
       setData(res.data);
@@ -44,11 +44,11 @@ export default function useVehiculos(idUser) {
     } finally {
       setLoading(false);
     }
-  }, [dependence]);
+  }, [idUser, query, idCar, active, conPlacas, dependence]);
 
   React.useEffect(() => {
     getVehiculos();
-  }, [getVehiculos]);
+  }, []);
 
   return { getVehiculos, data, isLoading, errorData, restoreValues, restartCall, query, setQuery, idCar, setIdCar, active, setActive, conPlacas, setConPlacas };
 }

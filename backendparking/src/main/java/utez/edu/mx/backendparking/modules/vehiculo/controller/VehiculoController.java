@@ -60,7 +60,7 @@ public class VehiculoController {
     }
 
     @DeleteMapping("/{id}")
-    public ApiResponse<Void> deleteVehiculo(@PathVariable Long id) {
+    public ApiResponse<Vehiculo> deleteVehiculo(@PathVariable Long id) {
         return vehiculoService.deleteVehiculo(id);
     }
 

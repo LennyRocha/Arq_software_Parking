@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
+import utez.edu.mx.backendparking.config.MessagesInterface;
 import utez.edu.mx.backendparking.modules.entradasalida.EntradaSalida;
 import utez.edu.mx.backendparking.modules.tipovehiculo.model.TipoVehiculo;
 import utez.edu.mx.backendparking.modules.usuario.Usuario;
@@ -139,13 +140,13 @@ public class VehiculoService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public ApiResponse<Void> deleteVehiculo(Long id) {
+    public ApiResponse<Vehiculo> deleteVehiculo(Long id) {
         try {
-            Vehiculo vehiculo = vehiculoRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("El vehículo que deseas cambiar su estatua no existe"));
+            Vehiculo vehiculo = vehiculoRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("El vehículo que deseas cambiar su estatus no existe"));
             boolean oldState = vehiculo.getEstatus();
             vehiculo.setEstatus(!vehiculo.getEstatus());
             vehiculo = vehiculoRepository.save(vehiculo);
-            return ApiResponse.success(HttpStatus.OK, "Ha cambiado el estatus de" + vehiculo.getModelo() + " de " + oldState + " a " + vehiculo.getEstatus(), null);
+            return ApiResponse.success(HttpStatus.OK, "Ha cambiado el estatus de " + vehiculo.getModelo() + " de " + MessagesInterface.isActiveOrInactive(oldState) + " a " + MessagesInterface.isActiveOrInactive(vehiculo.getEstatus()), vehiculo);
         } catch (Exception e) {
             return ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), null);
         }

@@ -226,7 +226,7 @@ export default function NuevoVehiculo({ navigation }) {
                     {lenDesc}/250
                   </HelperText>
 
-                  <HelperText variant="labelSmall" type="error" visible={!!errors.modelo}>
+                  <HelperText variant="labelSmall" type="error" visible={!!errors.desc}>
                     {errors?.desc?.message}
                   </HelperText>
                 </>

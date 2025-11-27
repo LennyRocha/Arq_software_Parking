@@ -10,8 +10,8 @@ import ErrorAxios from "../../errores/screens/ErroresScreens";
 import EmptyListView from "../../errores/screens/EmptyListView";
 
 export default function Pensiones({ navigation }) {
-  const goTo = () => {
-    navigation.navigate("detallesPension");
+  const goTo = (pension) => {
+    navigation.navigate("detallesPension", { pension: pension });
   }
   const { data, isLoading, error, errorData, renderedList, restartCall } = usePensiones(navigation, goTo);
   const paper = useTheme();
