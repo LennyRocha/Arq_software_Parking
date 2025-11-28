@@ -14,6 +14,7 @@ import AdminGestionTarifas from "../modules/tarifas/pages/AdminGestionTarifas";
 import GestionTiposPension from "../modules/tipo_pension/pages/GestionTiposPension";
 import PensionesUsuario from "../modules/usuario_pension/pages/PensionesUsuarios";
 import UsuarioTablaAdmin from "../modules/usuarios/pages/UsuarioTablaAdmin";
+import CajonesPage from "../modules/cajon/pages/CajonesPage";
 
 const Err = () => <h1>404 - Not Found!</h1>;
 
