@@ -1,21 +1,21 @@
 export default class TipoVehiculo {
   constructor({ id, nombre }) {
-    this.id = id;
-    this.nombre = nombre;
+    this._id = id;
+    this._nombre = nombre;
   }
 
   get getId() {
-    return this.id;
+    return this._id;
   }
 
   get getNombre() {
-    return this.nombre;
+    return this._nombre;
   }
 
   toJson() {
     return {
-      id: this.id || null,
-      nombre: this.nombre,
+      id: this._id || null,
+      nombre: this._nombre,
     };
   }
 

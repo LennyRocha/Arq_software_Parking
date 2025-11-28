@@ -28,6 +28,7 @@ export const DarkProvider = ({ children }) => {
     const info = getCssVar("--info","#2196f3");
     const black = getCssVar("--dark","#1e1e1e");
     const gray = getCssVar("--gray","#808080");
+    const blueSurface = getCssVar("--surface", "#c5e4e7")
 
     return createTheme({
       palette: {
@@ -41,7 +42,8 @@ export const DarkProvider = ({ children }) => {
         // custom palette entry; you can use color="tertiary" on Button
         tertiary: { main: tertiary, contrastText: '#fff' },
         black: { main: black, contrastText: '#fff' },
-        gray: { main: gray, contrastText: '#fff' }
+        gray: { main: gray, contrastText: '#fff' },
+        blueSurface: { main: blueSurface, contrastText: '#397974' },
       }
     });
   }, [isDarkMode]);

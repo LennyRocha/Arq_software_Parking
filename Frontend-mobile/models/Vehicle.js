@@ -1,13 +1,14 @@
 import vehicleYup from "./yup/vehicleYup";
 export default class Vehicle {
-  constructor({ id, id_user, id_type, placa, modelo, desc, status }) {
-    (this.id = id),
-      (this.id_user = id_user),
-      (this.id_type = id_type),
-      (this.placa = placa),
-      (this.modelo = modelo),
-      (this.desc = desc),
-      (this.status = status);
+  constructor({ id, id_user, id_type, placa, modelo, desc, status, type_object }) {
+    this._id = id;
+    this._id_user = id_user;
+    this._id_type = id_type;
+    this._placa = placa;
+    this._modelo = modelo;
+    this._desc = desc;
+    this._status = status;
+    this._type_object = type_object;
   }
 
   static getYup() {
@@ -20,13 +21,13 @@ export default class Vehicle {
 
   toJson() {
     return {
-      id: this.id || null,
-      id_usuario: this.id_user,
-      id_tipo_vehiculo: this.id_type,
-      placa: this.placa,
-      modelo: this.modelo,
-      descripcion: this.desc,
-      estatus: this.status,
+      id: this._id || null,
+      idUsuario: this._id_user,
+      idTipoVehiculo: this._id_type,
+      placa: this._placa,
+      modelo: this._modelo,
+      descripcion: this._desc,
+      estatus: this._status,
     };
   }
 

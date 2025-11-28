@@ -1,10 +1,8 @@
-import axios from "axios";
 import React from "react";
 import pensionInterface from "./pensionInterface";
 import { getAxiosErrorMessage } from "../../../utils/getAxiosMessage";
 import PensionCard from "../components/PensionCard";
-
-const url = process.env.API_URL;
+import api from "../../../utils/api";
 
 export default function usePensiones(navigation, pressHanlder) {
   const [isLoading, setLoading] = React.useState(false);
@@ -16,15 +14,20 @@ export default function usePensiones(navigation, pressHanlder) {
   const restartCall = () => setDependence(!dependence);
 
   const getPensiones = React.useCallback(async () => {
+    let errorObject = {}
     setLoading(true);
     setError(null);
     setErrorData(null);
     try {
-      const res = await axios.get(`${url}${pensionInterface.getAll}`);
+      const res = await api.get(`${pensionInterface.getAll}`);
       setData(res.data);
     } catch (err) {
-      setError(err);
-      if (error.response) setErrorData(getAxiosErrorMessage(err));
+      errorObject = {
+        tipo: err.response ? "Error de la API" : "Error de Axios",
+        texto: getAxiosErrorMessage(err),
+        detalles: err
+      }
+      setErrorData(errorObject);
     } finally {
       setLoading(false);
     }
@@ -35,12 +38,12 @@ export default function usePensiones(navigation, pressHanlder) {
   }, [getPensiones]);
 
   const renderedList = React.useMemo(() => (
-      data?.data.map((item) => {
-        if (!item.status) return;
-        return (
-          <PensionCard key={item.id} pension={item} onPress={pressHanlder} />
-        )
-      })
+    data?.data.map((item) => {
+      if (!item.status) return;
+      return (
+        <PensionCard key={item.id} pension={item} onPress={() => pressHanlder(item)} />
+      )
+    })
   ), [data]);
 
   return { data, isLoading, error, errorData, renderedList, restartCall };

@@ -43,7 +43,7 @@ export default function Rutas() {
           <Route path="tipos_de_pension" element={<GestionTiposPension/>} />
           <Route path="pensiones_de_usuarios" element={<PensionesUsuario />} />
           <Route path="tarifas" element={<AdminGestionTarifas />} />
-          <Route path="cajones" element={<Pages />} />
+          <Route path="cajones" element={<CajonesPage isPensionado={false} />} />
           <Route path="gestion_usuarios" element={<UsuarioTablaAdmin/>} />
             <Route path="gestion_usuarios_nuevoempleado" element={<UsuarioTablaAdmin/>} />
           <Route path="gestion_vehiculos" element={<Pages />} />
@@ -52,12 +52,12 @@ export default function Rutas() {
         <Route path="/empleado" element={<EmpleadoRouter />}>
           <Route index element={<AdminGestionarEntradasSalidas />} />
           <Route path="pensiones" element={<PensionesUsuario />} />
-          <Route path="cajones" element={<Pages />} />
+          <Route path="cajones" element={<CajonesPage isPensionado={false} />} />
           <Route path="nuevo_pensionado" element={<Pages />} />
         </Route>
         {/* Rutas del pensionado */}
         <Route path="/pensionados" element={<PensionadoRouter />}>
-          <Route index element={<Pages />} />
+          <Route index element={<CajonesPage isPensionado />} />
           <Route path="entradas" element={<PensionadoEstacionamiento />} />
           <Route path="historial" element={<PensionadoEstacionamiento />} />
           <Route path="mi_pension" element={<Pages />} />

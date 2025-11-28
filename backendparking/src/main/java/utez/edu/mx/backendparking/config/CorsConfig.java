@@ -26,7 +26,8 @@ public class CorsConfig {
                 "http://localhost:4200",      // Angular
                 "http://localhost:5173",
                  "http://localhost:5174",      // Vite
-                "http://localhost:8081"       // Vue u otro
+                "http://localhost:8081",      // Vue u Expo
+                "http://localhost:5000"       // Servidor con Socket.io
         ));
 
         // Headers permitidos

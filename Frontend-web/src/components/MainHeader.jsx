@@ -102,6 +102,7 @@ export default function MainHeader({ titulo, breads }) {
           sx={{
             fontWeight: "bold",
             fontSize: { xs: "1.5rem", md: "2rem" }, // h6 en xs, h3 en md
+            textTransform: "uppercase"
           }}
         >
           {titulo}

@@ -4,10 +4,10 @@ import {
   Button,
   Card,
   Text,
-  Provider as PaperProvider,
   TouchableRipple,
 } from "react-native-paper";
 import { ThemeProvider } from "./context/useCustomColors";
+import SnackBarProvider from "./context/SnackBarContext";
 import PaperContext from "./context/paperContext";
 import { useCustomThemes } from "./context/useCustomColors";
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
@@ -490,7 +490,9 @@ export default function App() {
         <NavigationContainer>
           <ThemeProvider>
             <PaperContext>
-              <AppWrapper />
+              <SnackBarProvider>
+                <AppWrapper />
+              </SnackBarProvider>
             </PaperContext>
           </ThemeProvider>
         </NavigationContainer>

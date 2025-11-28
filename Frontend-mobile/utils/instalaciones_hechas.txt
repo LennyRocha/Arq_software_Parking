@@ -67,4 +67,6 @@ npx expo install expo-media-library
 
 #webSocket client y stomp
 npm install @stomp/stompjs
-npm install sockjs-client   # si tu backend usa SockJS
+npm install sockjs-client
+
+npm install socket.io-client

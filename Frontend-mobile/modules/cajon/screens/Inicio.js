@@ -1,12 +1,293 @@
 import React from "react";
-import { View } from "react-native";
+import { View, FlatList, Dimensions, RefreshControl } from "react-native";
 import BoxStyles from "../../../utils/genericScreenStyles";
-import { Text } from "react-native-paper";
+import { Text, Button, SegmentedButtons, RadioButton, useTheme, Chip, HelperText, IconButton } from "react-native-paper";
+import { useWebSocket } from "../hooks/useWebSocket";
+import Cajoncito from "../components/Cajoncito";
+import LoadingView from '../../../components/LoadingView'
+import { useSnackBar } from "../../../context/SnackBarContext";
+import EmptyListView from "../../errores/screens/EmptyListView";
+import useVehiculos from "../../vehiculo/hooks/useVehículos";
+import useTiposVehiculos from "../../vehiculo/hooks/useTiposVehiculos";
+import VehiculoSheetCard from "../components/VehiculoSheetCard";
+import { ScrollView } from "react-native-gesture-handler";
+import useCajones from "../hooks/useCajones";
 
-export default function Inicio() {
+const { width, height } = Dimensions.get("screen")
+
+export default function Inicio({ navigation }) {
+  const { data: list, load: loadTypes } = useTiposVehiculos();
+  const { data: cars, isLoading: load } = useVehiculos(3);
+  const { setSnapPoints, openSheet, closeSheet, setSheetChild } = useSnackBar();
+  const paper = useTheme();
+
+  const {
+    data,
+    loading,
+    sendParams,
+    restartValues,
+    setPiso,
+    setIdCar,
+    piso,
+    idCar,
+    availableCount,
+    message
+  } = useCajones();
+
+  React.useEffect(() => {
+    setSnapPoints(["25%", "50%"])
+    return () => closeSheet();
+  }, []);
+
+  const [idEnter, setIdEnter] = React.useState(0);
+
+  React.useEffect(() => {
+    if (cars) {
+      setSheetChild(
+        <ScrollView style={{ flex: 1 }} contentContainerStyle={{ gap: 12 }}>
+          <Text variant="titleMedium">Selecciona un vehículo</Text>
+          <RadioButton.Group onValueChange={setIdEnter} value={idEnter}>
+            <View style={{ gap: 8, padding: 2 }}>
+              {cars.data.map((v) => (
+                <VehiculoSheetCard
+                  key={v.id}
+                  vehic={v}
+                  useRadios
+                  currentValue={idEnter}
+                  list={list}
+                  setValue={setIdEnter}
+                />
+              ))}
+            </View>
+          </RadioButton.Group>
+          <Button
+            mode="text" style={[BoxStyles.ButtonRadius]} labelStyle={BoxStyles.buttonText} disabled={idEnter === 0}
+            onPress={() => {
+              navigation.navigate("entradaQR", { folio: 2000 })
+              closeSheet();
+            }}>Continuar</Button>
+        </ScrollView >
+      );
+    }
+  }, [cars, idEnter]);
+
+  const [normalizedData, setNormalizedData] = React.useState([]);
+
+  const ListHeaderComponent = () => (
+    <View style={{ flexDirection: "row", justifyContent: "space-between", gap: 8, alignItems: "center", height: 40 }}>
+      <View style={{ height: 2, flex: 1, borderBottomWidth: 2, borderBottomColor: paper.colors.outline, borderStyle: "dashed" }} />
+      <Chip mode="outlined" style={{ borderColor: paper.colors.secondary }} textStyle={{ color: paper.colors.secondary }}>Entrada</Chip>
+      <View style={{ height: 2, flex: 1, borderBottomWidth: 2, borderBottomColor: paper.colors.outline, borderStyle: "dashed" }} />
+    </View>
+  );
+
+  const ListFooterComponent = () => (
+    <View style={{ flexDirection: "row", justifyContent: "space-between", gap: 8, alignItems: "center", height: 40 }}>
+      <View style={{ height: 2, flex: 1, borderBottomWidth: 2, borderBottomColor: paper.colors.outline, borderStyle: "dashed" }} />
+    </View>
+  );
+
+  const normalizeColumns = (data, columns = 5) => {
+    const result = [];
+    const ROW_SIZE = columns;
+    const CENTER = 2;
+
+    const copy = [...data];
+
+    while (copy.length > 0) {
+      const left = copy.splice(0, 2);
+
+      const right = copy.splice(0, 2);
+
+      const row = new Array(ROW_SIZE).fill(null);
+
+      row[CENTER] = { id: `road-${result.length}`, road: true };
+
+      if (left[0]) row[0] = left[0];
+      if (left[1]) row[1] = left[1];
+
+      if (right[0]) row[3] = right[0];
+      if (right[1]) row[4] = right[1];
+
+      for (let i = 0; i < ROW_SIZE; i++) {
+        if (!row[i]) {
+          row[i] = {
+            id: `empty-${result.length}-${i}`,
+            empty: true,
+          };
+        }
+      }
+
+      result.push(...row);
+    }
+
+    return result;
+  };
+
+  React.useEffect(() => {
+    if (data) setNormalizedData(normalizeColumns(data, 5))
+  }, [data]);
+
+  const SCREEN = width;
+  const H_PADDING = 24;
+  const ROAD_WIDTH = 40;
+  const SLOTS = 4;
+  const ITEM_MARGIN_HORIZONTAL = 2;
+
+  const totalPadding = H_PADDING * 2;
+  const totalItemMargins = SLOTS * (ITEM_MARGIN_HORIZONTAL * 2);
+
+  const available = SCREEN - totalPadding - ROAD_WIDTH - totalItemMargins;
+  const slotWidth = Math.floor(available / SLOTS);
+
+  if (loading || !data || load || loadTypes) return <LoadingView />;
+
   return (
     <View style={[BoxStyles.container, BoxStyles.flexCentered]}>
-      <Text>Inicio</Text>
+      <Text variant='titleLarge' style={{ fontWeight: "bold", color: paper.colors.primary, width: "100%" }}>
+        Cajones disponibles
+      </Text>
+
+      {data.length !== 0 && (
+        <View style={{ width: "100%", gap: 1, flexDirection: "column" }}>
+          <HelperText type="info" variant="labelSmall" style={{ textAlign: "left", paddingHorizontal: 0 }}>Tipo de vehículo</HelperText>
+          <SegmentedButtons
+            value={idCar}
+            onValueChange={setIdCar}
+            buttons={[
+              {
+                value: 0,
+                label: 'Todos',
+                style: { backgroundColor: idCar === 0 ? paper.colors.tertiary : undefined },
+                checkedColor: "white",
+              },
+              {
+                value: 1,
+                label: 'Coche',
+                style: { backgroundColor: idCar === 1 ? paper.colors.tertiary : undefined },
+                checkedColor: "white",
+              },
+              {
+                value: 2,
+                label: 'Camioneta',
+                style: { backgroundColor: idCar === 2 ? paper.colors.tertiary : undefined },
+                checkedColor: "white",
+              },
+              {
+                value: 3,
+                label: 'Moto',
+                style: { backgroundColor: idCar === 3 ? paper.colors.tertiary : undefined },
+                checkedColor: "white",
+              },
+            ]}
+            style={{ borderColor: paper.colors.tertiary, marginBottom: 4 }}
+            theme={{ roundness: 1 }}
+          />
+          <HelperText type="info" variant="labelSmall" style={{ textAlign: "left", paddingHorizontal: 0 }}>Piso</HelperText>
+          <View style={{ width: "100%", flexDirection: "row", alignItems: "center", gap: 4, marginBottom: 8 }}>
+            <Button
+              style={{
+                borderRadius: 5,
+                flex: 1,
+                backgroundColor: piso === 0 ? paper.colors.primary : paper.colors.cardSurface,
+              }}
+              labelStyle={{ color: piso === 0 ? paper.colors.onPrimary : paper.colors.onCardSurface }}
+              compact
+              mode={piso === 0 ? "contained" : "elevated"}
+              onPress={() => setPiso(0)}
+            >
+              Todos
+            </Button>
+            <Button style={{
+              borderRadius: 5,
+              flex: 1,
+              backgroundColor: piso === 1 ? paper.colors.primary : paper.colors.cardSurface,
+            }}
+              labelStyle={{ color: piso === 1 ? paper.colors.onPrimary : paper.colors.onCardSurface }}
+              compact mode={piso === 1 ? "contained" : "elevated"}
+              onPress={() => setPiso(1)}>Piso 1</Button>
+            <Button style={{
+              borderRadius: 5,
+              flex: 1,
+              backgroundColor: piso === 2 ? paper.colors.primary : paper.colors.cardSurface,
+            }}
+              labelStyle={{ color: piso === 2 ? paper.colors.onPrimary : paper.colors.onCardSurface }} compact mode={piso === 2 ? "contained" : "elevated"} onPress={() => setPiso(2)}>Piso 2</Button>
+            <Button style={{
+              borderRadius: 5,
+              flex: 1,
+              backgroundColor: piso === 3 ? paper.colors.primary : paper.colors.cardSurface,
+            }}
+              labelStyle={{ color: piso === 3 ? paper.colors.onPrimary : paper.colors.onCardSurface }} compact mode={piso === 3 ? "contained" : "elevated"} onPress={() => setPiso(3)}>Piso 3</Button>
+          </View>
+          <View style={{ width: "100%", flexDirection: "row", alignItems: "center" }}>
+            <Text variant="bodyLarge">Cajones disponibles: {availableCount}</Text>
+            <IconButton
+              icon={"information-outline"}
+              size={24}
+              style={{ padding: 0, margin: 0 }}
+              onPress={() => { }}
+              iconColor={paper.colors.primary}
+            />
+          </View>
+        </View>
+      )}
+
+      {data && (
+        <View style={{ flex: 1 }}>
+          <ListHeaderComponent />
+          <FlatList
+            data={normalizedData}
+            numColumns={5}
+            style={{ flex: 1 }}
+            refreshControl={
+              <RefreshControl
+                refreshing={loading}
+                onRefresh={restartValues}
+                tintColor={paper.colors.primary} // iOS
+                colors={[paper.colors.primary]} // Android
+                progressBackgroundColor={paper.colors.background}
+              />
+            }
+            keyExtractor={item => item.id.toString()}
+            contentContainerStyle={{ flexGrow: 1 }}
+            renderItem={({ item, index }) => {
+              if (item.empty) {
+                return <View style={{ width: slotWidth, height: 40, margin: 2 }} />;
+              }
+
+              const columnIndex = index % 5;
+              const isMiddle = columnIndex === 2;
+
+              if (item.road) {
+                return (
+                  <View style={{ width: ROAD_WIDTH, justifyContent: 'center', alignItems: 'center', marginVertical: 1, height: 40, padding: 1 }}>
+                    <View style={{ width: 2, height: "100%", borderRightWidth: 2, borderRightColor: paper.colors.outline, borderStyle: "dashed" }} />
+                  </View>
+                );
+              }
+
+              return (
+                <View style={{ width: slotWidth, height: 40, margin: 2 }}>
+                  <Cajoncito cajon={item} />
+                </View>
+              );
+            }}
+            columnWrapperStyle={{ gap: 0 }}
+            ListEmptyComponent={<EmptyListView message={message} icon={"parking"} />}
+          />
+          <ListFooterComponent />
+        </View>
+      )}
+
+      <Button
+        theme={{ colors: { primary: paper.colors.tertiary } }}
+        mode="contained"
+        style={[BoxStyles.ButtonRadius]}
+        labelStyle={BoxStyles.buttonText}
+        onPress={() => openSheet()}
+      >
+        Marcar entrada
+      </Button>
     </View>
   );
 }

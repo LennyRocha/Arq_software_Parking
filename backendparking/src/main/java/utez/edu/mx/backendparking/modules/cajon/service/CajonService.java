@@ -1,6 +1,7 @@
 package utez.edu.mx.backendparking.modules.cajon.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -8,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.reactive.function.client.WebClient;
 import utez.edu.mx.backendparking.config.MessagesInterface;
 import utez.edu.mx.backendparking.modules.cajon.model.Cajon;
 import utez.edu.mx.backendparking.modules.cajon.model.CajonDto;
@@ -16,6 +18,7 @@ import utez.edu.mx.backendparking.shared.api.ApiResponse;
 import utez.edu.mx.backendparking.shared.exception.BadRequestException;
 import utez.edu.mx.backendparking.shared.exception.ConflictException;
 import utez.edu.mx.backendparking.shared.exception.ResourceNotFoundException;
+import utez.edu.mx.backendparking.shared.webClient.WebClientConfig;
 
 import java.util.HashMap;
 import java.util.List;
@@ -31,10 +34,31 @@ public class CajonService {
     @Autowired
     private SimpMessagingTemplate template;
 
+    @Value("${websocket.server.url}")
+    private String websocketServerUrl;
+
+    @Autowired
+    private WebClientConfig webClientConfig;
+
     private void refresh(){
         List<Cajon> cajones = cajonRepository.findAll();
         ApiResponse<List<Cajon>> response = ApiResponse.success(HttpStatus.OK, "Cajones actualizados", cajones);
         template.convertAndSend("/topic/cajones", response);
+    }
+
+    private void updateNodeServer() {
+        List<Cajon> cajones = cajonRepository.findAll();
+        ApiResponse<List<Cajon>> response = ApiResponse.success(HttpStatus.OK, "Cajones actualizados", cajones);
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("datos", response);
+
+        webClientConfig.createClient(websocketServerUrl).post()
+                .uri("/notify")
+                .bodyValue(payload)
+                .retrieve()
+                .bodyToMono(String.class)
+                .doOnError(error -> System.err.println("Error: " + error.getMessage()))
+                .subscribe();
     }
 
     @Transactional(readOnly = true, rollbackFor = Exception.class)
@@ -79,7 +103,7 @@ public class CajonService {
             } else {
                 cajones = cajonRepository.findAll();
             }
-            if(cajones.isEmpty()) return ApiResponse.success(HttpStatus.NO_CONTENT,causa.isBlank() ? "No hay cajones disponibles para esa combinación" : causa, cajones);
+            if(cajones.isEmpty()) return ApiResponse.success(HttpStatus.NO_CONTENT,causa.isBlank() ? "No hay cajones disponibles" : causa, cajones);
             return ApiResponse.success(HttpStatus.OK, "Cajones recuperados", cajones);
         } catch (Exception e) {
             return ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR,e.getMessage(), null);
@@ -115,6 +139,7 @@ public class CajonService {
             Cajon cajon = cDto.toEntity();
             cajon = cajonRepository.save(cajon);
             refresh();
+            updateNodeServer();
             return ApiResponse.success(HttpStatus.CREATED, "Cajón registrado correctamente",cajon);
         } catch (BadRequestException ex) {
             return ApiResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage(), null);
@@ -134,6 +159,7 @@ public class CajonService {
                     .toList();
             List<Cajon> saved = cajonRepository.saveAll(cajones);
             refresh();
+            updateNodeServer();
             return ApiResponse.success(HttpStatus.CREATED, "Cajones registrados correctamente", saved);
         } catch (BadRequestException ex) {
             return ApiResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage(), null);
@@ -157,6 +183,7 @@ public class CajonService {
             cajon.setEstatus(cDto.isEstatus());
             cajon = cajonRepository.save(cajon);
             refresh();
+            updateNodeServer();
             return ApiResponse.success(HttpStatus.OK, "Cajón registrado correctamente",cajon);
         } catch (BadRequestException ex) {
             return ApiResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage(), null);
@@ -179,6 +206,7 @@ public class CajonService {
             cajon.setDisponible(!cajon.getDisponible());
             cajon = cajonRepository.save(cajon);
             refresh();
+            updateNodeServer();
             return ApiResponse.success(HttpStatus.OK, paraOcupar ? "Cajón ocupado" : "Cajón desocupado",cajon);
         } catch (BadRequestException ex) {
             return ApiResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage(), null);
@@ -201,6 +229,7 @@ public class CajonService {
             cajon.setDisponible(!cajon.getDisponible());
             cajon = cajonRepository.save(cajon);
             refresh();
+            updateNodeServer();
             return ApiResponse.success(HttpStatus.OK, paraOcupar ? "Cajón ocupado" : "Cajón desocupado",cajon);
         } catch (BadRequestException ex) {
             return ApiResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage(), null);
@@ -219,6 +248,7 @@ public class CajonService {
             cajon.setEstatus(!cajon.getEstatus());
             cajon = cajonRepository.save(cajon);
             refresh();
+            updateNodeServer();
             return ApiResponse.success(HttpStatus.OK, "Ha cambiado el estatus del cajón "+ cajon.getName() +" de "+ MessagesInterface.isActiveOrInactive(oldState) +" a "+MessagesInterface.isActiveOrInactive(cajon.getEstatus()),cajon);
         } catch (BadRequestException ex) {
             return ApiResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage(), null);
@@ -239,6 +269,7 @@ public class CajonService {
             cajones.forEach(cajon -> cajon.setDisponible(!cajon.getDisponible()));
             List<Cajon> saved = cajonRepository.saveAll(cajones);
             refresh();
+            updateNodeServer();
             return ApiResponse.success(HttpStatus.CREATED, "Cajones reservados correctamente", saved);
         } catch (BadRequestException ex) {
             return ApiResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage(), null);

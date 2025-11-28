@@ -36,7 +36,7 @@ public class Cajon
 
     public Cajon(){}
 
-    public Cajon(Long id, String name, String ubicacion, Boolean disponible, Boolean paraPensionados, int piso, Boolean estatus){
+    public Cajon(Long id, String name, String ubicacion, Boolean disponible, Boolean paraPensionados, int piso, Boolean estatus, TipoVehiculo tipoVehiculo){
         this.id = id;
         this.name = name;
         this.ubicacion = ubicacion;
@@ -44,6 +44,7 @@ public class Cajon
         this.paraPensionados = paraPensionados;
         this.piso = piso;
         this.estatus = estatus;
+        this.tipoVehiculo = tipoVehiculo;
     }
 
     public void setId(Long id) {

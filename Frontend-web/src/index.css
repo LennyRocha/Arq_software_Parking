@@ -28,6 +28,13 @@
   --side-icon: #808080;
   --text: #242424;
   --main-background: #ffffff;
+  /*Nuevos colores*/
+  --surfaceVariant: #EDEAF0;
+  --onSurfaceVariant: #323035;
+  --surface_claro: #FAFAFA;
+  --onSurfaceClaro: #2E2E2E;
+  --cardDark: #FAFDFC;
+  --onCardDark: #191C1C;
 }
 
 body.dark {
@@ -50,6 +57,13 @@ body.dark {
   --side-icon: #c5e4e7;
   --text: #ffffff;
   --main-background: #242424;
+  /*Nuevos colores*/
+  --onSurfaceVariant: #EDEAF0;
+  --surfaceVariant: #323035;
+  --onSurfaceClaro: #FAFAFA;
+  --surface_claro: #2E2E2E;
+  --onCardDark: #FAFDFC;
+  --cardDark: #191C1C;
 }
 
 .bukon {
@@ -152,11 +166,11 @@ body.dark {
   color: var(--text);
 }
 
-.bg-white{
+.bg-white {
   background-color: #ffffff;
 }
 
-.color-white{
+.color-white {
   color: #ffffff;
 }
 
@@ -231,4 +245,8 @@ button:focus-visible {
 
 .no_scroll::-webkit-scrollbar {
   display: none;
+}
+
+.overflow-y-auto {
+  overflow-y: auto;
 }

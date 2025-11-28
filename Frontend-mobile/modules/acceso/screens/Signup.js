@@ -12,11 +12,19 @@ import LoadingView from "../../../components/LoadingView";
 import ErrorAxios from "../../errores/screens/ErroresScreens";
 import EmptyListView from "../../errores/screens/EmptyListView";
 
+import useModalController from '../../../hooks/useModalController';
+import CustomModal from '../../../components/CustomModal'
+import DetallesPension from "../../pension/screens/DetallesPension";
+
 export default function Signup({ navigation }) {
   const paper = useTheme();
+  const { modalVisible, showModal, hideModal } = useModalController();
 
-  const openModal = () => {
-    console.log("Uniendose")
+  const [pension, setPension] = React.useState({});
+
+  const openModal = (pension) => {
+    setPension(pension);
+    showModal();
   }
 
   const { data, isLoading, error, renderedList, restartCall } = usePensiones(navigation, openModal);
@@ -51,6 +59,10 @@ export default function Signup({ navigation }) {
         0/50
       </HelperText>
       <TextInput label={"Correo electrónico"} placeholder="Ingresa tu correo elctrónico" inputMode="email" keyboardType="email-address" />
+      <HelperText type="info" visible style={{ alignSelf: "flex-end", color: paper.colors.gray }}>
+        0/50
+      </HelperText>
+      <TextInput label={"Contraseña"} placeholder="Ingresa tus apellidos" secureTextEntry keyboardType="visible-password" />
       <HelperText type="info" visible style={{ alignSelf: "flex-end", color: paper.colors.gray }}>
         0/50
       </HelperText>
@@ -140,6 +152,9 @@ export default function Signup({ navigation }) {
             {renderedList}
           </>
         }
+        <CustomModal visible={modalVisible} onClose={hideModal} >
+          <DetallesPension pensionObject={pension} />
+        </CustomModal>
       </View>
     )
   };
