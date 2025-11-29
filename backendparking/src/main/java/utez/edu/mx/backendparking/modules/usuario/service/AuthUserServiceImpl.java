@@ -104,6 +104,11 @@ public ApiResponse<?> ModificarDatosEmpleado(ActualizarUsuarioDto request, Long 
 
         usuario.setNombre(request.getNombre());
         usuario.setApellidos(request.getApellidos());
+        
+        if (!usuario.getCorreo().equals(request.getCorreo()) && usuarioRepository.existsByCorreo(request.getCorreo())) {
+            return ApiResponse.error(HttpStatus.BAD_REQUEST, "El correo ya está registrado por otro usuario", null);
+        }
+        
         usuario.setCorreo(request.getCorreo());
         usuario.setTelefono(request.getTelefono());
        
