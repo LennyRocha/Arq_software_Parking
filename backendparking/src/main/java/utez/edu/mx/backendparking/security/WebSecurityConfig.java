@@ -44,6 +44,8 @@ public class WebSecurityConfig {
                         .requestMatchers("/api/pensionado/public/**").permitAll()//porque hay registro publico desde la landing page
                         .requestMatchers("/api/pensionado/private/**").hasAnyRole("ADMINISTRADOR","EMPLEADO")
                         .requestMatchers("/api/pensionado/cliente/**").hasRole("CLIENTE_PENSIONADO")
+                        //--- GESTION DE TARIFAS
+                        .requestMatchers("/api/tarifa/**").hasRole("ADMINISTRADOR")
 
                         .anyRequest().permitAll())
                 .addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class)

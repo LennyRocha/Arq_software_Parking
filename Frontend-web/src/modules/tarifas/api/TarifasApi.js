@@ -1,4 +1,4 @@
-import apiToken from "../../../utils/api";
+import apiToken from "../../../utils/apiToken";
 
 // Obtener todas las tarifas
 export const fetchTarifas = () => apiToken.get("/api/tarifa");
