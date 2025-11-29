@@ -7,20 +7,24 @@ public class ActualizarContraDto {
   
     @NotNull(message = "El id no puede ser nulo.")
     private  Long id;
-    @Size(min = 8, message = "La contraseña debe tener entre 4 y 20 caracteres.")
-    @NotNull(message = "La contrsaeña no puede ser nula.")
+    
+    @NotNull(message = "La contraseña no puede ser nula.")
+    @Size(min = 8, message = "La contraseña debe tener al menos 8 caracteres.")
     private String contra;
+    
     public Long getId() {
         return id;
     }
+    
     public void setId(Long id) {
         this.id = id;
     }
+    
     public String getContra() {
         return contra;
     }
+    
     public void setContra(String contra) {
         this.contra = contra;
     }
-
 }

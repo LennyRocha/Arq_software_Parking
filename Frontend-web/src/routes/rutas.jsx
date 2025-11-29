@@ -79,7 +79,7 @@ export default function Rutas() {
           <Route path="mis_vehiculos" element={<Pages />} />
         </Route>
         {/* Perfil y otros */}
-        <Route path="/private/perfil/:id" element={<Pages />} />
+        <Route path="/private/perfil" element={<Pages />} />
         <Route path="*" element={<Err />} />
       </Routes>
     </Router>

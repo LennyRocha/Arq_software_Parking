@@ -556,7 +556,6 @@ const ParkingGrid = ({ columnsConfig = {} }) => {
               sx={{
                 width: "5rem",
                 height: "2.5rem",
-                border: "1px solid var(--card-text)",
                 border: "1px solid var(--dark)",
                 backgroundColor: "var(--gray)",
               }}
