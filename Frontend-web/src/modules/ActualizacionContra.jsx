@@ -37,7 +37,6 @@ export default function ActualizacionContra() {
             newCodigo[index] = value;
             setCodigo(newCodigo);
 
-            // Auto-focus al siguiente input
             if (value && index < 5) {
                 const nextInput = document.getElementById(`codigo-${index + 1}`);
                 if (nextInput) nextInput.focus();
@@ -46,7 +45,6 @@ export default function ActualizacionContra() {
     };
 
     const handleKeyDown = (index, e) => {
-        // Si presiona backspace y el campo está vacío, ir al anterior
         if (e.key === "Backspace" && !codigo[index] && index > 0) {
             const prevInput = document.getElementById(`codigo-${index - 1}`);
             if (prevInput) prevInput.focus();
