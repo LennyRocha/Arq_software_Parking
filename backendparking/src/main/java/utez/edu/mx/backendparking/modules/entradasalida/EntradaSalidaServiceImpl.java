@@ -15,6 +15,7 @@ import utez.edu.mx.backendparking.modules.entradasalida.dto.EntradaSalidaRespons
 import utez.edu.mx.backendparking.modules.entradasalida.dto.ReporteGananciasResponseDto;
 import utez.edu.mx.backendparking.modules.entradasalida.dto.ReporteGananciasTotalesResponseDto;
 import utez.edu.mx.backendparking.modules.historialpagos.PagoRepository;
+import utez.edu.mx.backendparking.modules.roles.ERole;
 import utez.edu.mx.backendparking.modules.tarifa.Tarifa;
 import utez.edu.mx.backendparking.modules.tarifa.TarifaMessages;
 import utez.edu.mx.backendparking.modules.tarifa.TarifaRepository;
@@ -77,8 +78,29 @@ public class EntradaSalidaServiceImpl implements EntradaSalidaService {
     @Override
     @Transactional(readOnly = true)
     public EntradaSalidaResponseDto findById(Long id) {
+
+        // Obtener el usuario autenticado actual
+        Usuario usuarioActual = SecurityUtils.getCurrentUser();
+
+        // Validar que si es usuario pensionado, tengan su pension activa
+        if(usuarioActual.getRol().getName() == ERole.CLIENTE_PENSIONADO){
+            // Buscar si el usuario tiene una pensión activa
+            Optional<UsuarioPension> usuarioPensionOpt = usuarioPensionRepository.findByUsuarioIdAndEstatusTrue(usuarioActual.getId());
+
+            if (usuarioPensionOpt.isEmpty()) {
+                throw new BadRequestException(UsuarioPensionMessages.ERROR_USUARIO_PENSION_NOT_FOUND);
+            }
+        }
+
         EntradaSalida entradaSalida = entradaSalidaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(EntradaSalidaMessages.ERROR_ENTRADA_SALIDA_NOT_FOUND));
+
+        // Validar que si es usuario pensionado, la entrada buscada corresponda a una de sus entradas
+        if(usuarioActual.getRol().getName() == ERole.CLIENTE_PENSIONADO){
+            if(entradaSalida.getUsuario() == null || !entradaSalida.getUsuario().getId().equals(usuarioActual.getId())){
+                throw new BadRequestException(EntradaSalidaMessages.ERROR_VEHICULO_NO_ENCONTRADO);
+            }
+        }
 
         return EntradaSalidaMapper.toResponseDto(entradaSalida);
     }
@@ -361,7 +383,7 @@ public class EntradaSalidaServiceImpl implements EntradaSalidaService {
             montoPagar = calcularMontoPago(minutosTranscurridos, tarifas);
         }
 
-        // 7. Actualizar la entidad con hora de salida y monto a pagar
+        // 7. Actualizar la entidad with hora de salida y monto a pagar
         entradaSalida.setHoraSalida(horaSalida);
         entradaSalida.setCantidadPago(montoPagar);
 
@@ -444,6 +466,39 @@ public class EntradaSalidaServiceImpl implements EntradaSalidaService {
         Page<EntradaSalida> entradasSalidasPage = entradaSalidaRepository.findByFolioOrUsuarioNombre(search, pageable);
 
         // 4. Convertir a DTOs usando map
+        return entradasSalidasPage.map(EntradaSalidaMapper::toResponseDto);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<EntradaSalidaResponseDto> searchAndSortPaginatedByPensionado(String search, String sortBy, String sortOrder, int page, int size) {
+
+        // 1. Obtener el ID del usuario autenticado
+        Long usuarioId = SecurityUtils.getCurrentUserId();
+
+        // 2. Crear el objeto Sort según los parámetros
+        Sort sort;
+
+        if (sortBy == null || sortBy.isEmpty() || sortBy.equalsIgnoreCase("fecha")) {
+            // Por defecto: ordenar por fecha y hora de entrada descendente
+            Sort.Direction direction = "asc".equalsIgnoreCase(sortOrder) ? Sort.Direction.ASC : Sort.Direction.DESC;
+            sort = Sort.by(direction, "fecha").and(Sort.by(direction, "horaEntrada"));
+        } else if (sortBy.equalsIgnoreCase("tipovehiculo")) {
+            // Ordenar por tipo de vehículo
+            Sort.Direction direction = "desc".equalsIgnoreCase(sortOrder) ? Sort.Direction.DESC : Sort.Direction.ASC;
+            sort = Sort.by(direction, "tipoVehiculo.nombre");
+        } else {
+            // Por defecto si el sortBy no es reconocido
+            sort = Sort.by(Sort.Direction.DESC, "fecha").and(Sort.by(Sort.Direction.DESC, "horaEntrada"));
+        }
+
+        // 3. Crear el objeto Pageable con paginación y ordenamiento
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        // 4. Obtener resultados paginados filtrados por usuario
+        Page<EntradaSalida> entradasSalidasPage = entradaSalidaRepository.findByUsuarioIdAndFolioOrUsuarioNombre(search, usuarioId, pageable);
+
+        // 5. Convertir a DTOs usando map
         return entradasSalidasPage.map(EntradaSalidaMapper::toResponseDto);
     }
 

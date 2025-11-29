@@ -48,6 +48,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/api/tarifa/**").hasRole("ADMINISTRADOR")
                         //--- GESTION DE ENTRADAS Y SALIDAS
                         .requestMatchers("/api/entrada-salida/search/paginated").hasAnyRole("ADMINISTRADOR","EMPLEADO")
+                        .requestMatchers("/api/entrada-salida/pensionado/search/paginated").hasRole("CLIENTE_PENSIONADO")
                         .requestMatchers("/api/entrada-salida/get-by-id/**").hasAnyRole("ADMINISTRADOR","EMPLEADO")
                         .requestMatchers("/api/entrada-salida/visitante").hasAnyRole("ADMINISTRADOR","EMPLEADO")
                         .requestMatchers("/api/entrada-salida/visitante/salida-datos/**").hasAnyRole("ADMINISTRADOR","EMPLEADO")
