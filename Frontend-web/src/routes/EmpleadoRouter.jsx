@@ -212,10 +212,7 @@ export default function EmpleadoRouter() {
             color: "error.main",
             "&:hover": { backgroundColor: "rgba(211, 47, 47, 0.1)" },
           }}
-          onClick={() => {
-            removeToken();
-            goTo("/login");
-          }}
+          
         >
           <ListItemIcon>
             <PersonAddICon
