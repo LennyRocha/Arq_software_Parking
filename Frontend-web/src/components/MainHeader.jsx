@@ -35,13 +35,14 @@
  * @param {string} breads[].nombre - Nombre del breadcrumb
  * @param {string} breads[].ruta - Ruta de navegación del breadcrumb
  * @param {boolean} breads[].disabled - Si el breadcrumb está deshabilitado (no clickeable)
+ * @param {React.ReactNode} icon - Icono opcional a mostrar al lado del título
  */
 import { Box, Breadcrumbs, Typography} from "@mui/material";
 import logo from "../img/logo_parking_hd_no_titulo.png";
 import React from "react";
 import { Link } from "react-router-dom";
 
-export default function MainHeader({ titulo, breads }) {
+export default function MainHeader({ titulo, breads, icon }) {
   const BreadCrumbs = (
     <Breadcrumbs
       aria-label="breadcrumb"
@@ -90,23 +91,53 @@ export default function MainHeader({ titulo, breads }) {
         }}
         className="bread_head"
       >
-        <Box
-          component="img"
-          src={logo}
-          alt="Logo"
-          sx={{ height: "3.5rem", mb: 1 }}
-        />
-        <Typography
-          component="div"
-          className="custom-font other"
-          sx={{
-            fontWeight: "bold",
-            fontSize: { xs: "1.5rem", md: "2rem" }, // h6 en xs, h3 en md
-            textTransform: "uppercase"
-          }}
-        >
-          {titulo}
-        </Typography>
+        {icon ? (
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 1.5,
+              justifyContent: "center",
+            }}
+          >
+            <Box
+              component="img"
+              src={logo}
+              alt="Logo"
+              sx={{ height: "3.5rem" }}
+            />
+            <Typography
+              component="div"
+              className="custom-font other"
+              sx={{
+                fontWeight: "bold",
+                fontSize: { xs: "1.5rem", md: "2rem" }, // h6 en xs, h3 en md
+                textAlign: "center",
+              }}
+            >
+              {titulo}
+            </Typography>
+          </Box>
+        ) : (
+          <>
+            <Box
+              component="img"
+              src={logo}
+              alt="Logo"
+              sx={{ height: "3.5rem", mb: 1 }}
+            />
+            <Typography
+              component="div"
+              className="custom-font other"
+              sx={{
+                fontWeight: "bold",
+                fontSize: { xs: "1.5rem", md: "2rem" }, // h6 en xs, h3 en md
+              }}
+            >
+              {titulo}
+            </Typography>
+          </>
+        )}
       </Box>
     </Box>
   );

@@ -230,7 +230,7 @@ export default function EmpleadoRouter() {
         </ListItemButton>
         <ListItemButton
           onClick={() => goTo("/empleado/nuevo_pensionado")}
-          selected={selectedIndex === 5}
+          selected={selectedIndex === 3}
           sx={{
             borderRadius: "5px",
             "&.Mui-selected": {
@@ -243,7 +243,7 @@ export default function EmpleadoRouter() {
           <ListItemIcon>
             <PersonAddICon
               className={`side-icon ${
-                selectedIndex === 5 ? "color-white " : "gray"
+                selectedIndex === 3 ? "color-white " : "gray"
               }`}
             />
           </ListItemIcon>

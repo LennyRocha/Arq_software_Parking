@@ -85,6 +85,9 @@ export default function AdminRouter() {
       case path.includes("gestion_usuarios"):
         setSelectedIndex(6);
         break;
+      case path.includes("/usuarios"):
+        setSelectedIndex(6);
+        break;
       default:
         setSelectedIndex(0);
     }
