@@ -124,7 +124,7 @@ export default function HistorialPagosModal({ open, onClose, usuario }) {
             orderOptions={historialOrderOptions}
             orderBy={ordenarPor}
             orderDirection={ordenDireccion}
-            searchPlaceholder="Buscar por costo, fecha de pago, inicio o fin"
+            searchPlaceholder="Costo,fecha(pago,inicio,fin)"
             searchText={buscarTexto}
             onOrderByChange={setOrdenarPor}
             onOrderDirectionChange={setOrdenDireccion}
