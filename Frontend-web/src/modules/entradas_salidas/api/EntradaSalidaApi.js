@@ -1,8 +1,8 @@
-import apiToken from "../../../utils/api";
+import apiToken from "../../../utils/apiToken";
 
 
 // Obtener una entrada-salida por ID
-export const fetchEntradaSalidaByID = (id) => apiToken.get(`/api/entrada-salida/${id}`);
+export const fetchEntradaSalidaByID = (id) => apiToken.get(`/api/entrada-salida/get-by-id/${id}`);
 
 // Crear una nueva entrada-salida para el visitante
 export const createEntradaSalidaVisitante = (entrada) => apiToken.post("/api/entrada-salida/visitante", entrada);

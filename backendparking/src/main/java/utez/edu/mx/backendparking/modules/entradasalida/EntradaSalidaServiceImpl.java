@@ -28,6 +28,7 @@ import utez.edu.mx.backendparking.modules.usuariopension.UsuarioPensionRepositor
 import utez.edu.mx.backendparking.modules.vehiculo.model.Vehiculo;
 import utez.edu.mx.backendparking.modules.vehiculo.model.VehiculoEstacionadoResponseDto;
 import utez.edu.mx.backendparking.modules.vehiculo.repository.VehiculoRepository;
+import utez.edu.mx.backendparking.security.SecurityUtils;
 import utez.edu.mx.backendparking.shared.api.ApiResponse;
 import utez.edu.mx.backendparking.shared.exception.BadRequestException;
 import utez.edu.mx.backendparking.shared.exception.ResourceNotFoundException;
@@ -516,8 +517,7 @@ public class EntradaSalidaServiceImpl implements EntradaSalidaService {
     @Transactional(readOnly = true)
     public String searchCodigoEntradaSalida(){
         // Obtener el usuario autenticado actual
-        //Usuario usuarioActual = SecurityUtils.getCurrentUser();
-        Usuario usuarioActual = usuarioRepository.findById((long)3).get();
+        Usuario usuarioActual = SecurityUtils.getCurrentUser();
 
         // Buscar si el usuario tiene una pensión activa
         Optional<UsuarioPension> usuarioPensionOpt = usuarioPensionRepository.findByUsuarioIdAndEstatusTrue(usuarioActual.getId());

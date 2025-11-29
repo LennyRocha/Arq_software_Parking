@@ -45,7 +45,7 @@ public class EntradaSalidaController {
                 .body(ApiResponse.success(HttpStatus.OK, EntradaSalidaMessages.ENDPOINT_ENTRADA_SALIDA_GET_ALL, resultado));
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/get-by-id/{id}")
     @Operation(summary = "Obtener entrada/salida por ID",
             description = "Obtiene los detalles completos de un registro de entrada/salida específico mediante su ID.")
     public ResponseEntity<ApiResponse<EntradaSalidaResponseDto>> findById(@PathVariable Long id) {
@@ -109,7 +109,7 @@ public class EntradaSalidaController {
     }
 
     @PutMapping("/pensionado/salida/{folioTicket}")
-    @Operation(summary = "marcar salida de pensionado",
+    @Operation(summary = "Marcar salida de pensionado",
             description = "Marca la salida de un vehículo pensionado del estacionamiento. " +
                     "Calcula y guarda la hora de salida.")
     public ResponseEntity<ApiResponse<EntradaSalidaResponseDto>> marcarSalidaPensionado(@PathVariable String uuidCodigoQR) {
