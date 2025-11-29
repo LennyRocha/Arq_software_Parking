@@ -3,6 +3,8 @@ package utez.edu.mx.backendparking.config;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import utez.edu.mx.backendparking.modules.cajon.model.Cajon;
+import utez.edu.mx.backendparking.modules.cajon.repository.CajonRepository;
 import utez.edu.mx.backendparking.modules.historialpagos.Pago;
 import utez.edu.mx.backendparking.modules.historialpagos.PagoRepository;
 import utez.edu.mx.backendparking.modules.pension.Pension;
@@ -23,6 +25,7 @@ import utez.edu.mx.backendparking.modules.vehiculo.repository.VehiculoRepository
 import utez.edu.mx.backendparking.shared.exception.ResourceNotFoundException;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -38,8 +41,9 @@ public class InitialDataService {
     private final VehiculoRepository vehiculoRepository;
     private final UsuarioPensionRepository usuarioPensionRepository;
     private final PagoRepository pagoRepository;
+    private final CajonRepository cajonRepository;
 
-    public InitialDataService(TarifaRepository tarifaRepository, TipoVehiculoRepository tipoVehiculoRepository, PensionRepository pensionRepository, RolesRepository roleRepository, UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder, VehiculoRepository vehiculoRepository, UsuarioPensionRepository usuarioPensionRepository, PagoRepository pagoRepository) {
+    public InitialDataService(TarifaRepository tarifaRepository, TipoVehiculoRepository tipoVehiculoRepository, PensionRepository pensionRepository, RolesRepository roleRepository, UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder, VehiculoRepository vehiculoRepository, UsuarioPensionRepository usuarioPensionRepository, PagoRepository pagoRepository, CajonRepository cajonRepository) {
         this.tarifaRepository = tarifaRepository;
         this.tipoVehiculoRepository = tipoVehiculoRepository;
         this.pensionRepository = pensionRepository;
@@ -49,6 +53,7 @@ public class InitialDataService {
         this.vehiculoRepository = vehiculoRepository;
         this.usuarioPensionRepository = usuarioPensionRepository;
         this.pagoRepository = pagoRepository;
+        this.cajonRepository = cajonRepository;
     }
 
     @Transactional
@@ -100,7 +105,7 @@ public class InitialDataService {
             usuarioRepository.save(empleado);
         }
 
-        // Crear usuario un empleado si no existe
+        // Crear usuario un usuario pensionado si no existe
         if (usuarioRepository.findByCorreo("pensionado@parking.com") == null) {
             Roles rolPensionado = roleRepository.findByName(ERole.CLIENTE_PENSIONADO)
                     .orElseThrow(() -> new RuntimeException("Rol Cliente pensionado no encontrado"));
@@ -202,73 +207,39 @@ public class InitialDataService {
     @Transactional
     public void inicializarPensiones() {
         if (pensionRepository.count() == 0) {
-            // Pensiones para Coche
-            Pension carBasic = new Pension();
-            carBasic.setNombre("Coche-Basica");
-            carBasic.setDuracionDias(7);
-            carBasic.setCosto(500.0);
-            carBasic.setStatus(true);
 
-            Pension carClassic = new Pension();
-            carClassic.setNombre("Coche-Clasica");
-            carClassic.setDuracionDias(15);
-            carClassic.setCosto(800.0);
-            carClassic.setStatus(true);
 
-            Pension carPremium = new Pension();
-            carPremium.setNombre("Coche-Premium");
-            carPremium.setDuracionDias(30);
-            carPremium.setCosto(1500.0);
-            carPremium.setStatus(true);
+            Pension p1 = new Pension();
+            p1.setNombre("Pensión Semanal");
+            p1.setDuracionDias(7);
+            p1.setCosto(500.0);
+            p1.setStatus(true);
+
+            Pension p2 = new Pension();
+            p2.setNombre("Pensión Quincena");
+            p2.setDuracionDias(15);
+            p2.setCosto(800.0);
+            p2.setStatus(true);
+
+            Pension p3 = new Pension();
+            p3.setNombre("Pensión Mensual");
+            p3.setDuracionDias(30);
+            p3.setCosto(1500.0);
+            p3.setStatus(true);
 
             // Pensiones para Moto
-            Pension motoBasic = new Pension();
-            motoBasic.setNombre("Moto-Basica");
-            motoBasic.setDuracionDias(7);
-            motoBasic.setCosto(300.0);
-            motoBasic.setStatus(true);
+            Pension p4 = new Pension();
+            p4.setNombre("Pensión Trimestral");
+            p4.setDuracionDias(90);
+            p4.setCosto(2500.0);
+            p4.setStatus(true);
 
-            Pension motoClassic = new Pension();
-            motoClassic.setNombre("Moto-Clasica");
-            motoClassic.setDuracionDias(15);
-            motoClassic.setCosto(500.0);
-            motoClassic.setStatus(true);
-
-            Pension motoPremium = new Pension();
-            motoPremium.setNombre("Moto-Premium");
-            motoPremium.setDuracionDias(30);
-            motoPremium.setCosto(650.0);
-            motoPremium.setStatus(true);
-
-            // Pensiones para Camioneta
-            Pension camionetaBasic = new Pension();
-            camionetaBasic.setNombre("Camioneta-Basica");
-            camionetaBasic.setDuracionDias(7);
-            camionetaBasic.setCosto(600.0);
-            camionetaBasic.setStatus(true);
-
-            Pension camionetaClassic = new Pension();
-            camionetaClassic.setNombre("Camioneta-Clasica");
-            camionetaClassic.setDuracionDias(15);
-            camionetaClassic.setCosto(800.0);
-            camionetaClassic.setStatus(true);
-
-            Pension camionetaPremium = new Pension();
-            camionetaPremium.setNombre("Camioneta-Premium");
-            camionetaPremium.setDuracionDias(30);
-            camionetaPremium.setCosto(1000.0);
-            camionetaPremium.setStatus(true);
 
             // Guardar todos
-            pensionRepository.save(carBasic);
-            pensionRepository.save(carClassic);
-            pensionRepository.save(carPremium);
-            pensionRepository.save(motoBasic);
-            pensionRepository.save(motoClassic);
-            pensionRepository.save(motoPremium);
-            pensionRepository.save(camionetaBasic);
-            pensionRepository.save(camionetaClassic);
-            pensionRepository.save(camionetaPremium);
+            pensionRepository.save(p1);
+            pensionRepository.save(p2);
+            pensionRepository.save(p3);
+            pensionRepository.save(p4);
         }
     }
 
@@ -309,7 +280,7 @@ public class InitialDataService {
 
         // Crear primer vehículo - Coche
         Vehiculo vehiculo1 = new Vehiculo();
-        vehiculo1.setPlaca("ABC-123");
+        vehiculo1.setPlaca("yyy-123");
         vehiculo1.setModelo("Honda Civic 2020");
         vehiculo1.setDescripcion("Sedán gris plata");
         vehiculo1.setEstatus(true);
@@ -318,7 +289,7 @@ public class InitialDataService {
 
         // Crear segundo vehículo - Moto
         Vehiculo vehiculo2 = new Vehiculo();
-        vehiculo2.setPlaca("XYZ-789");
+        vehiculo2.setPlaca("zzz-789");
         vehiculo2.setModelo("Yamaha MT-07 2021");
         vehiculo2.setDescripcion("Motocicleta deportiva azul");
         vehiculo2.setEstatus(true);
@@ -355,9 +326,9 @@ public class InitialDataService {
             return;
         }
 
-        // Seleccionar la pensión "Coche-Premium" (30 días) o la primera disponible
+        // Seleccionar la pensión "Pensión Semanal"  o la primera disponible
         Pension pensionSeleccionada = pensiones.stream()
-                .filter(p -> p.getNombre().equalsIgnoreCase("Coche-Premium"))
+                .filter(p -> p.getNombre().equalsIgnoreCase("Pensión Semanal"))
                 .findFirst()
                 .orElse(pensiones.get(0));
 
@@ -371,7 +342,7 @@ public class InitialDataService {
         LocalDate fechaFinalizacion = LocalDate.now().plusDays(pensionSeleccionada.getDuracionDias());
         usuarioPension.setFechaFinalizacion(fechaFinalizacion);
 
-        // Generar código QR único (usando el mismo método que el servicio de entrada/salida)
+        // Generar código QR único (usando el mismo metodo que el servicio de entrada/salida)
         String uuidCodigoQR = generarUuidUnico();
         usuarioPension.setUuidCodigoQR(uuidCodigoQR);
 
@@ -385,6 +356,7 @@ public class InitialDataService {
         pago.setCantidadPago(pensionSeleccionada.getCosto());
         pago.setUsuarioPension(usuarioPension);
         pago.setFechaPago(LocalDate.now());
+        pago.setHoraPago(LocalTime.now());
         pago.setFechaInicio(LocalDate.now());
         pago.setFechaFin(LocalDate.now().plusDays(pensionSeleccionada.getDuracionDias()));
         pago.setPension(pensionSeleccionada);
@@ -397,8 +369,8 @@ public class InitialDataService {
     }
 
     /**
-     * Método privado para generar UUID único para código QR
-     * (mismo método que en EntradaSalidaServiceImpl)
+     * Metodo privado para generar UUID único para código QR
+     * (mismo metodo que en EntradaSalidaServiceImpl)
      */
     private String generarUuidUnico() {
         String uuid;
@@ -406,5 +378,116 @@ public class InitialDataService {
             uuid = UUID.randomUUID().toString();
         } while (usuarioPensionRepository.existsByUuidCodigoQR(uuid));
         return uuid;
+    }
+
+    /**
+     * Metodo para crear los cajones del estacionamiento
+     */
+    @Transactional
+    public void inicializarCajones() {
+
+        // Verificar si ya existen cajones
+        if (cajonRepository.count() > 0) {
+            System.out.println("Los cajones ya fueron inicializados previamente.");
+            return;
+        }
+
+        // Obtener tipos de vehículo
+        List<TipoVehiculo> tipos = tipoVehiculoRepository.findAll();
+        if (tipos.isEmpty()) {
+            System.out.println("No hay tipos de vehículo. Inicialice primero Tipos de Vehículo.");
+            return;
+        }
+
+        TipoVehiculo coche = tipos.stream()
+                .filter(t -> t.getNombre().equalsIgnoreCase("Coche"))
+                .findFirst().orElse(null);
+
+        TipoVehiculo moto = tipos.stream()
+                .filter(t -> t.getNombre().equalsIgnoreCase("Moto"))
+                .findFirst().orElse(null);
+
+        TipoVehiculo camioneta = tipos.stream()
+                .filter(t -> t.getNombre().equalsIgnoreCase("Camioneta"))
+                .findFirst().orElse(null);
+
+        // Crear cajones de ejemplo
+        Cajon c1 = new Cajon(null, "A1", "Cerca de entrada principal", true, false, 1, true, coche);
+        c1.setTipoVehiculo(coche);
+
+        Cajon c2 = new Cajon(null, "A2", "Zona media del piso 1", true, false, 1, true, coche);
+        c2.setTipoVehiculo(coche);
+
+        Cajon c3 = new Cajon(null, "M1", "Cerca de escalera piso 2", true, false, 2, true, coche);
+        c3.setTipoVehiculo(moto);
+
+        Cajon c4 = new Cajon(null, "C1", "Zona amplia piso 1", true, true, 1, true, camioneta);
+        c4.setTipoVehiculo(camioneta);
+
+        Cajon c5 = new Cajon(null, "B1", "Zona amplia piso 2", true, false, 2, true, camioneta);
+        c4.setTipoVehiculo(camioneta);
+
+        Cajon c6 = new Cajon(null, "C4", "Zona amplia piso 3", true, false, 3, true, camioneta);
+        c4.setTipoVehiculo(camioneta);
+
+        Cajon c7 = new Cajon(null, "C2", "Cerca de la entrada trasera", true, true, 1, true, moto);
+        c4.setTipoVehiculo(camioneta);
+
+        Cajon c8 = new Cajon(null, "M2", "Zona amplia piso 1, a la izquierda", true, false, 1, true, moto);
+        c4.setTipoVehiculo(camioneta);
+
+        Cajon c9 = new Cajon(null, "A3", "Zona media del piso 1", true, false, 1, true, coche);
+        c9.setTipoVehiculo(coche);
+
+        Cajon c10 = new Cajon(null, "A4", "Cerca de salida piso 1", true, false, 1, true, coche);
+        c10.setTipoVehiculo(coche);
+
+        Cajon c11 = new Cajon(null, "B2", "Zona izquierda piso 2", true, false, 2, true, coche);
+        c11.setTipoVehiculo(coche);
+
+        Cajon c12 = new Cajon(null, "B3", "Zona derecha piso 2", true, false, 2, true, coche);
+        c12.setTipoVehiculo(coche);
+
+        Cajon c13 = new Cajon(null, "M3", "Cerca de elevador piso 1", true, false, 1, true, moto);
+        c13.setTipoVehiculo(moto);
+
+        Cajon c14 = new Cajon(null, "M4", "Zona lateral piso 2", true, false, 2, true, moto);
+        c14.setTipoVehiculo(moto);
+
+        Cajon c15 = new Cajon(null, "C3", "Zona amplia piso 3", true, false, 3, true, camioneta);
+        c15.setTipoVehiculo(camioneta);
+
+        Cajon c16 = new Cajon(null, "C5", "Cerca de salida piso 3", true, false, 3, true, camioneta);
+        c16.setTipoVehiculo(camioneta);
+
+        Cajon c17 = new Cajon(null, "D1", "Zona premium piso 1", true, true, 1, true, coche);
+        c17.setTipoVehiculo(coche);
+
+        Cajon c18 = new Cajon(null, "D2", "Zona premium piso 2", true, true, 2, true, coche);
+        c18.setTipoVehiculo(coche);
+
+
+        // Guardar
+        cajonRepository.save(c1);
+        cajonRepository.save(c2);
+        cajonRepository.save(c3);
+        cajonRepository.save(c4);
+        cajonRepository.save(c5);
+        cajonRepository.save(c6);
+        cajonRepository.save(c7);
+        cajonRepository.save(c8);
+        cajonRepository.save(c9);
+        cajonRepository.save(c10);
+        cajonRepository.save(c11);
+        cajonRepository.save(c12);
+        cajonRepository.save(c13);
+        cajonRepository.save(c14);
+        cajonRepository.save(c15);
+        cajonRepository.save(c16);
+        cajonRepository.save(c17);
+        cajonRepository.save(c18);
+
+
+        System.out.println("Cajones inicializados exitosamente");
     }
 }

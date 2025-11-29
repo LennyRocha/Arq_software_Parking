@@ -14,7 +14,7 @@ import utez.edu.mx.backendparking.shared.api.ApiResponse;
 
 @RestController
 @RequestMapping("/api/mercadopago")
-@CrossOrigin(origins = {"http://localhost:5173"})
+@CrossOrigin(origins = {"http://localhost:5173", "http://localhost:8081"})
 public class MercadoPagoController {
 
     private static final Logger logger = LoggerFactory.getLogger(MercadoPagoController.class);

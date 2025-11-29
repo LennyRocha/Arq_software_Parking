@@ -12,6 +12,7 @@ import utez.edu.mx.backendparking.modules.vehiculo.model.Vehiculo;
 import utez.edu.mx.backendparking.modules.usuariopension.dto.VehiculoDto;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -61,6 +62,7 @@ public class PensionadoMapper {
         pago.setFechaInicio(fechaInicio);
         pago.setFechaFin(fechaFin);
         pago.setPension(pension);
+        pago.setHoraPago(LocalTime.now());
 
         return pago;
     }

@@ -91,8 +91,9 @@ public class VehiculoDto {
             vehiculo.setId(id);
         }
         vehiculo.setModelo(modelo);
-        vehiculo.setPlaca(placa);
+        vehiculo.setPlaca(placa.isBlank() ? null : placa);
         vehiculo.setEstatus(estatus);
+        vehiculo.setDescripcion(descripcion);
         vehiculo.setTipoVehiculo(null);
         vehiculo.setUsuario(null);
         return vehiculo;

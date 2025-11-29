@@ -13,4 +13,5 @@ public interface PensionService {
     void changeStatus(Long id);
     List<PensionResponseDto> findAll();
     Page<PensionResponseDto> findAllPensionesPaginados(Pageable pageable, String search);
+    Page<PensionResponseDto> findAllPensionesActivasPaginados(Pageable pageable, String search);
 }

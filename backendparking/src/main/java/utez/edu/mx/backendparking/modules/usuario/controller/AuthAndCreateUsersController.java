@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import utez.edu.mx.backendparking.modules.usuario.dto.LoginRequest;
 import utez.edu.mx.backendparking.modules.usuario.service.AuthUserServiceImpl;
+import utez.edu.mx.backendparking.modules.usuario.dto.ActualizarContraDto;
+import utez.edu.mx.backendparking.modules.usuario.dto.ActualizarUsuarioDto;
 import utez.edu.mx.backendparking.modules.usuario.dto.EmpleadoRegisterDto;
 import utez.edu.mx.backendparking.shared.api.ApiResponse;
 
@@ -36,6 +38,21 @@ public class AuthAndCreateUsersController {
     @Operation(summary = "Login",description="Loguearse en el sistema para obtener JWT")
     public ResponseEntity<ApiResponse<?>> login(@RequestBody LoginRequest loginRequest) {
         ApiResponse<?> response = authUserService.Login(loginRequest.getCorreo(), loginRequest.getContra());
+
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
+    @PostMapping("/actualizarDatosUsuario")
+    @Operation(summary = "Actualizar datos de cualquier usuario",description="Esto es para que el usuario actualice sus datos personales desde perfil")
+    public ResponseEntity<ApiResponse<?>> ModificarDatosEmpleado(@RequestBody ActualizarUsuarioDto actualizarUsuarioDto) {
+        ApiResponse<?> response = authUserService.ModificarDatosEmpleado(actualizarUsuarioDto, actualizarUsuarioDto.getId());
+
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+    @PostMapping("/actualizarContraUsuario")
+    @Operation(summary = "Actualizar contraseña de cualquier usuario",description="Esto es para que el usuario actualice su contraseña desde perfil")
+    public ResponseEntity<ApiResponse<?>> ActualizarContraseña(@RequestBody ActualizarContraDto actualizarContraDto) {
+        ApiResponse<?> response = authUserService.ActualizarContraseña(actualizarContraDto, actualizarContraDto.getId());
 
         return ResponseEntity.status(response.getStatus()).body(response);
     }

@@ -34,7 +34,7 @@ export default function Perfil({ dad, ruta, navigation }) {
             </Text>
             <Text style={{ borderColor: paper.colors.tertiary, borderWidth: 2, fontFamily: "Exo2_700Bold", borderRadius: 2, paddingHorizontal: 4, color: paper.colors.tertiary }} variant="titleSmall">Pro</Text>
           </View>
-          <Text variant="titleSmall" style={{ color: paper.colors.onBackground, fontWeight: "400" }}>Caduca el 02/12/2025</Text>
+          <Text variant="titleSmall" style={{ color: paper.colors.onTertiaryContainer, fontWeight: "400" }}>Caduca el 02/12/2025</Text>
         </View>
         <View style={{ height: "100%", flexDirection: "row", gap: 2, justifyContent: "flex-start", alignContent: "flex-start", paddingVertical: 12 }}>
           <Icon source={"calendar-month"} size={18} color={paper.colors.primary} />

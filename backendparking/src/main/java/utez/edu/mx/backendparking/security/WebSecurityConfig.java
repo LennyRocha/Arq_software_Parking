@@ -36,6 +36,11 @@ public class WebSecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         //.requestMatchers("/api/auth/private/registrarEmpleado").hasRole("ADMINISTRADOR")
+
+                        //----TIPOS DE PENSIONES. Loo gestiona totalmente EL ADMIN, SOLO HAY GETS ESPECIFICOS PARA FRONT SIN AUTENTICACION
+                        .requestMatchers("/api/pension/private/**").hasRole("ADMINISTRADOR")
+                        .requestMatchers("/api/pension/public/**").permitAll() //para los gets en la landing page
+
                         .anyRequest().permitAll())
                 .addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();

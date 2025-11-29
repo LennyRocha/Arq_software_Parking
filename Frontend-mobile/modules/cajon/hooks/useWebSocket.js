@@ -1,34 +1,28 @@
-import React from 'react';
-import { Client } from '@stomp/stompjs';
-import SockJS from 'sockjs-client';
+import { socket } from "./socket";
+import React from "react";
 
-export default function useWebSocket(url, topic, onMessage) {
-    const clientRef = React.useRef(null);
+export const useWebSocket = () => {
+  const [isConnected, setIsConnected] = React.useState(socket.connected);
 
-    React.useEffect(() => {
-        const client = new Client({
-            webSocketFactory: () => new SockJS(url),
-            debug: (str) => console.log(str),
-            reconnectDelay: 5000,
-            onConnect: () => {
-                console.log('STOMP conectado');
-                client.subscribe(topic, (msg) => {
-                    const body = JSON.parse(msg.body);
-                    onMessage && onMessage(body);
-                });
-            },
-            onStompError: (frame) => {
-                console.log('Error STOMP', frame);
-            },
-        });
+  React.useEffect(() => {
+    const handleConnect = () => setIsConnected(true);
+    const handleDisconnect = () => setIsConnected(false);
 
-        client.activate();
-        clientRef.current = client;
+    socket.on("connect", handleConnect);
+    socket.on("disconnect", handleDisconnect);
 
-        return () => {
-            client.deactivate();
-        };
-    }, [url, topic, onMessage]);
+    return () => {
+      socket.off("connect", handleConnect);
+      socket.off("disconnect", handleDisconnect);
+    };
+  }, []);
 
-    return clientRef.current;
-}
+  return {
+    emit: socket.emit.bind(socket),
+    on: (ev, cb) => {
+      socket.off(ev);
+      socket.on(ev, cb);
+    },
+    isConnected,
+  };
+};

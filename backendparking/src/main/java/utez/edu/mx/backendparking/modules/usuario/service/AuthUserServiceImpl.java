@@ -3,11 +3,16 @@ package utez.edu.mx.backendparking.modules.usuario.service;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 import utez.edu.mx.backendparking.security.JWTUtils;
 import utez.edu.mx.backendparking.shared.api.ApiResponse;
 import utez.edu.mx.backendparking.modules.roles.ERole;
 import utez.edu.mx.backendparking.modules.usuario.UsuarioRepository;
+import utez.edu.mx.backendparking.modules.usuario.dto.ActualizarContraDto;
+import utez.edu.mx.backendparking.modules.usuario.dto.ActualizarUsuarioDto;
 import utez.edu.mx.backendparking.modules.usuario.dto.EmpleadoRegisterDto;
 import utez.edu.mx.backendparking.modules.usuario.Usuario;
 import utez.edu.mx.backendparking.modules.roles.Roles;
@@ -63,26 +68,78 @@ public class AuthUserServiceImpl {
     }
 
     public ApiResponse<?> Login(String correo, String contra) {
-        try {
-            Usuario usuario = usuarioRepository.findByCorreo(correo);
+   Usuario usuario = usuarioRepository.findByCorreo(correo);
 
-            if (!passwordEncoder.matches(contra, usuario.getContra())) {
-                return ApiResponse.error(HttpStatus.UNAUTHORIZED, "Credenciales incorrectas", null);
-            }
-
-            if (!usuario.isStatus()) {
-                return ApiResponse.error(HttpStatus.BAD_REQUEST, "Tu cuenta esta desactivada", null);
-            }
-
-            String role = usuario.getRol().getName().name();
-            Long id = usuario.getId();
-            String token = jwtUtils.generateAccessToken(correo, role, id);
-            return ApiResponse.success(HttpStatus.OK, token, null);
-
-        } catch (Exception e) {
-            return ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR, "No se pudo iniciar sesion", null);
-        }
+    if (usuario == null || !passwordEncoder.matches(contra, usuario.getContra())) {
+        return ApiResponse.error(HttpStatus.UNAUTHORIZED, "Credenciales incorrectas", null);
     }
 
+    if (!usuario.isStatus()) {
+        return ApiResponse.error(HttpStatus.BAD_REQUEST, "Tu cuenta está desactivada", null);
+    }
 
+    String role = usuario.getRol().getName().name();
+    Long id = usuario.getId();
+
+    String token = jwtUtils.generateAccessToken(correo, role, id);
+
+    
+    Map<String, Object> data = new HashMap<>();
+    data.put("token", token);
+    data.put("expiration", System.currentTimeMillis() + (1000 * 60 * 60)); 
+    data.put("user", Map.of(
+            "id", id,
+            "correo", correo,
+            "role", role
+    ));
+
+    return ApiResponse.success(HttpStatus.OK, "Inicio exitoso", data);
+}
+
+
+public ApiResponse<?> ModificarDatosEmpleado(ActualizarUsuarioDto request, Long id) {
+    try {
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
+
+        usuario.setNombre(request.getNombre());
+        usuario.setApellidos(request.getApellidos());
+        
+        if (!usuario.getCorreo().equals(request.getCorreo()) && usuarioRepository.existsByCorreo(request.getCorreo())) {
+            return ApiResponse.error(HttpStatus.BAD_REQUEST, "El correo ya está registrado por otro usuario", null);
+        }
+        
+        usuario.setCorreo(request.getCorreo());
+        usuario.setTelefono(request.getTelefono());
+       
+
+        usuarioRepository.save(usuario);
+
+        return ApiResponse.success(HttpStatus.OK, "Usuario modificado exitosamente", null);
+    } catch (ResourceNotFoundException e) {
+        log.severe("Error modifying user: " + e.getMessage());
+        return ApiResponse.error(HttpStatus.NOT_FOUND, e.getMessage(), null);
+    } catch (Exception e) {
+        log.severe("Error modifying user: " + e.getMessage());
+        return ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR, "No se pudo modificar el usuario: " + e.getMessage(), null);
+    }
+}
+public ApiResponse<?>ActualizarContraseña(ActualizarContraDto resquest, Long id){
+    try {
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
+
+        usuario.setContra(passwordEncoder.encode(resquest.getContra()));
+
+        usuarioRepository.save(usuario);
+
+        return ApiResponse.success(HttpStatus.OK, "Contraseña modificada exitosamente", null);
+    } catch (ResourceNotFoundException e) {
+        log.severe("Error modifying password: " + e.getMessage());
+        return ApiResponse.error(HttpStatus.NOT_FOUND, e.getMessage(), null);
+    } catch (Exception e) {
+        log.severe("Error modifying password: " + e.getMessage());
+        return ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR, "No se pudo modificar la contraseña: " + e.getMessage(), null);
+    }
+}
 }

@@ -1,235 +1,358 @@
 import React, { useState } from "react";
+import api from "../utils/api";
+import { saveAllStorage } from "../utils/AuthService";
+import Logo from "../img/logo_parking copy.png";
+import ciudad from "../img/fondo.png";
+import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
+import sweetAlert from "../utils/sweetAlert";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import ErrorIcon from "@mui/icons-material/Error";
+
+
+
+
 import {
   Box,
-  Container,
+  TextField,
+  Button,
   Typography,
   Card,
   CardContent,
-  TextField,
-  Button,
   Link,
-  useTheme,
-  alpha,
   IconButton,
   InputAdornment,
+  Paper,
 } from "@mui/material";
-import {
-  DirectionsCar as CarIcon,
-  Brightness4 as DarkModeIcon,
-  Brightness7 as LightModeIcon,
-  Visibility,
-  VisibilityOff,
-  ArrowBack as ArrowBackIcon,
-} from "@mui/icons-material";
+
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
-import { useDarkContext } from "../context/DarkContext";
+import { set } from "react-hook-form";
 
 export default function Login() {
-  const theme = useTheme();
   const navigate = useNavigate();
-  const { isDarkMode, toggleDarkMode } = useDarkContext();
 
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
+
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    
-    // Aquí irá la lógica de autenticación
-    console.log("Datos de login:", formData);
-    
-    // Simulación de login - reemplazar con lógica real
-    setTimeout(() => {
-      setLoading(false);
-      // Redirigir según el rol del usuario
-      navigate("/admin"); // o /empleado, /pensionados
-    }, 1000);
-  };
 
-  const handleClickShowPassword = () => {
-    setShowPassword(!showPassword);
+    try {
+      const response = await api.post("/api/auth/public/login", {
+        correo: formData.email,
+        contra: formData.password,
+      });
+
+      const apiResponse = response.data;
+
+      if (!apiResponse.success) {
+        sweetAlert({
+          title: "Error de autenticación",
+          text: "Correo o contraseña incorrectos.",
+          icon: "error",
+        });
+
+        setLoading(false);
+        return;
+      }
+
+
+      const { token, expiration, user } = apiResponse.data;
+
+      saveAllStorage(token, expiration, user);
+
+      switch (user.role) {
+        case "ADMINISTRADOR":
+          navigate("/admin");
+          break;
+        case "EMPLEADO":
+          navigate("/empleado");
+          break;
+        case "CLIENTE_PENSIONADO":
+          navigate("/pensionados");
+          break;
+        default:
+          navigate("/");
+      }
+    } catch (error) {
+      sweetAlert({
+        title: "Error de inicio de sesión",
+        text: "Correo o contraseña incorrectos.",
+        icon: "error",
+      });
+    }
+    setLoading(false);
   };
 
   return (
-    <Box sx={{ bgcolor: "background.default", minHeight: "100vh" }}>
-      {/* Header */}
-      <Box
-        component="header"
-        sx={{
-          py: 2,
-          px: 3,
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          bgcolor: alpha(theme.palette.primary.main, 0.05),
-        }}
-      >
-        <Typography
-          variant="h6"
-          sx={{
-            fontWeight: "bold",
-            color: "primary.main",
-            display: "flex",
-            alignItems: "center",
-            gap: 1,
-          }}
-        >
-          <CarIcon /> parKing
-        </Typography>
-        <IconButton onClick={toggleDarkMode} color="inherit">
-          {isDarkMode ? <LightModeIcon /> : <DarkModeIcon />}
-        </IconButton>
-      </Box>
+    <Box
+      sx={{
+        display: "flex",
+        minHeight: "100vh",
+        width: "100%",
+        flexDirection: { xs: "column", md: "row" },
 
-      <Container
-        maxWidth="sm"
+      }}
+    >
+      <Box
         sx={{
+          flex: 1,
+          bgcolor: "#0f3b3d",
+          color: "white",
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
-          minHeight: "calc(100vh - 80px)",
-          py: 4,
+          alignItems: "center",
+          px: 1,
+          py: { xs: 4, md: 0 },
         }}
       >
-        <Button
-          startIcon={<ArrowBackIcon />}
-          onClick={() => navigate("/")}
-          sx={{ mb: 3, alignSelf: "flex-start" }}
-        >
-          Volver al inicio
-        </Button>
 
-        <Card
+        <img
+          src={Logo}
+          alt="logo"
+          style={{ width: "100%", maxWidth: 350, marginBottom: 20 }}
+        />
+      </Box>
+
+      <Box
+        sx={{
+          flex: 1,
+          bgcolor: "white",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          position: "relative",
+          overflow: "hidden",
+          paddingX: { xs: 2, sm: 4 },
+          paddingY: { xs: 4, md: 0 },
+        }}
+
+      >
+        <IconButton
+          onClick={() => navigate("/")}
           sx={{
-            p: 2,
-            boxShadow: 3,
-            borderRadius: 2,
+            position: "absolute",
+            top: { xs: 10, sm: 20 },
+            left: { xs: 10, sm: 20 },
+            color: "#0F4C4C",
+            padding: "12px",
+            width: "48px",
+            height: "48px",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            transform: "translateZ(0)",
           }}
         >
-          <CardContent sx={{ p: 4 }}>
-            <Box sx={{ textAlign: "center", mb: 4 }}>
-              <CarIcon
-                sx={{
-                  fontSize: 60,
-                  color: "primary.main",
-                  mb: 2,
-                }}
-              />
-              <Typography
-                variant="h4"
-                sx={{ fontWeight: "bold", mb: 1, color: "primary.main" }}
-              >
-                Iniciar Sesión
-              </Typography>
-              <Typography variant="body1" color="text.secondary">
-                Accede a tu cuenta de parKing
-              </Typography>
-            </Box>
+          <ArrowBackIosNewIcon fontSize="large" />
+        </IconButton>
 
-            <Box component="form" onSubmit={handleSubmit}>
-              <TextField
-                fullWidth
-                label="Correo electrónico"
-                name="email"
-                type="email"
-                value={formData.email}
-                onChange={handleChange}
-                required
-                sx={{ mb: 3 }}
-                autoComplete="email"
-              />
 
-              <TextField
-                fullWidth
-                label="Contraseña"
-                name="password"
-                type={showPassword ? "text" : "password"}
-                value={formData.password}
-                onChange={handleChange}
-                required
-                sx={{ mb: 3 }}
-                autoComplete="current-password"
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label="toggle password visibility"
-                        onClick={handleClickShowPassword}
-                        edge="end"
-                      >
-                        {showPassword ? <VisibilityOff /> : <Visibility />}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-              />
+        <Paper
+          elevation={0}
+          sx={{
+            boxShadow: "none",
+            border: "none",
+            padding: { xs: 2, sm: 3, md: 4 },
+            width: "100%",
+            maxWidth: 420,
+            zIndex: 20,
+            position: "relative",
+            backgroundColor: "transparent",
+          }}
 
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                size="large"
-                disabled={loading}
-                sx={{
-                  mb: 2,
-                  py: 1.5,
-                  fontSize: "1.1rem",
-                  fontWeight: "bold",
-                }}
-              >
-                {loading ? "Iniciando sesión..." : "INGRESAR"}
-              </Button>
+        >
 
-              <Box sx={{ textAlign: "center" }}>
-                <Link
-                  href="#"
-                  variant="body2"
-                  sx={{ textDecoration: "none", color: "primary.main" }}
-                >
-                  ¿Olvidaste tu contraseña?
-                </Link>
-              </Box>
-            </Box>
-          </CardContent>
-        </Card>
-
-        <Box sx={{ textAlign: "center", mt: 3 }}>
-          <Typography variant="body2" color="text.secondary">
-            ¿No tienes una cuenta?{" "}
-            <Link
-              href="#"
-              sx={{ color: "primary.main", textDecoration: "none" }}
-            >
-              Regístrate aquí
-            </Link>
+          <Typography
+            variant="h4"
+            sx={{
+              textAlign: "center",
+              fontWeight: "bold",
+              color: "#144e4a",
+              marginBottom: 4,
+            }}
+          >
+            Iniciar sesión
           </Typography>
-        </Box>
-      </Container>
 
-      {/* Footer */}
-      <Box
-        component="footer"
-        sx={{
-          bgcolor: alpha(theme.palette.primary.main, 0.05),
-          py: 2,
-          textAlign: "center",
-        }}
-      >
-        <Typography variant="body2" color="text.secondary">
-          © 2025 parKing. Todos los derechos reservados.
-        </Typography>
+          <form onSubmit={handleSubmit}>
+            <TextField
+              variant="filled"
+              fullWidth
+              label="Correo electrónico*"
+              value={formData.email}
+              type="email"
+              name="email"
+              onChange={handleChange}
+              InputProps={{
+                endAdornment: formData.email.trim() !== "" && (
+                  <InputAdornment position="end">
+                    {/\S+@\S+\.\S+/.test(formData.email) ? (
+                      <CheckCircleIcon sx={{ color: "green" }} />
+                    ) : (
+                      <ErrorIcon sx={{ color: "red" }} />
+                    )}
+                  </InputAdornment>
+                ),
+              }}
+              InputLabelProps={{
+                style: {
+                  color: "#2c6f6b",
+                  fontSize: "17px",
+                },
+              }}
+              sx={{
+                backgroundColor: "#e6e6e6",
+                borderTopLeftRadius: "10px",
+                borderTopRightRadius: "10px",
+                mb: 3,
+                borderBottom:
+                  formData.email.trim() === ""
+                    ? "4px solid #103f3d"
+                    : /\S+@\S+\.\S+/.test(formData.email)
+                      ? "4px solid #2ecc71" 
+                      : "4px solid #e74c3c", 
+                "& .MuiFilledInput-root": {
+                  backgroundColor: "transparent",
+                },
+                "& .MuiFilledInput-underline:before": {
+                  borderBottom: "none",
+                },
+                "& .MuiFilledInput-underline:after": {
+                  borderBottom: "none",
+                },
+                transition: "0.3s",
+              }}
+            />
+
+            <TextField
+              variant="filled"
+              fullWidth
+              label="Contraseña*"
+              name="password"
+              type={showPassword ? "text" : "password"}
+              value={formData.password}
+              onChange={handleChange}
+              InputLabelProps={{
+                style: {
+                  color: "#2c6f6b",
+                  fontSize: "17px",
+                },
+              }}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton onClick={() => setShowPassword(!showPassword)}>
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+              sx={{
+                backgroundColor: "#e6e6e6",
+                borderTopLeftRadius: "10px",
+                borderTopRightRadius: "10px",
+                mb: 3,
+                borderBottom: "4px solid #103f3d",
+
+                "& .MuiFilledInput-root": {
+                  backgroundColor: "transparent",
+                },
+                "& .MuiFilledInput-underline:before": {
+                  borderBottom: "none",
+                },
+                "& .MuiFilledInput-underline:after": {
+                  borderBottom: "none",
+                },
+              }}
+            />
+
+            <Button
+              type="submit"
+              disabled={formData.email.trim() === "" || formData.password.trim() === "" || loading}
+              variant="contained"
+              sx={{
+                backgroundColor:
+                  formData.email.trim() === "" ? "#77acacff" : "#2f6f6f",
+                color: "#fff",
+                fontSize: "16px",
+                padding: "10px",
+                width: "100%",
+                marginBottom: 2,
+                ":hover": {
+                  backgroundColor:
+                    formData.email.trim() === "" ? "#77acacff" : "#255b5b",
+                },
+                transition: "0.3s ease",
+              }}
+            >
+              {loading ? "Iniciando..." : "Acceder"}
+            </Button>
+
+            <Typography
+              sx={{
+                textAlign: "center",
+                color: "#4b6d6b",
+                marginBottom: 3,
+                cursor: "pointer",
+                fontSize: "14px",
+              }}
+            >
+              <Link href="#" underline="hover" color="#4b6d6b" onClick={() => navigate('/recuperacion-contraseña')}>
+                ¿Olvidaste tu contraseña?
+              </Link>
+            </Typography>
+
+            <Box
+              sx={{
+                width: "100%",
+                height: "1px",
+                backgroundColor: "#b4d2d0",
+                marginBottom: 3,
+              }}
+            />
+
+            <Button
+              fullWidth
+              variant="contained"
+              sx={{
+                backgroundColor: "#77c5c0",
+                color: "#fff",
+                fontSize: "16px",
+                padding: "10px",
+                ":hover": { backgroundColor: "#6ab3ae" },
+              }}
+            >
+              ¿No tienes cuenta?
+            </Button>
+          </form>
+        </Paper>
+
+        <Box
+          component="img"
+          src={ciudad}
+          alt="city"
+          sx={{
+            position: "absolute",
+            bottom: 0,
+            left: 0,
+            width: "100%",
+            opacity: 0.95,
+            zIndex: 1,
+            pointerEvents: "none",
+          }}
+        />
       </Box>
     </Box>
   );

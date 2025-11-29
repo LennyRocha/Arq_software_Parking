@@ -28,8 +28,9 @@ import {
 } from "@mui/icons-material";
 import { useDarkContext } from "../context/DarkContext";
 import { useNavigate } from "react-router-dom";
-import { searchTiposPensionPaginados } from "./tipo_pension/api/TiposPensionApi";
+import { searchTiposPensionActivasPaginados } from "./tipo_pension/api/TiposPensionApi";
 import LoadingBackdrop from "../components/LoadingBackdrop";
+import ParkingGrid from "./cajon/components/ParkingGrid";
 
 export default function LandingPage() {
   const { isDarkMode, toggleDarkMode } = useDarkContext();
@@ -51,7 +52,7 @@ export default function LandingPage() {
   const cargarTiposPension = async () => {
     setLoading(true);
     try {
-      const response = await searchTiposPensionPaginados({
+      const response = await searchTiposPensionActivasPaginados({
         page,
         size: rowsPerPage,
         sort: "duracionDias,asc",
@@ -81,18 +82,44 @@ export default function LandingPage() {
 
   // Preguntas frecuentes
   const faqs = [
-    { pregunta: "¿Qué?", respuesta: "Ofrecemos servicio de estacionamiento con diferentes opciones de tarifas y pensiones." },
-    { pregunta: "¿Quién?", respuesta: "Nuestro servicio está dirigido a cualquier persona que necesite estacionar su vehículo de manera segura." },
-    { pregunta: "¿Cómo?", respuesta: "Puedes pagar una tarifa por uso o contratar una pensión con código QR para acceso rápido." },
-    { pregunta: "¿Dónde?", respuesta: "Contamos con múltiples ubicaciones en la ciudad para tu comodidad." },
-    { pregunta: "¿Cuánto?", respuesta: "Las tarifas varían según el tiempo de uso. Consulta nuestra sección de tarifas para más detalles." },
-    { pregunta: "¿Por qué?", respuesta: "Porque tu vehículo merece un lugar seguro y accesible en todo momento." },
+    {
+      pregunta: "¿Qué?",
+      respuesta:
+        "Ofrecemos servicio de estacionamiento con diferentes opciones de tarifas y pensiones.",
+    },
+    {
+      pregunta: "¿Quién?",
+      respuesta:
+        "Nuestro servicio está dirigido a cualquier persona que necesite estacionar su vehículo de manera segura.",
+    },
+    {
+      pregunta: "¿Cómo?",
+      respuesta:
+        "Puedes pagar una tarifa por uso o contratar una pensión con código QR para acceso rápido.",
+    },
+    {
+      pregunta: "¿Dónde?",
+      respuesta:
+        "Contamos con múltiples ubicaciones en la ciudad para tu comodidad.",
+    },
+    {
+      pregunta: "¿Cuánto?",
+      respuesta:
+        "Las tarifas varían según el tiempo de uso. Consulta nuestra sección de tarifas para más detalles.",
+    },
+    {
+      pregunta: "¿Por qué?",
+      respuesta:
+        "Porque tu vehículo merece un lugar seguro y accesible en todo momento.",
+    },
   ];
 
   return (
-    <Box sx={{ bgcolor: "background.default", width: "100%", overflow: "visible" }}>
+    <Box
+      sx={{ bgcolor: "background.default", width: "100%", overflow: "visible" }}
+    >
       <LoadingBackdrop open={loading} />
-      
+
       {/* Header */}
       <Box
         component="header"
@@ -118,11 +145,53 @@ export default function LandingPage() {
           <CarIcon /> parKing
         </Typography>
         <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
-          <Button color="inherit" onClick={() => document.getElementById('inicio')?.scrollIntoView({ behavior: 'smooth' })}>Inicio</Button>
-          <Button color="inherit" onClick={() => document.getElementById('tarifas')?.scrollIntoView({ behavior: 'smooth' })}>Tarifas</Button>
-          <Button color="inherit" onClick={() => document.getElementById('pensiones')?.scrollIntoView({ behavior: 'smooth' })}>Pensiones</Button>
-          <Button color="inherit" onClick={() => document.getElementById('faqs')?.scrollIntoView({ behavior: 'smooth' })}>FAQs</Button>
-          <Button variant="contained" color="primary" onClick={() => navigate('/login')}>INGRESAR</Button>
+          <Button
+            color="inherit"
+            onClick={() =>
+              document
+                .getElementById("inicio")
+                ?.scrollIntoView({ behavior: "smooth" })
+            }
+          >
+            Inicio
+          </Button>
+          <Button
+            color="inherit"
+            onClick={() =>
+              document
+                .getElementById("tarifas")
+                ?.scrollIntoView({ behavior: "smooth" })
+            }
+          >
+            Tarifas
+          </Button>
+          <Button
+            color="inherit"
+            onClick={() =>
+              document
+                .getElementById("pensiones")
+                ?.scrollIntoView({ behavior: "smooth" })
+            }
+          >
+            Pensiones
+          </Button>
+          <Button
+            color="inherit"
+            onClick={() =>
+              document
+                .getElementById("faqs")
+                ?.scrollIntoView({ behavior: "smooth" })
+            }
+          >
+            FAQs
+          </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => navigate("/login")}
+          >
+            INGRESAR
+          </Button>
           <IconButton onClick={toggleDarkMode} color="inherit">
             {isDarkMode ? <LightModeIcon /> : <DarkModeIcon />}
           </IconButton>
@@ -176,14 +245,18 @@ export default function LandingPage() {
               variant="contained"
               size="large"
               sx={{ bgcolor: "secondary.main" }}
-              onClick={() => navigate('/registro-pension')}
+              onClick={() => navigate("/registro-pension")}
             >
               Comprar pensión
             </Button>
-            <Button 
-              variant="outlined" 
+            <Button
+              variant="outlined"
               size="large"
-              onClick={() => document.getElementById('pensiones')?.scrollIntoView({ behavior: 'smooth' })}
+              onClick={() =>
+                document
+                  .getElementById("pensiones")
+                  ?.scrollIntoView({ behavior: "smooth" })
+              }
             >
               Ver pensiones
             </Button>
@@ -222,7 +295,9 @@ export default function LandingPage() {
           </Grid>
           <Grid item xs={12} md={4}>
             <Box sx={{ textAlign: "center" }}>
-              <CreditCardIcon sx={{ fontSize: 60, color: "primary.main", mb: 2 }} />
+              <CreditCardIcon
+                sx={{ fontSize: 60, color: "primary.main", mb: 2 }}
+              />
               <Typography variant="h6" sx={{ fontWeight: "bold", mb: 1 }}>
                 Paga al salir
               </Typography>
@@ -235,7 +310,13 @@ export default function LandingPage() {
       </Container>
 
       {/* Visualización en tiempo real */}
-      <Box sx={{ bgcolor: alpha(theme.palette.primary.main, 0.05), py: 8, width: "100%" }}>
+      <Box
+        sx={{
+          bgcolor: alpha(theme.palette.primary.main, 0.05),
+          py: 8,
+          width: "100%",
+        }}
+      >
         <Container maxWidth="lg">
           <Typography
             variant="h4"
@@ -250,34 +331,9 @@ export default function LandingPage() {
             Tenemos cajones disponibles tanto para coches y camionetas como para
             motocicletas, en distintos pisos para cubrir la demanda
           </Typography>
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              gap: 2,
-              mb: 3,
-            }}
-          >
-            <Chip label="COCHE" color="primary" />
-            <Chip label="CAMIONETA" />
-            <Chip label="MOTO" />
-          </Box>
-          <Typography variant="h6" sx={{ textAlign: "center", mb: 3 }}>
-            Cajones disponibles: <strong>10</strong>
-          </Typography>
           {/* Aquí podrías agregar la visualización del estacionamiento */}
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              minHeight: "200px",
-              alignItems: "center",
-            }}
-          >
-            <Typography color="text.secondary">
-              [Visualización del estacionamiento]
-            </Typography>
-          </Box>
+          <ParkingGrid />
+          {/*Ya we */}
         </Container>
       </Box>
 
@@ -297,14 +353,20 @@ export default function LandingPage() {
           ingresarán nuestros visitantes
         </Typography>
         <Box sx={{ display: "flex", justifyContent: "center", mb: 2 }}>
-          <Button variant="contained" sx={{ mx: 1 }}>ENTRAR AL ESTACIONAMIENTO</Button>
+          <Button variant="contained" sx={{ mx: 1 }}>
+            ENTRAR AL ESTACIONAMIENTO
+          </Button>
         </Box>
       </Container>
 
       {/* Pensiones Section */}
       <Box
         id="pensiones"
-        sx={{ bgcolor: alpha(theme.palette.primary.main, 0.05), py: 8, width: "100%" }}
+        sx={{
+          bgcolor: alpha(theme.palette.primary.main, 0.05),
+          py: 8,
+          width: "100%",
+        }}
       >
         <Container maxWidth="lg">
           <Typography
@@ -331,7 +393,8 @@ export default function LandingPage() {
           {tiposPension.length === 0 && !loading ? (
             <Box sx={{ textAlign: "center", py: 4 }}>
               <Typography variant="h6" color="text.secondary">
-                Lo sentimos, en este momento no podemos cargar los tipos de pensión.
+                Lo sentimos, en este momento no podemos cargar los tipos de
+                pensión.
               </Typography>
               <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
                 Por favor, intenta más tarde.
@@ -340,87 +403,102 @@ export default function LandingPage() {
           ) : (
             <Grid container spacing={3} justifyContent="center">
               {tiposPension.map((pension) => (
-              <Grid item xs={12} sm={6} md={4} key={pension.id}>
-                <Card
-                  sx={{
-                    height: "100%",
-                    display: "flex",
-                    flexDirection: "column",
-                    border: `2px solid ${theme.palette.primary.main}`,
-                    borderRadius: 2,
-                  }}
-                >
-                  <Box
+                <Grid item xs={12} sm={6} md={4} key={pension.id}>
+                  <Card
                     sx={{
-                      bgcolor: "primary.main",
-                      color: "white",
-                      py: 2,
-                      textAlign: "center",
+                      height: "100%",
+                      display: "flex",
+                      flexDirection: "column",
+                      border: `2px solid ${theme.palette.primary.main}`,
+                      borderRadius: 2,
                     }}
                   >
-                    <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                      parKing {pension.nombre}
-                    </Typography>
-                  </Box>
-                  <CardContent sx={{ flexGrow: 1, textAlign: "center", p: 3 }}>
-                    <Typography variant="h4" sx={{ fontWeight: "bold", mb: 1 }}>
-                      ${pension.costo}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      color="text.secondary"
-                      sx={{ mb: 3 }}
-                    >
-                      Por un periodo de {pension.duracionDias} días
-                    </Typography>
-                    <Button
-                      fullWidth
-                      variant="contained"
+                    <Box
                       sx={{
-                        bgcolor: "text.primary",
-                        color: "background.paper",
-                        mb: 3,
-                        "&:hover": {
-                          bgcolor: "text.secondary",
-                        },
+                        bgcolor: "primary.main",
+                        color: "white",
+                        py: 2,
+                        textAlign: "center",
                       }}
-                      onClick={() => handleUnirseAhora(pension)}
                     >
-                      Unirse ahora
-                    </Button>
-                    <Box sx={{ textAlign: "left" }}>
-                      <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-                        <CheckCircleIcon
-                          sx={{ color: "success.main", mr: 1, fontSize: 20 }}
-                        />
-                        <Typography variant="body2">
-                          Lugar reservado para ti
-                        </Typography>
-                      </Box>
-                      <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-                        <CheckCircleIcon
-                          sx={{ color: "success.main", mr: 1, fontSize: 20 }}
-                        />
-                        <Typography variant="body2">Sin costos extra</Typography>
-                      </Box>
-                      <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-                        <CheckCircleIcon
-                          sx={{ color: "success.main", mr: 1, fontSize: 20 }}
-                        />
-                        <Typography variant="body2">Acceso ilimitado</Typography>
-                      </Box>
-                      <Box sx={{ display: "flex", alignItems: "center" }}>
-                        <CheckCircleIcon
-                          sx={{ color: "success.main", mr: 1, fontSize: 20 }}
-                        />
-                        <Typography variant="body2">
-                          Registra los vehículos que puedes utilizar
-                        </Typography>
-                      </Box>
+                      <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                        parKing {pension.nombre}
+                      </Typography>
                     </Box>
-                  </CardContent>
-                </Card>
-              </Grid>
+                    <CardContent
+                      sx={{ flexGrow: 1, textAlign: "center", p: 3 }}
+                    >
+                      <Typography
+                        variant="h4"
+                        sx={{ fontWeight: "bold", mb: 1 }}
+                      >
+                        ${pension.costo}
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ mb: 3 }}
+                      >
+                        Por un periodo de {pension.duracionDias} días
+                      </Typography>
+                      <Button
+                        fullWidth
+                        variant="contained"
+                        sx={{
+                          bgcolor: "text.primary",
+                          color: "background.paper",
+                          mb: 3,
+                          "&:hover": {
+                            bgcolor: "text.secondary",
+                          },
+                        }}
+                        onClick={() => handleUnirseAhora(pension)}
+                      >
+                        Unirse ahora
+                      </Button>
+                      <Box sx={{ textAlign: "left" }}>
+                        <Box
+                          sx={{ display: "flex", alignItems: "center", mb: 1 }}
+                        >
+                          <CheckCircleIcon
+                            sx={{ color: "success.main", mr: 1, fontSize: 20 }}
+                          />
+                          <Typography variant="body2">
+                            Lugar reservado para ti
+                          </Typography>
+                        </Box>
+                        <Box
+                          sx={{ display: "flex", alignItems: "center", mb: 1 }}
+                        >
+                          <CheckCircleIcon
+                            sx={{ color: "success.main", mr: 1, fontSize: 20 }}
+                          />
+                          <Typography variant="body2">
+                            Sin costos extra
+                          </Typography>
+                        </Box>
+                        <Box
+                          sx={{ display: "flex", alignItems: "center", mb: 1 }}
+                        >
+                          <CheckCircleIcon
+                            sx={{ color: "success.main", mr: 1, fontSize: 20 }}
+                          />
+                          <Typography variant="body2">
+                            Acceso ilimitado
+                          </Typography>
+                        </Box>
+                        <Box sx={{ display: "flex", alignItems: "center" }}>
+                          <CheckCircleIcon
+                            sx={{ color: "success.main", mr: 1, fontSize: 20 }}
+                          />
+                          <Typography variant="body2">
+                            Registra los vehículos que puedes utilizar
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </CardContent>
+                  </Card>
+                </Grid>
               ))}
             </Grid>
           )}

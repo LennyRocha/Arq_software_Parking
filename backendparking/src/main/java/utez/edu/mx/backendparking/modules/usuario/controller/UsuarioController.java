@@ -1,6 +1,7 @@
 package utez.edu.mx.backendparking.modules.usuario.controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import utez.edu.mx.backendparking.modules.usuario.Usuario;
@@ -17,7 +18,7 @@ public class UsuarioController {
     }
 
     @GetMapping("/backend/{id}")
-    public Usuario getUsuarioForBackend(Long id) {
+    public Usuario getUsuarioForBackend(@PathVariable Long id) {
         return userService.getOneForBackend(id);
     }
 
