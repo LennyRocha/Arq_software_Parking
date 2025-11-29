@@ -105,7 +105,7 @@ public class InitialDataService {
             usuarioRepository.save(empleado);
         }
 
-        // Crear usuario un empleado si no existe
+        // Crear usuario un usuario pensionado si no existe
         if (usuarioRepository.findByCorreo("pensionado@parking.com") == null) {
             Roles rolPensionado = roleRepository.findByName(ERole.CLIENTE_PENSIONADO)
                     .orElseThrow(() -> new RuntimeException("Rol Cliente pensionado no encontrado"));
@@ -207,73 +207,39 @@ public class InitialDataService {
     @Transactional
     public void inicializarPensiones() {
         if (pensionRepository.count() == 0) {
-            // Pensiones para Coche
-            Pension carBasic = new Pension();
-            carBasic.setNombre("Coche-Basica");
-            carBasic.setDuracionDias(7);
-            carBasic.setCosto(500.0);
-            carBasic.setStatus(true);
 
-            Pension carClassic = new Pension();
-            carClassic.setNombre("Coche-Clasica");
-            carClassic.setDuracionDias(15);
-            carClassic.setCosto(800.0);
-            carClassic.setStatus(true);
 
-            Pension carPremium = new Pension();
-            carPremium.setNombre("Coche-Premium");
-            carPremium.setDuracionDias(30);
-            carPremium.setCosto(1500.0);
-            carPremium.setStatus(true);
+            Pension p1 = new Pension();
+            p1.setNombre("Pensión Semanal");
+            p1.setDuracionDias(7);
+            p1.setCosto(500.0);
+            p1.setStatus(true);
+
+            Pension p2 = new Pension();
+            p2.setNombre("Pensión Quincena");
+            p2.setDuracionDias(15);
+            p2.setCosto(800.0);
+            p2.setStatus(true);
+
+            Pension p3 = new Pension();
+            p3.setNombre("Pensión Mensual");
+            p3.setDuracionDias(30);
+            p3.setCosto(1500.0);
+            p3.setStatus(true);
 
             // Pensiones para Moto
-            Pension motoBasic = new Pension();
-            motoBasic.setNombre("Moto-Basica");
-            motoBasic.setDuracionDias(7);
-            motoBasic.setCosto(300.0);
-            motoBasic.setStatus(true);
+            Pension p4 = new Pension();
+            p4.setNombre("Pensión Trimestral");
+            p4.setDuracionDias(90);
+            p4.setCosto(2500.0);
+            p4.setStatus(true);
 
-            Pension motoClassic = new Pension();
-            motoClassic.setNombre("Moto-Clasica");
-            motoClassic.setDuracionDias(15);
-            motoClassic.setCosto(500.0);
-            motoClassic.setStatus(true);
-
-            Pension motoPremium = new Pension();
-            motoPremium.setNombre("Moto-Premium");
-            motoPremium.setDuracionDias(30);
-            motoPremium.setCosto(650.0);
-            motoPremium.setStatus(true);
-
-            // Pensiones para Camioneta
-            Pension camionetaBasic = new Pension();
-            camionetaBasic.setNombre("Camioneta-Basica");
-            camionetaBasic.setDuracionDias(7);
-            camionetaBasic.setCosto(600.0);
-            camionetaBasic.setStatus(true);
-
-            Pension camionetaClassic = new Pension();
-            camionetaClassic.setNombre("Camioneta-Clasica");
-            camionetaClassic.setDuracionDias(15);
-            camionetaClassic.setCosto(800.0);
-            camionetaClassic.setStatus(true);
-
-            Pension camionetaPremium = new Pension();
-            camionetaPremium.setNombre("Camioneta-Premium");
-            camionetaPremium.setDuracionDias(30);
-            camionetaPremium.setCosto(1000.0);
-            camionetaPremium.setStatus(true);
 
             // Guardar todos
-            pensionRepository.save(carBasic);
-            pensionRepository.save(carClassic);
-            pensionRepository.save(carPremium);
-            pensionRepository.save(motoBasic);
-            pensionRepository.save(motoClassic);
-            pensionRepository.save(motoPremium);
-            pensionRepository.save(camionetaBasic);
-            pensionRepository.save(camionetaClassic);
-            pensionRepository.save(camionetaPremium);
+            pensionRepository.save(p1);
+            pensionRepository.save(p2);
+            pensionRepository.save(p3);
+            pensionRepository.save(p4);
         }
     }
 
@@ -360,9 +326,9 @@ public class InitialDataService {
             return;
         }
 
-        // Seleccionar la pensión "Coche-Premium" (30 días) o la primera disponible
+        // Seleccionar la pensión "Pensión Semanal"  o la primera disponible
         Pension pensionSeleccionada = pensiones.stream()
-                .filter(p -> p.getNombre().equalsIgnoreCase("Coche-Premium"))
+                .filter(p -> p.getNombre().equalsIgnoreCase("Pensión Semanal"))
                 .findFirst()
                 .orElse(pensiones.get(0));
 
@@ -376,7 +342,7 @@ public class InitialDataService {
         LocalDate fechaFinalizacion = LocalDate.now().plusDays(pensionSeleccionada.getDuracionDias());
         usuarioPension.setFechaFinalizacion(fechaFinalizacion);
 
-        // Generar código QR único (usando el mismo método que el servicio de entrada/salida)
+        // Generar código QR único (usando el mismo metodo que el servicio de entrada/salida)
         String uuidCodigoQR = generarUuidUnico();
         usuarioPension.setUuidCodigoQR(uuidCodigoQR);
 
@@ -403,8 +369,8 @@ public class InitialDataService {
     }
 
     /**
-     * Método privado para generar UUID único para código QR
-     * (mismo método que en EntradaSalidaServiceImpl)
+     * Metodo privado para generar UUID único para código QR
+     * (mismo metodo que en EntradaSalidaServiceImpl)
      */
     private String generarUuidUnico() {
         String uuid;
@@ -415,7 +381,7 @@ public class InitialDataService {
     }
 
     /**
-     * Método para crear los cajones del estacionamiento
+     * Metodo para crear los cajones del estacionamiento
      */
     @Transactional
     public void inicializarCajones() {

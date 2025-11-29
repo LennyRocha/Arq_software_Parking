@@ -205,6 +205,8 @@ export default function EmpleadoRouter() {
       <Box sx={{ p: 2 }}>
         <Divider sx={{ mb: 1 }} />
         <ListItemButton
+          onClick={() => goTo("/empleado/nuevo_pensionado")}
+          selected={selectedIndex === 3}
           sx={{
             borderRadius: "5px",
             color: "error.main",
@@ -216,7 +218,11 @@ export default function EmpleadoRouter() {
           }}
         >
           <ListItemIcon>
-            <LogoutIcon sx={{ color: "error.main" }} />
+            <PersonAddICon
+              className={`side-icon ${
+                selectedIndex === 3 ? "color-white " : "gray"
+              }`}
+            />
           </ListItemIcon>
           <ListItemText primary="Cerrar sesión" />
         </ListItemButton>
