@@ -1,9 +1,10 @@
-import apiToken from "../../../utils/api";
+import apiToken from "../../../utils/apiToken";
+import api from "../../../utils/api";
 
-// Obtener todos los tipos de pensión (sin paginado)
-export const fetchTiposPension = () => apiToken.get("/api/pension/public");
+// Obtener todos los tipos de pensión (sin paginado) - Público
+export const fetchTiposPension = () => api.get("/api/pension/public");
 
-// Obtener tipos de pensión paginados con filtros y ordenamiento
+// Obtener tipos de pensión paginados con filtros y ordenamiento (para admin - requiere auth)
 export const searchTiposPensionPaginados = ({
   page = 0,
   size = 10,
@@ -17,7 +18,24 @@ export const searchTiposPensionPaginados = ({
     ...(search && { search })
   };
 
-  return apiToken.get("/api/pension/public/paginados", { params });
+  return apiToken.get("/api/pension/private/paginados", { params });
+};
+
+// Obtener tipos de pensión ACTIVAS paginados (para landing page) - Público
+export const searchTiposPensionActivasPaginados = ({
+  page = 0,
+  size = 10,
+  sort = "id,desc",
+  search = null
+}) => {
+  const params = {
+    page,
+    size,
+    sort,
+    ...(search && { search })
+  };
+
+  return api.get("/api/pension/public/activas/paginados", { params });
 };
 
 // Crear un nuevo tipo de pensión
