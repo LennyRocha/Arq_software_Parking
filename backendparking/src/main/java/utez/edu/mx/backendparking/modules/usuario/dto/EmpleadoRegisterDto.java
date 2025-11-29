@@ -7,6 +7,7 @@ public class EmpleadoRegisterDto {
     private String telefono;
     private String apellidos;
 
+ 
     public String getNombre() {
         return nombre;
     }
