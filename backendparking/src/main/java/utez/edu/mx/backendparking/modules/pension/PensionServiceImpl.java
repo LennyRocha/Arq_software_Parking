@@ -80,8 +80,10 @@ public class PensionServiceImpl implements PensionService {
     @Override
     @Transactional(readOnly = true)
     public List<PensionResponseDto> findAll() {
+        // Solo traer pensiones activas para uso público (selects en frontend)
         return pensionRepository.findAll()
                 .stream()
+                .filter(Pension::isStatus) // Filtrar solo activas
                 .map(PensionMapper::toResponseDto)
                 .collect(Collectors.toList());
     }
@@ -103,12 +105,40 @@ public class PensionServiceImpl implements PensionService {
         Page<Pension> pensionesPage;
 
         if (search != null && !search.trim().isEmpty()) {
-            // Búsqueda en múltiples campos
+            // Búsqueda en múltiples campos (TODAS las pensiones para admin)
             String searchTerm = "%" + search.trim().toLowerCase() + "%";
             pensionesPage = pensionRepository.findBySearchTerm(searchTerm, pageRequest);
         } else {
-            // Todas las pensiones sin filtro
+            // Todas las pensiones sin filtro (para admin)
             pensionesPage = pensionRepository.findAll(pageRequest);
+        }
+
+        return pensionesPage.map(PensionMapper::toResponseDto);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<PensionResponseDto> findAllPensionesActivasPaginados(Pageable pageable, String search) {
+        // Definir ordenamiento por defecto (por id) si no viene especificado
+        Sort sort = pageable.getSort().isSorted()
+                ? pageable.getSort()
+                : Sort.by("id").descending();
+
+        PageRequest pageRequest = PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                sort
+        );
+
+        Page<Pension> pensionesPage;
+
+        if (search != null && !search.trim().isEmpty()) {
+            // Búsqueda en múltiples campos - solo pensiones activas
+            String searchTerm = "%" + search.trim().toLowerCase() + "%";
+            pensionesPage = pensionRepository.findBySearchTermAndStatusTrue(searchTerm, pageRequest);
+        } else {
+            // Solo pensiones activas (para landing page)
+            pensionesPage = pensionRepository.findByStatus(true, pageRequest);
         }
 
         return pensionesPage.map(PensionMapper::toResponseDto);

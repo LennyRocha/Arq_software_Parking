@@ -20,6 +20,13 @@ public interface PensionRepository extends JpaRepository<Pension, Long> {
             "CAST(p.costo AS string) LIKE :searchTerm")
     Page<Pension> findBySearchTerm(@Param("searchTerm") String searchTerm, Pageable pageable);
 
+    // Búsqueda en múltiples campos solo para pensiones activas
+    @Query("SELECT p FROM Pension p WHERE p.status = true AND (" +
+            "LOWER(p.nombre) LIKE LOWER(:searchTerm) OR " +
+            "CAST(p.duracionDias AS string) LIKE :searchTerm OR " +
+            "CAST(p.costo AS string) LIKE :searchTerm)")
+    Page<Pension> findBySearchTermAndStatusTrue(@Param("searchTerm") String searchTerm, Pageable pageable);
+
     // Encontrar por estado
     Page<Pension> findByStatus(boolean status, Pageable pageable);
 }
