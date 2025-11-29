@@ -15,6 +15,8 @@ import GestionTiposPension from "../modules/tipo_pension/pages/GestionTiposPensi
 import PensionesUsuario from "../modules/usuario_pension/pages/PensionesUsuarios";
 import UsuarioTablaAdmin from "../modules/usuarios/pages/UsuarioTablaAdmin";
 import CajonesPage from "../modules/cajon/pages/CajonesPage";
+import RecuperacionContraseña from "../modules/RecuperacionContraseña";
+import ActualizacionContra from "../modules/ActualizacionContra";
 
 const Err = () => <h1>404 - Not Found!</h1>;
 
@@ -28,6 +30,8 @@ export default function Rutas() {
         <Route path="/login" element={<Login />} />
         <Route path="/registro-pension" element={<RegistroPension />} />
         <Route path="/registro-pension/:id" element={<RegistroPension />} />
+        <Route path="/recuperacion-contraseña" element={<RecuperacionContraseña />} />
+        <Route path="/actualizacion-contra" element={<ActualizacionContra />} />
         
         {/* Autenticación legacy */}
         <Route path="/auth">
