@@ -49,6 +49,14 @@ export default function PensionesUsuarios() {
     }, 500);
   }, [page, rowsPerPage, ordenarPor, ordenDireccion]);
 
+  // Función para obtener mensaje cuando no hay datos
+  const getEmptyMessage = () => {
+    if (buscarTexto.trim() !== "") {
+      return "No se encontraron usuarios que coincidan con el correo o nombre de pensión buscada";
+    }
+    return "No hay usuarios pensionados registrados";
+  };
+
   // Manejadores
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -92,13 +100,6 @@ export default function PensionesUsuarios() {
     },
   ];
 
-  const getEmptyMessage = () => {
-    if (buscarTexto.trim() !== "" || ordenarPor !== "id" || ordenDireccion !== "desc") {
-      return "No se encontraron usuarios que coincidan con los criterios de búsqueda";
-    }
-    return "No hay usuarios pensionados registrados";
-  };
-
   return (
     <>
       <LoadingBackdrop isOpen={loading} onClose={() => {}} />
@@ -107,7 +108,7 @@ export default function PensionesUsuarios() {
       <Box sx={{ padding: { xs: 2, sm: 3, md: 4 }, paddingTop: { xs: 3, sm: 4, md: 6 }, maxWidth: "1200px", margin: "0 auto" }}>
         <HeadingDescription
           title="GESTIÓN DE PENSIONES DE USUARIOS"
-          description="Gestión de pensiones de usuarios con registro de pagos y renovaciones."
+          description="Apartado para consultar usuarios con pago de pensión, renovarla (recibiendo dinero de manera física) y/o consultar su historial de pagos."
         />
 
         {/* Controles de búsqueda y filtros */}
@@ -125,7 +126,7 @@ export default function PensionesUsuarios() {
             orderOptions={orderOptions}
             orderBy={ordenarPor}
             orderDirection={ordenDireccion}
-            searchPlaceholder={"Buscar por correo o nombre de pensión..."}
+            searchPlaceholder={"Correo o nombre de pensión"}
             searchText={buscarTexto}
             onOrderByChange={setOrdenarPor}
             onOrderDirectionChange={setOrdenDireccion}

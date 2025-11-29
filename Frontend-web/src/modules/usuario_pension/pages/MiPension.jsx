@@ -27,8 +27,10 @@ export default function MiPension() {
     totalElements,
     ordenarPor,
     ordenDireccion,
+    buscarTexto,
     setOrdenarPor,
     setOrdenDireccion,
+    setBuscarTexto,
     handleChangePage,
     handleChangeRowsPerPage,
     renovarModalOpen,
@@ -43,10 +45,10 @@ export default function MiPension() {
   }, [cargarMiPension]);
 
   useEffect(() => {
-    if (pension) {
+    if (pension && !errorPension) {
       cargarMiHistorial();
     }
-  }, [pension, page, rowsPerPage, ordenarPor, ordenDireccion, cargarMiHistorial]);
+  }, [pension, errorPension, page, rowsPerPage, ordenarPor, ordenDireccion, buscarTexto, cargarMiHistorial]);
 
   const links = [
     { 
@@ -89,6 +91,11 @@ export default function MiPension() {
   const handleLimpiarFiltros = () => {
     setOrdenarPor("fechaPago");
     setOrdenDireccion("desc");
+    setBuscarTexto("");
+  };
+
+  const handleSearch = () => {
+    // La búsqueda se ejecuta automáticamente por el useEffect
   };
 
   return (
@@ -186,7 +193,7 @@ export default function MiPension() {
               {/* Nota informativa */}
               <Box sx={{ mt: 3, p: 2, bgcolor: "rgba(var(--primary-rgb), 0.1)", borderRadius: 1, border: "1px solid var(--primary)" }}>
                 <Typography variant="body2" color="text.secondary">
-                  💡 <strong>Nota:</strong> La fecha de inicio de la próxima renovación se calcula automáticamente. 
+                   <strong>Nota:</strong> La fecha de inicio de la próxima renovación se calcula automáticamente. 
                   Si renuevas antes de que termine tu pensión actual, la nueva comenzará el día siguiente a la fecha de finalización actual.
                 </Typography>
               </Box>
@@ -206,21 +213,21 @@ export default function MiPension() {
             orderOptions={historialOrderOptions}
             orderBy={ordenarPor}
             orderDirection={ordenDireccion}
-            searchPlaceholder="Buscar"
-            searchText=""
+            searchPlaceholder="Costo,fecha(pago,inicio,fin)"
+            searchText={buscarTexto}
             onOrderByChange={setOrdenarPor}
             onOrderDirectionChange={setOrdenDireccion}
-            onSearchChange={() => {}}
-            onSearch={() => {}}
+            onSearchChange={(e) => setBuscarTexto(e.target.value)}
+            onSearch={handleSearch}
             onClearFilters={handleLimpiarFiltros}
           />
         </Box>
 
         {/* Tabla de historial */}
-        {errorHistorial ? (
+        {(errorHistorial || errorPension) ? (
           <Card>
             <CardContent>
-              <Typography color="error">{errorHistorial}</Typography>
+              <Typography color="error">{errorHistorial || errorPension}</Typography>
             </CardContent>
           </Card>
         ) : (
@@ -233,7 +240,7 @@ export default function MiPension() {
             totalElements={totalElements}
             onPageChange={handleChangePage}
             onRowsPerPageChange={handleChangeRowsPerPage}
-            emptyMessage="No hay historial de pagos registrado"
+            emptyMessage="Sin pagos realizados"
           />
         )}
       </Box>

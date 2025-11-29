@@ -20,12 +20,13 @@ export default function HistorialPagosModal({ open, onClose, usuario }) {
   const [totalElements, setTotalElements] = useState(0);
   const [ordenarPor, setOrdenarPor] = useState("fechaPago");
   const [ordenDireccion, setOrdenDireccion] = useState("desc");
+  const [buscarTexto, setBuscarTexto] = useState("");
 
   useEffect(() => {
     if (open && usuario) {
       loadHistorial();
     }
-  }, [open, usuario, page, rowsPerPage, ordenarPor, ordenDireccion]);
+  }, [open, usuario, page, rowsPerPage, ordenarPor, ordenDireccion, buscarTexto]);
 
   const loadHistorial = async () => {
     if (!usuario?.id) return;
@@ -36,7 +37,8 @@ export default function HistorialPagosModal({ open, onClose, usuario }) {
       const response = await fetchHistorialPagos(usuario.id, {
         page,
         size: rowsPerPage,
-        sort
+        sort,
+        search: buscarTexto || null
       });
       
       if (response.data && response.data.data) {
@@ -66,7 +68,19 @@ export default function HistorialPagosModal({ open, onClose, usuario }) {
     setRowsPerPage(10);
     setOrdenarPor("fechaPago");
     setOrdenDireccion("desc");
+    setBuscarTexto("");
     onClose();
+  };
+
+  const handleSearch = () => {
+    setPage(0); // Reiniciar a la primera página al buscar
+  };
+
+  const handleLimpiarFiltros = () => {
+    setOrdenarPor("fechaPago");
+    setOrdenDireccion("desc");
+    setBuscarTexto("");
+    setPage(0);
   };
 
   return (
@@ -110,16 +124,13 @@ export default function HistorialPagosModal({ open, onClose, usuario }) {
             orderOptions={historialOrderOptions}
             orderBy={ordenarPor}
             orderDirection={ordenDireccion}
-            searchPlaceholder="Buscar"
-            searchText=""
+            searchPlaceholder="Costo,fecha(pago,inicio,fin)"
+            searchText={buscarTexto}
             onOrderByChange={setOrdenarPor}
             onOrderDirectionChange={setOrdenDireccion}
-            onSearchChange={() => {}}
-            onSearch={() => {}}
-            onClearFilters={() => {
-              setOrdenarPor("fechaPago");
-              setOrdenDireccion("desc");
-            }}
+            onSearchChange={(e) => setBuscarTexto(e.target.value)}
+            onSearch={handleSearch}
+            onClearFilters={handleLimpiarFiltros}
           />
         </Box>
 
@@ -133,7 +144,7 @@ export default function HistorialPagosModal({ open, onClose, usuario }) {
           totalElements={totalElements}
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
-          emptyMessage="No hay historial de pagos registrado"
+          emptyMessage="Sin pagos realizados"
         />
       </DialogContent>
 
