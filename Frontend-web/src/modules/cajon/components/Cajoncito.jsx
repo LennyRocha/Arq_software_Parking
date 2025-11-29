@@ -3,6 +3,7 @@ import moto from "../../../img/motoViewUp.png";
 import coche from "../../../img/coche.png";
 import camioneta from "../../../img/camioneta.png";
 import { Box, Paper } from "@mui/material";
+import getCajonDireccion from "../hooks/getCajonDireccion";
 
 export default function Cajoncito({ cajon, sx, positions }) {
   const vehiculos = {
@@ -10,9 +11,11 @@ export default function Cajoncito({ cajon, sx, positions }) {
     2: camioneta,
     3: moto,
   };
-  console.log(positions);
+
+  const rotacion = getCajonDireccion(positions)
+
   return (
-    <Paper sx={sx}>
+    <Paper sx={sx} elevation={cajon.disponible ? 1 : 0} >
       {!cajon.disponible && (
         <Box
           sx={{
@@ -21,17 +24,16 @@ export default function Cajoncito({ cajon, sx, positions }) {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            overflow: "visible", // <<< IMPORTANTE
           }}
         >
           <Box
             component="img"
             src={vehiculos[cajon.tipoVehiculo.id]}
             sx={{
-              maxWidth: "100%",
-              maxHeight: "100%",
+              height: "175%",
+              width: "auto",
               objectFit: "contain",
-              transform: "rotate(90deg)",
+              transform: rotacion,
               transformOrigin: "center",
             }}
           />

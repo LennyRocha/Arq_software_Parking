@@ -7,6 +7,8 @@ import {
   Skeleton,
   Typography,
   IconButton,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import useCajones from "../hooks/useCajones";
 import React from "react";
@@ -27,6 +29,8 @@ const ParkingGrid = ({ columnsConfig = {} }) => {
     idCar,
     availableCount,
   } = useCajones();
+  const theme = useTheme();
+  const isXs = useMediaQuery(theme.breakpoints.down("md"));
   const defaultConfig = {
     xs: {
       columns: "1fr 1fr 0.25fr 1fr 1fr",
@@ -47,7 +51,7 @@ const ParkingGrid = ({ columnsConfig = {} }) => {
       roadColumns: [2, 5, 8],
     },
     lg: {
-      columns: "repeat(9, 1fr)",
+      columns: "1fr .5fr 1fr 1fr .5fr 1fr 1fr .5fr 1fr",
       positions: [1, 3, 4, 6, 7, 9],
       itemsPerRow: 6,
       roadColumns: [2, 5, 8],
@@ -129,7 +133,12 @@ const ParkingGrid = ({ columnsConfig = {} }) => {
           <ButtonGroup
             variant="contained"
             color="tertiary"
-            sx={{ flexWrap: "wrap" }} // hace wrap en pantallas pequeñas
+            sx={{
+              flexWrap: "wrap",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+            disableElevation={isXs}
           >
             <Button
               variant={idCar === 0 ? "contained" : "outlined"}
@@ -170,7 +179,12 @@ const ParkingGrid = ({ columnsConfig = {} }) => {
           <ButtonGroup
             variant="contained"
             color="tertiary"
-            sx={{ flexWrap: "wrap" }} // wrap también aquí
+            sx={{
+              flexWrap: "wrap",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+            disableElevation={isXs}
           >
             <Button
               variant={piso === 0 ? "contained" : "outlined"}
@@ -182,19 +196,19 @@ const ParkingGrid = ({ columnsConfig = {} }) => {
               variant={piso === 1 ? "contained" : "outlined"}
               onClick={() => setPiso(1)}
             >
-              Primer piso
+              Piso 1
             </Button>
             <Button
               variant={piso === 2 ? "contained" : "outlined"}
               onClick={() => setPiso(2)}
             >
-              Segundo piso
+              Piso 2
             </Button>
             <Button
               variant={piso === 3 ? "contained" : "outlined"}
               onClick={() => setPiso(3)}
             >
-              Tercer piso
+              Piso 3
             </Button>
           </ButtonGroup>
         </Box>
