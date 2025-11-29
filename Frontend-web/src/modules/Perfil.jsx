@@ -2,6 +2,7 @@ import * as React from "react";
 import api from "../utils/api.js";
 import { useState } from "react";
 import sweetAlert from "../utils/sweetAlert.js";
+import { useTheme } from "@mui/material/styles";
 import {
     Box,
     TextField,
@@ -17,6 +18,7 @@ import { getInfoUser } from "../utils/AuthService.jsx";
 import { set } from "react-hook-form";
 
 export default function Perfil() {
+    const theme = useTheme();
     const [showPassword, setShowPassword] = React.useState(false);
     const [loading, setLoading] = React.useState(true);
     const [editableFields, setEditableFields] = React.useState({
@@ -25,6 +27,59 @@ export default function Perfil() {
         correo: false,
         telefono: false,
         password: false,
+    });
+
+    // Helper para estilos de TextField adaptados al tema
+    const getTextFieldStyles = (isEditable, isDisabled = false) => ({
+        backgroundColor: isDisabled 
+            ? (theme.palette.mode === 'dark' ? theme.palette.action.disabledBackground : "#fafafa")
+            : (isEditable 
+                ? (theme.palette.mode === 'dark' ? theme.palette.action.hover : "#e6e6e6")
+                : (theme.palette.mode === 'dark' ? theme.palette.background.paper : "#fafafa")),
+        borderTopLeftRadius: "10px",
+        borderTopRightRadius: "10px",
+        mb: 3,
+        borderBottom: isEditable
+            ? `4px solid ${theme.palette.primary.main}`
+            : `3px solid ${theme.palette.mode === 'dark' ? theme.palette.divider : "#103f3d"}`,
+        "& .MuiFilledInput-root": {
+            backgroundColor: "transparent",
+            border: "none !important",
+            "&::before": {
+                borderBottom: "none !important",
+            },
+            "&::after": {
+                borderBottom: "none !important",
+            },
+            "&.Mui-disabled": {
+                backgroundColor: "transparent",
+            }
+        },
+        "& .MuiFilledInput-underline:before": {
+            borderBottom: "none !important",
+        },
+        "& .MuiFilledInput-underline:after": {
+            borderBottom: "none !important",
+        },
+        "& .MuiInputBase-input": {
+            color: theme.palette.text.primary,
+            WebkitTextFillColor: theme.palette.text.primary,
+        },
+        "& .MuiInputBase-input.Mui-disabled": {
+            color: theme.palette.text.secondary,
+            WebkitTextFillColor: theme.palette.text.secondary,
+        },
+        "& .MuiInputLabel-root": {
+            color: theme.palette.text.secondary,
+        },
+        transition: "0.3s",
+    });
+
+    const getLabelProps = () => ({
+        style: {
+            color: theme.palette.mode === 'dark' ? theme.palette.text.secondary : "#2c6f6b",
+            fontSize: "17px",
+        },
     });
     const [formData, setFormData] = React.useState({
         status: "",
@@ -290,43 +345,8 @@ const [estado, setEstado]= useState("");
                             label="Estatus"
                             value={formData.status}
                             disabled
-                            InputLabelProps={{
-                                style: {
-                                    color: "#2c6f6b",
-                                    fontSize: "17px",
-                                },
-                            }}
-                            sx={{
-                                backgroundColor: "#fafafa",
-                                borderTopLeftRadius: "10px",
-                                borderTopRightRadius: "10px",
-                                mb: 3,
-                                borderBottom: "3px solid #103f3d",
-                                "& .MuiFilledInput-root": {
-                                    backgroundColor: "transparent",
-                                    border: "none !important",
-                                    "&::before": {
-                                        borderBottom: "none !important",
-                                    },
-                                    "&::after": {
-                                        borderBottom: "none !important",
-                                    },
-                                    "&.Mui-disabled": {
-                                        backgroundColor: "transparent",
-                                    }
-                                },
-                                "& .MuiFilledInput-underline:before": {
-                                    borderBottom: "none !important",
-                                },
-                                "& .MuiFilledInput-underline:after": {
-                                    borderBottom: "none !important",
-                                },
-                                "& .MuiInputBase-input.Mui-disabled": {
-                                    color: "rgba(0, 0, 0, 0.6)",
-                                    WebkitTextFillColor: "rgba(0, 0, 0, 0.6)",
-                                },
-                                transition: "0.3s",
-                            }}
+                            InputLabelProps={getLabelProps()}
+                            sx={getTextFieldStyles(false, true)}
                         />
                     </Box>
 
@@ -359,38 +379,8 @@ const [estado, setEstado]= useState("");
                                     </InputAdornment>
                                 ),
                             }}
-                            InputLabelProps={{
-                                style: {
-                                    color: "#2c6f6b",
-                                    fontSize: "17px",
-                                },
-                            }}
-                            sx={{
-                                backgroundColor: !editableFields.nombre ? "#fafafa" : "#e6e6e6",
-                                borderTopLeftRadius: "10px",
-                                borderTopRightRadius: "10px",
-                                mb: 3,
-                                borderBottom: editableFields.nombre
-                                    ? "4px solid #1976D2"
-                                    : "3px solid #103f3d",
-                                "& .MuiFilledInput-root": {
-                                    backgroundColor: "transparent",
-                                    border: "none !important",
-                                    "&::before": {
-                                        borderBottom: "none !important",
-                                    },
-                                    "&::after": {
-                                        borderBottom: "none !important",
-                                    },
-                                },
-                                "& .MuiFilledInput-underline:before": {
-                                    borderBottom: "none !important",
-                                },
-                                "& .MuiFilledInput-underline:after": {
-                                    borderBottom: "none !important",
-                                },
-                                transition: "0.3s",
-                            }}
+                            InputLabelProps={getLabelProps()}
+                            sx={getTextFieldStyles(editableFields.nombre)}
                         />
                     </Box>
 
@@ -403,36 +393,8 @@ const [estado, setEstado]= useState("");
                             onChange={handleChange("apellido")}
                             disabled={!editableFields.apellido}
                             autoFocus={editableFields.apellido}
-                            InputLabelProps={{
-                                style: {
-                                    color: "#2c6f6b",
-                                    fontSize: "17px",
-                                },
-                            }}
-                            sx={{
-                                backgroundColor: !editableFields.apellido ? "#fafafa" : "#e6e6e6",
-                                borderTopLeftRadius: "10px",
-                                borderTopRightRadius: "10px",
-                                mb: 3,
-                                borderBottom: editableFields.apellido ? "4px solid #1976D2" : "3px solid #103f3d",
-                                "& .MuiFilledInput-root": {
-                                    backgroundColor: "transparent",
-                                    border: "none !important",
-                                    "&::before": {
-                                        borderBottom: "none !important",
-                                    },
-                                    "&::after": {
-                                        borderBottom: "none !important",
-                                    },
-                                },
-                                "& .MuiFilledInput-underline:before": {
-                                    borderBottom: "none !important",
-                                },
-                                "& .MuiFilledInput-underline:after": {
-                                    borderBottom: "none !important",
-                                },
-                                transition: "0.3s",
-                            }}
+                            InputLabelProps={getLabelProps()}
+                            sx={getTextFieldStyles(editableFields.apellido)}
                             InputProps={{
                                 endAdornment: (
                                     <InputAdornment position="end">
@@ -464,36 +426,8 @@ const [estado, setEstado]= useState("");
                             onChange={handleChange("correo")}
                             disabled={!editableFields.correo}
                             autoFocus={editableFields.correo}
-                            InputLabelProps={{
-                                style: {
-                                    color: "#2c6f6b",
-                                    fontSize: "17px",
-                                },
-                            }}
-                            sx={{
-                                backgroundColor: !editableFields.correo ? "#fafafa" : "#e6e6e6",
-                                borderTopLeftRadius: "10px",
-                                borderTopRightRadius: "10px",
-                                mb: 3,
-                                borderBottom: editableFields.correo ? "4px solid #1976D2" : "3px solid #103f3d",
-                                "& .MuiFilledInput-root": {
-                                    backgroundColor: "transparent",
-                                    border: "none !important",
-                                    "&::before": {
-                                        borderBottom: "none !important",
-                                    },
-                                    "&::after": {
-                                        borderBottom: "none !important",
-                                    },
-                                },
-                                "& .MuiFilledInput-underline:before": {
-                                    borderBottom: "none !important",
-                                },
-                                "& .MuiFilledInput-underline:after": {
-                                    borderBottom: "none !important",
-                                },
-                                transition: "0.3s",
-                            }}
+                            InputLabelProps={getLabelProps()}
+                            sx={getTextFieldStyles(editableFields.correo)}
                             InputProps={{
                                 endAdornment: (
                                     <InputAdornment position="end">
@@ -524,36 +458,8 @@ const [estado, setEstado]= useState("");
                             onChange={handleChange("telefono")}
                             disabled={!editableFields.telefono}
                             autoFocus={editableFields.telefono}
-                            InputLabelProps={{
-                                style: {
-                                    color: "#2c6f6b",
-                                    fontSize: "17px",
-                                },
-                            }}
-                            sx={{
-                                backgroundColor: !editableFields.telefono ? "#fafafa" : "#e6e6e6",
-                                borderTopLeftRadius: "10px",
-                                borderTopRightRadius: "10px",
-                                mb: 3,
-                                borderBottom: editableFields.telefono ? "4px solid #1976D2" : "3px solid #103f3d",
-                                "& .MuiFilledInput-root": {
-                                    backgroundColor: "transparent",
-                                    border: "none !important",
-                                    "&::before": {
-                                        borderBottom: "none !important",
-                                    },
-                                    "&::after": {
-                                        borderBottom: "none !important",
-                                    },
-                                },
-                                "& .MuiFilledInput-underline:before": {
-                                    borderBottom: "none !important",
-                                },
-                                "& .MuiFilledInput-underline:after": {
-                                    borderBottom: "none !important",
-                                },
-                                transition: "0.3s",
-                            }}
+                            InputLabelProps={getLabelProps()}
+                            sx={getTextFieldStyles(editableFields.telefono)}
                             InputProps={{
                                 endAdornment: (
                                     <InputAdornment position="end">
@@ -585,36 +491,8 @@ const [estado, setEstado]= useState("");
                             onChange={handleChange("password")}
                             disabled={!editableFields.password}
                             autoFocus={editableFields.password}
-                            InputLabelProps={{
-                                style: {
-                                    color: "#2c6f6b",
-                                    fontSize: "17px",
-                                },
-                            }}
-                            sx={{
-                                backgroundColor: !editableFields.password ? "#fafafa" : "#e6e6e6",
-                                borderTopLeftRadius: "10px",
-                                borderTopRightRadius: "10px",
-                                mb: 3,
-                                borderBottom: editableFields.password ? "4px solid #1976D2" : "3px solid #103f3d",
-                                "& .MuiFilledInput-root": {
-                                    backgroundColor: "transparent",
-                                    border: "none !important",
-                                    "&::before": {
-                                        borderBottom: "none !important",
-                                    },
-                                    "&::after": {
-                                        borderBottom: "none !important",
-                                    },
-                                },
-                                "& .MuiFilledInput-underline:before": {
-                                    borderBottom: "none !important",
-                                },
-                                "& .MuiFilledInput-underline:after": {
-                                    borderBottom: "none !important",
-                                },
-                                transition: "0.3s",
-                            }}
+                            InputLabelProps={getLabelProps()}
+                            sx={getTextFieldStyles(editableFields.password)}
                             InputProps={{
                                 endAdornment: (
                                     <InputAdornment position="end">
