@@ -272,7 +272,7 @@ export default function RenovarPensionModal({ open, onClose, usuario, onRenovar,
           <Button 
             type="submit" 
             variant="contained" 
-            disabled={!formik.isValid || !formik.dirty || loadingTipos}
+            disabled={!tipoPensionSeleccionado || loadingTipos}
             sx={{ minWidth: 120 }}
           >
             Renovar

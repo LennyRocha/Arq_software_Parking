@@ -37,9 +37,13 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         //.requestMatchers("/api/auth/private/registrarEmpleado").hasRole("ADMINISTRADOR")
 
-                        //----TIPOS DE PENSIONES. Loo gestiona totalmente EL ADMIN, SOLO HAY GETS ESPECIFICOS PARA FRONT SIN AUTENTICACION
+                        //----TIPOS DE PENSIONES. Lo gestiona totalmente EL ADMIN, SOLO HAY GETS ESPECIFICOS PARA FRONT SIN AUTENTICACION
                         .requestMatchers("/api/pension/private/**").hasRole("ADMINISTRADOR")
                         .requestMatchers("/api/pension/public/**").permitAll() //para los gets en la landing page
+                        //---PENSIONES DE USUARIO
+                        .requestMatchers("/api/pensionado/public/**").permitAll()//porque hay registro publico desde la landing page
+                        .requestMatchers("/api/pensionado/private/**").hasAnyRole("ADMINISTRADOR","EMPLEADO")
+                        .requestMatchers("/api/pensionado/cliente/**").hasRole("CLIENTE_PENSIONADO")
 
                         .anyRequest().permitAll())
                 .addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class)

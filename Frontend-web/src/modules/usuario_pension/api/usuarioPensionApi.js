@@ -22,11 +22,12 @@ export const fetchUsuariosPensionPaginados = ({
 /**
  * Obtener historial de pagos de un usuario pensionado
  */
-export const fetchHistorialPagos = (usuarioPensionId, { page = 0, size = 10, sort = "fechaPago,desc" }) => {
+export const fetchHistorialPagos = (usuarioPensionId, { page = 0, size = 10, sort = "fechaPago,desc", search = null }) => {
   const params = {
     page,
     size,
     sort,
+    ...(search && { search })
   };
 
   return apiToken.get(`/api/pensionado/private/historial-pagos/${usuarioPensionId}`, { params });
@@ -49,11 +50,12 @@ export const fetchMiPension = () =>
 /**
  * Obtener historial de pagos del usuario autenticado
  */
-export const fetchMiHistorialPagos = ({ page = 0, size = 10, sort = "fechaPago,desc" }) => {
+export const fetchMiHistorialPagos = ({ page = 0, size = 10, sort = "fechaPago,desc", search = null }) => {
   const params = {
     page,
     size,
     sort,
+    ...(search && { search })
   };
 
   return apiToken.get("/api/pensionado/cliente/mi-historial-pagos", { params });

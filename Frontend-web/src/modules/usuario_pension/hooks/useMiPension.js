@@ -26,6 +26,7 @@ export default function useMiPension() {
   // Estado para filtros y ordenamiento del historial
   const [ordenarPor, setOrdenarPor] = useState("fechaPago");
   const [ordenDireccion, setOrdenDireccion] = useState("desc");
+  const [buscarTexto, setBuscarTexto] = useState("");
 
   // Estados para modal de renovar
   const [renovarModalOpen, setRenovarModalOpen] = useState(false);
@@ -53,7 +54,8 @@ export default function useMiPension() {
       const response = await fetchMiHistorialPagos({
         page,
         size: rowsPerPage,
-        sort
+        sort,
+        search: buscarTexto || null
       });
 
       const { content, totalElements: total } = response.data.data;
@@ -65,7 +67,7 @@ export default function useMiPension() {
     } finally {
       setLoadingHistorial(false);
     }
-  }, [page, rowsPerPage, ordenarPor, ordenDireccion]);
+  }, [page, rowsPerPage, ordenarPor, ordenDireccion, buscarTexto]);
 
   // Handlers de modales
   const handleAbrirRenovar = () => {
@@ -173,8 +175,10 @@ export default function useMiPension() {
     totalElements,
     ordenarPor,
     ordenDireccion,
+    buscarTexto,
     setOrdenarPor,
     setOrdenDireccion,
+    setBuscarTexto,
     handleChangePage,
     handleChangeRowsPerPage,
 

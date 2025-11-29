@@ -165,8 +165,14 @@ public class PensionadoService {
     }
 
     @Transactional(readOnly = true)
-    public Page<PagoResponseDto> findHistorialPagosByUsuarioPension(Long usuarioPensionId, Pageable pageable) {
-        Page<Pago> pagos = pagoRepository.findByUsuarioPensionId(usuarioPensionId, pageable);
+    public Page<PagoResponseDto> findHistorialPagosByUsuarioPension(Long usuarioPensionId, Pageable pageable, String search) {
+        Page<Pago> pagos;
+        
+        if (search != null && !search.trim().isEmpty()) {
+            pagos = pagoRepository.findByUsuarioPensionIdWithSearch(usuarioPensionId, search.trim(), pageable);
+        } else {
+            pagos = pagoRepository.findByUsuarioPensionId(usuarioPensionId, pageable);
+        }
 
         return pagos.map(pago -> new PagoResponseDto(pago.getId(), pago.getCantidadPago(), pago.getFechaPago(), pago.getFechaInicio(), pago.getFechaFin()));
     }
@@ -178,6 +184,10 @@ public class PensionadoService {
 
         Pension nuevaPension = pensionRepository.findById(dto.getIdPension())
                 .orElseThrow(() -> new RuntimeException("Tipo de pensión no encontrado"));
+
+        if(!usuarioPension.getUsuario().isStatus()){
+            throw new ConflictException("¡No se pudo realizar la acción!. No se puede renovar la pensión de usuarios inactivos");
+        }
 
         LocalDate fechaActual = LocalDate.now();
 
