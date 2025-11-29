@@ -76,6 +76,7 @@ export default function MainHeader({ titulo, breads }) {
         alignItems: "center",
         justifyContent: "center",
         gap: 1,
+        padding: 2
       }}
     >
       {BreadCrumbs}

@@ -104,27 +104,32 @@ const ParkingGrid = ({ columnsConfig = {} }) => {
         display: "flex",
         flex: 1,
         flexDirection: "column",
+        width: "100%",
       }}
     >
       <Box
         sx={{
           display: "flex",
-          flexDirection: { sm: "column", md: "row" },
-          justifyContent: "space-between",
+          flexDirection: { xs: "column", md: "row" },
+          justifyContent: { xs: "center", md: "space-between" },
           alignItems: "center",
+          gap: 2,
+          width: "100%", // importante
         }}
       >
-        <Box>
-          <Typography
-            variant="subtitle2"
-            sx={{ width: "100%", textAlign: { sm: "center", md: "left" } }}
-          >
-            Tipo de vehículo
-          </Typography>
+        {/* Primer bloque: tipo de vehículo */}
+        <Box
+          sx={{
+            width: { xs: "100%", md: "auto" },
+            textAlign: { xs: "center", md: "left" },
+          }}
+        >
+          <Typography variant="subtitle2">Tipo de vehículo</Typography>
+
           <ButtonGroup
             variant="contained"
             color="tertiary"
-            aria-label="Basic button group"
+            sx={{ flexWrap: "wrap" }} // hace wrap en pantallas pequeñas
           >
             <Button
               variant={idCar === 0 ? "contained" : "outlined"}
@@ -153,17 +158,19 @@ const ParkingGrid = ({ columnsConfig = {} }) => {
           </ButtonGroup>
         </Box>
 
-        <Box>
-          <Typography
-            variant="subtitle2"
-            sx={{ width: "100%", textAlign: { sm: "center", md: "right" } }}
-          >
-            Piso
-          </Typography>
+        {/* Segundo bloque: piso */}
+        <Box
+          sx={{
+            width: { xs: "100%", md: "auto" },
+            textAlign: { xs: "center", md: "right" },
+          }}
+        >
+          <Typography variant="subtitle2">Piso</Typography>
+
           <ButtonGroup
             variant="contained"
             color="tertiary"
-            aria-label="Basic button group"
+            sx={{ flexWrap: "wrap" }} // wrap también aquí
           >
             <Button
               variant={piso === 0 ? "contained" : "outlined"}
@@ -569,23 +576,5 @@ const ParkingGrid = ({ columnsConfig = {} }) => {
     </Box>
   );
 };
-
-/* titulo,
-  isOpen,
-  children,
-  isForm = false,
-  onSubmit,
-  onCancel,
-  onConfirm,
-  textSubmit = "Submit",
-  textCancel = "Cancel",
-  textConfirm = "Confirm",
-  showActions = true,
-  fullWidth = true, // changed default to true
-  maxWidth = "sm",  // changed default to "sm"
-  containerStyle = {},
-  handleClose,
-  keyForClose = true,
-  allowOutsideClick = true */
 
 export default ParkingGrid;

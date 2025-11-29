@@ -84,12 +84,12 @@
     display: none;
   }
 
-  .bread_head{
+  .bread_head {
     display: none;
   }
 }
 
-.appbar{
+.appbar {
   display: none !important;
 }
 
@@ -102,17 +102,18 @@
 
 /* Estilos para el scrollbar */
 ::-webkit-scrollbar {
-  width: .25rem;
+  width: .5rem;
   opacity: 0.5;
+  background: var(--mui_back);
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--background);
+  background: var(--mui_back);
   opacity: 0.5;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(120, 120, 120, 0.5);
+  background: var(--primary);
   border-radius: 8px;
 }
 
@@ -140,6 +141,19 @@ body:not(.dark) .Mui-selected.side-item:hover .side-icon {
 }
 
 /*Link*/
+.link {
+  color: var(--primary);
+  transition: all .5s ease;
+}
+
 .link:hover {
-  text-decoration: underline !important;
+  color: var(--other);
+}
+
+.link:hover {
+  color: var(--secondary);
+}
+
+.link:visited {
+  color: var(--surface);
 }

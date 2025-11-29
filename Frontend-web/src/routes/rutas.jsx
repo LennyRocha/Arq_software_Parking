@@ -14,6 +14,9 @@ import AdminGestionTarifas from "../modules/tarifas/pages/AdminGestionTarifas";
 import GestionTiposPension from "../modules/tipo_pension/pages/GestionTiposPension";
 import PensionesUsuario from "../modules/usuario_pension/pages/PensionesUsuarios";
 import UsuarioTablaAdmin from "../modules/usuarios/pages/UsuarioTablaAdmin";
+import CajonesPage from '../modules/cajon/pages/CajonesPage'
+import MisVehiculos from "../modules/vehiculo/screens/MisVehiculos";
+import NuevoVehiculo from "../modules/vehiculo/screens/NuevoVehiculo";
 
 const Err = () => <h1>404 - Not Found!</h1>;
 
@@ -61,7 +64,8 @@ export default function Rutas() {
           <Route path="entradas" element={<PensionadoEstacionamiento />} />
           <Route path="historial" element={<PensionadoEstacionamiento />} />
           <Route path="mi_pension" element={<Pages />} />
-          <Route path="mis_vehiculos" element={<Pages />} />
+          <Route path="nuevo_vehiculo" element={<NuevoVehiculo />} />
+          <Route path="mis_vehiculos" element={<MisVehiculos />} />
         </Route>
         {/* Perfil y otros */}
         <Route path="/private/perfil/:id" element={<Pages />} />

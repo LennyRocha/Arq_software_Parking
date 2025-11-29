@@ -74,6 +74,7 @@ export default function AdminRouter() {
         setSelectedIndex(3);
         break;
       case path.includes("vehiculos"):
+      case path.includes("vehiculo"):
         setSelectedIndex(4);
         break;
       default:
@@ -164,7 +165,10 @@ export default function AdminRouter() {
             />
           </ListItem>
           <Tooltip title="Cambiar modo" cursor="pointer">
-            <IconButton color={isDarkMode ? "primary"  : "tertiary" } onClick={toggleDarkMode}>
+            <IconButton
+              color={isDarkMode ? "primary" : "tertiary"}
+              onClick={toggleDarkMode}
+            >
               {isDarkMode ? <DarkModeIcon /> : <LightModeIcon />}
             </IconButton>
           </Tooltip>
