@@ -1,5 +1,6 @@
 package utez.edu.mx.backendparking.modules.usuario.dto;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
@@ -9,7 +10,8 @@ public class ActualizarUsuarioDto {
     @Size(min = 3, max = 50, message = "El nombre debe tener entre 3 y 25 caracteres.")
     @NotNull(message = "El nombre no puede ser nulo.")
     private String nombre;
-   @Size(min = 5, max = 100, message = "El correo debe tener entre 5 y 25 caracteres.")
+    @Size(min = 5, max = 100, message = "El correo debe tener entre 5 y 30 caracteres.")
+    @Email(message = "El correo debe tener un formato válido.")
     @NotNull(message = "El correo no puede ser nulo.")
     private String correo;
     @Size(min = 3, max = 100, message = "Los apellidos deben tener entre 3 y 25 caracteres.")

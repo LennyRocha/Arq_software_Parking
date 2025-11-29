@@ -124,6 +124,30 @@ public ApiResponse<?> ModificarDatosEmpleado(ActualizarUsuarioDto request, Long 
         return ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR, "No se pudo modificar el usuario: " + e.getMessage(), null);
     }
 }
+public ApiResponse<?> ConsultarDatos(Long id) {
+    try {
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
+
+        Map<String, Object> datosUsuario = new HashMap<>();
+        datosUsuario.put("id", usuario.getId());
+        datosUsuario.put("nombre", usuario.getNombre());
+        datosUsuario.put("apellidos", usuario.getApellidos());
+        datosUsuario.put("correo", usuario.getCorreo());
+        datosUsuario.put("telefono", usuario.getTelefono());
+        datosUsuario.put("rol", usuario.getRol().getName());
+        datosUsuario.put("status", usuario.isStatus());
+        datosUsuario.put("esPensionado", usuario.isEsPensionado());
+
+        return ApiResponse.success(HttpStatus.OK, "Datos del usuario obtenidos exitosamente", datosUsuario);
+    } catch (ResourceNotFoundException e) {
+        log.severe("Error consulting user: " + e.getMessage());
+        return ApiResponse.error(HttpStatus.NOT_FOUND, e.getMessage(), null);
+    } catch (Exception e) {
+        log.severe("Error consulting user: " + e.getMessage());
+        return ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR, "No se pudieron obtener los datos del usuario: " + e.getMessage(), null);
+    }
+}
 public ApiResponse<?>ActualizarContraseña(ActualizarContraDto resquest, Long id){
     try {
         Usuario usuario = usuarioRepository.findById(id)
