@@ -141,7 +141,7 @@ export default function EmpleadoRouter() {
               color={isDarkMode ? "primary" : "tertiary"}
               onClick={toggleDarkMode}
             >
-              {isDarkMode ? <DarkModeIcon /> : <LightModeIcon />}
+              {!isDarkMode ? <DarkModeIcon /> : <LightModeIcon />}
             </IconButton>
           </Tooltip>
           <Tooltip title="Ir a mi perfil" cursor="pointer">

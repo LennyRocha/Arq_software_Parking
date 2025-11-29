@@ -8,7 +8,7 @@ import sweetAlert from "../../../utils/sweetAlert";
 import { useNavigate } from "react-router-dom";
 
 export default function usePostVehiculos(idUser) {
-    const navigate =  useNavigate();
+    const navigate = useNavigate();
     const [isLoading, setLoading] = React.useState(false);
     const [errorData, setErrorData] = React.useState(null);
 
@@ -30,6 +30,8 @@ export default function usePostVehiculos(idUser) {
 
         try {
             const res = await api.post(vehiculoInterface.postIt(), vehic.toJson());
+
+            setLoading(false);
 
             await sweetAlert({
                 icon: "success",
