@@ -333,6 +333,7 @@ export default function Login() {
                 padding: "10px",
                 ":hover": { backgroundColor: "#6ab3ae" },
               }}
+              onClick={() => navigate('/registro-pension')}
             >
               ¿No tienes cuenta?
             </Button>
