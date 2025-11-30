@@ -16,7 +16,8 @@ import {
     Paper,
 } from "@mui/material";
 
-import { Visibility, VisibilityOff } from "@mui/icons-material";
+// Importamos los iconos necesarios para la validación
+import { Visibility, VisibilityOff, CheckCircle, Cancel } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 
 export default function ActualizacionContra() {
@@ -27,10 +28,28 @@ export default function ActualizacionContra() {
         confirmPassword: "",
     });
 
+    // Estado para la validación visual (null = sin validar, true = correcto, false = error)
+    const [fieldValidation, setFieldValidation] = useState({
+        password: null,
+        confirmPassword: null,
+    });
+
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [loading, setLoading] = useState(false);
 
+    // --- FUNCIONES DE VALIDACIÓN ---
+    const validatePassword = (value) => {
+        // Ejemplo: Mínimo 6 caracteres
+        return value.length >= 8;
+    };
+
+    const validateMatch = (value, compareValue) => {
+        if (!value) return null;
+        return value === compareValue && value.length >= 6;
+    };
+
+    // --- MANEJO DEL CÓDIGO ---
     const handleCodigoChange = (index, value) => {
         if (value.length <= 1 && /^[0-9]*$/.test(value)) {
             const newCodigo = [...codigo];
@@ -51,11 +70,32 @@ export default function ActualizacionContra() {
         }
     };
 
+    // --- MANEJO DE CAMBIOS EN INPUTS ---
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData({
-            ...formData,
-            [name]: value,
+
+        // Actualizamos los datos del formulario
+        setFormData((prev) => {
+            const newData = { ...prev, [name]: value };
+
+            // Validamos en tiempo real basándonos en el NUEVO estado de los datos
+            if (name === "password") {
+                setFieldValidation((prevValid) => ({
+                    ...prevValid,
+                    password: validatePassword(value),
+                    // Si ya hay algo escrito en confirmar, re-validamos si coinciden
+                    confirmPassword: newData.confirmPassword ? validateMatch(newData.confirmPassword, value) : null
+                }));
+            }
+
+            if (name === "confirmPassword") {
+                setFieldValidation((prevValid) => ({
+                    ...prevValid,
+                    confirmPassword: validateMatch(value, newData.password)
+                }));
+            }
+
+            return newData;
         });
     };
 
@@ -77,20 +117,11 @@ export default function ActualizacionContra() {
             return;
         }
 
-        if (formData.password !== formData.confirmPassword) {
+        // Validación final antes de enviar
+        if (!fieldValidation.password || !fieldValidation.confirmPassword) {
             sweetAlert({
-                title: "Error",
-                text: "Las contraseñas no coinciden",
-                icon: "error",
-            });
-            setLoading(false);
-            return;
-        }
-
-        if (formData.password.length < 6) {
-            sweetAlert({
-                title: "Error",
-                text: "La contraseña debe tener al menos 6 caracteres",
+                title: "Error de validación",
+                text: "Asegúrate de que la contraseña tenga al menos 6 caracteres y coincidan.",
                 icon: "error",
             });
             setLoading(false);
@@ -98,17 +129,20 @@ export default function ActualizacionContra() {
         }
 
         try {
+            const user = getInfoUser();
             const response = await api.post(`/api/auth/actualizarContraUsuario`, {
-                id: getInfoUser().id,
+                id: localStorage.getItem("userId"),
                 contra: formData.password,
             });
 
             const apiResponse = response.data;
 
             if (!apiResponse.success) {
+                const apiMessage = specificContraError || apiResponse.data.contra || "No se pudo actualizar la contraseña";
+                console.log("mensaje", apiMessage)
                 sweetAlert({
                     title: "Error",
-                    text: apiResponse.message,
+                    text: apiMessage,
                     icon: "error",
                 });
                 setLoading(false);
@@ -120,26 +154,28 @@ export default function ActualizacionContra() {
                 text: "Tu contraseña se actualizó correctamente",
                 icon: "success",
             });
-
+            localStorage.removeItem("userId");
             localStorage.removeItem("codigoRecuperacion");
             navigate("/login");
+
         } catch (error) {
+
+            const apiMessage = error?.response?.data?.data?.contra;
+
             sweetAlert({
                 title: "Error",
-                text: "No se pudo actualizar",
+                text: apiMessage,
                 icon: "error",
             });
         }
-
         setLoading(false);
     };
 
     const isFormValid = () => {
         return (
             codigo.every((digit) => digit !== "") &&
-            formData.password.length >= 6 &&
-            formData.confirmPassword.length >= 6 &&
-            formData.password === formData.confirmPassword
+            fieldValidation.password === true &&
+            fieldValidation.confirmPassword === true
         );
     };
 
@@ -234,6 +270,7 @@ export default function ActualizacionContra() {
                             Código de verificación
                         </Typography>
 
+                        {/* INPUTS DEL CÓDIGO */}
                         <Box
                             sx={{
                                 display: "flex",
@@ -278,6 +315,7 @@ export default function ActualizacionContra() {
                             ))}
                         </Box>
 
+                        {/* CONTRASEÑA */}
                         <TextField
                             variant="filled"
                             fullWidth
@@ -286,9 +324,22 @@ export default function ActualizacionContra() {
                             value={formData.password}
                             name="password"
                             onChange={handleChange}
+                            helperText={
+                                formData.password && formData.password.length < 8
+                                    ? "La contraseña debe tener al menos 8 caracteres"
+                                    : " "
+                            }
+                            FormHelperTextProps={{
+                                style: { color:  "red", fontWeight: 500 } // <-- color amarillo
+                            }}
                             InputProps={{
                                 endAdornment: (
                                     <InputAdornment position="end">
+                                        {fieldValidation.password !== null && (
+                                            fieldValidation.password
+                                                ? <CheckCircle sx={{ color: "#4caf50", mr: 1, fontSize: "20px" }} />
+                                                : <Cancel sx={{ color: "#f44336", mr: 1, fontSize: "20px" }} />
+                                        )}
                                         <IconButton
                                             onClick={() => setShowPassword(!showPassword)}
                                             edge="end"
@@ -298,30 +349,20 @@ export default function ActualizacionContra() {
                                     </InputAdornment>
                                 ),
                             }}
-                            InputLabelProps={{
-                                style: {
-                                    color: "#2c6f6b",
-                                    fontSize: "17px",
-                                },
-                            }}
+                            InputLabelProps={{ style: { color: "#2c6f6b", fontSize: "17px" } }}
                             sx={{
                                 backgroundColor: "#e6e6e6",
                                 borderTopLeftRadius: "10px",
                                 borderTopRightRadius: "10px",
                                 mb: 3,
                                 borderBottom: "4px solid #103f3d",
-                                "& .MuiFilledInput-root": {
-                                    backgroundColor: "transparent",
-                                },
-                                "& .MuiFilledInput-underline:before": {
-                                    borderBottom: "none",
-                                },
-                                "& .MuiFilledInput-underline:after": {
-                                    borderBottom: "none",
-                                },
+                                "& .MuiFilledInput-root": { backgroundColor: "transparent" },
+                                "& .MuiFilledInput-underline:before": { borderBottom: "none" },
+                                "& .MuiFilledInput-underline:after": { borderBottom: "none" },
                                 transition: "0.3s",
                             }}
                         />
+
 
                         <TextField
                             variant="filled"
@@ -331,53 +372,52 @@ export default function ActualizacionContra() {
                             value={formData.confirmPassword}
                             name="confirmPassword"
                             onChange={handleChange}
+                            helperText={
+                                formData.confirmPassword.length < 8
+                                    ? "La contraseña debe tener al menos 8 caracteres"
+                                    : fieldValidation.confirmPassword === false
+                                        ? "Las contraseñas no coinciden"
+                                        : " "
+                            }
+                            FormHelperTextProps={{
+                                style: { color:  "red", fontWeight: 500 } // <-- color amarillo
+                            }}
                             InputProps={{
                                 endAdornment: (
                                     <InputAdornment position="end">
+                                        {fieldValidation.confirmPassword !== null && (
+                                            fieldValidation.confirmPassword
+                                                ? <CheckCircle sx={{ color: "#4caf50", mr: 1, fontSize: "20px" }} />
+                                                : <Cancel sx={{ color: "#f44336", mr: 1, fontSize: "20px" }} />
+                                        )}
                                         <IconButton
-                                            onClick={() =>
-                                                setShowConfirmPassword(!showConfirmPassword)
-                                            }
+                                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                                             edge="end"
                                         >
-                                            {showConfirmPassword ? (
-                                                <VisibilityOff />
-                                            ) : (
-                                                <Visibility />
-                                            )}
+                                            {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
                                         </IconButton>
                                     </InputAdornment>
                                 ),
                             }}
-                            InputLabelProps={{
-                                style: {
-                                    color: "#2c6f6b",
-                                    fontSize: "17px",
-                                },
-                            }}
+                            InputLabelProps={{ style: { color: "#2c6f6b", fontSize: "17px" } }}
                             sx={{
                                 backgroundColor: "#e6e6e6",
                                 borderTopLeftRadius: "10px",
                                 borderTopRightRadius: "10px",
                                 mb: 3,
                                 borderBottom: "4px solid #103f3d",
-                                "& .MuiFilledInput-root": {
-                                    backgroundColor: "transparent",
-                                },
-                                "& .MuiFilledInput-underline:before": {
-                                    borderBottom: "none",
-                                },
-                                "& .MuiFilledInput-underline:after": {
-                                    borderBottom: "none",
-                                },
+                                "& .MuiFilledInput-root": { backgroundColor: "transparent" },
+                                "& .MuiFilledInput-underline:before": { borderBottom: "none" },
+                                "& .MuiFilledInput-underline:after": { borderBottom: "none" },
                                 transition: "0.3s",
                             }}
                         />
 
+
                         <Box sx={{ display: "flex", justifyContent: "center" }}>
                             <Button
                                 type="submit"
-                                disabled={!isFormValid()}
+                                disabled={!isFormValid() || loading}
                                 variant="contained"
                                 sx={{
                                     backgroundColor: !isFormValid() ? "#77acacff" : "#2f6f6f",
@@ -386,10 +426,9 @@ export default function ActualizacionContra() {
                                     padding: "12px 40px",
                                     borderRadius: "8px",
                                     marginBottom: 2,
-                                    ":hover": {
-                                        backgroundColor: !isFormValid() ? "#77acacac" : "#255b5b",
-                                    },
-                                    transition: "0.3s ease",
+                                    "&:hover": {
+                                        backgroundColor: "#1a4d4d",
+                                    }
                                 }}
                             >
                                 {loading ? "Actualizando..." : "Actualizar"}

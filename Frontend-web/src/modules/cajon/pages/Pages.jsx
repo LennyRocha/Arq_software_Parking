@@ -1,6 +1,6 @@
+//Para perfil de empleado 
 import * as React from "react";
-
-import { getInfoUser, getToken, removeToken } from "../../../utils/AuthService";
+import { getInfoUser, getToken, removeAllStorage, removeToken } from "../../../utils/AuthService";
 
 //Components MUI Lists
 import List from "@mui/material/List";
@@ -10,9 +10,8 @@ import ListItemText from "@mui/material/ListItemText";
 import Divider from "@mui/material/Divider";
 import MainHeader from "../../../components/MainHeader";
 
-
 //Icons
-import PersonAddICon from "@mui/icons-material/PersonAdd";
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import ConfirmationNumberIcon from "@mui/icons-material/ConfirmationNumber";
 import LocalParkingIcon from "@mui/icons-material/LocalParking";
 import LightModeIcon from "@mui/icons-material/LightMode";
@@ -91,15 +90,16 @@ export default function Pages() {
         setShowPerfil(false);
         break;
       case path.includes("perfil"):
-        setSelectedIndex(0);
+        setSelectedIndex(null);
         setPageTitle("Mi perfil");
-        setLinks([{ title: "Inicio", path: "/" }, { title: "Mi perfil" }]);
+        setLinks([{ title: "Inicio", path: "" }, { title: "Mi perfil" }]);
         setShowPerfil(true);
         break;
+
       default:
         setSelectedIndex(0);
         setPageTitle("Mi perfil");
-        setLinks([{ title: "Inicio", path: "/" }, { title: "Mi perfil" }]);
+        setLinks([{ title: "Inicio", path: "" }, { title: "Mi perfil" }]);
         setShowPerfil(false);
     }
   }, [path]);
@@ -125,6 +125,9 @@ export default function Pages() {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  getInfoUser();
+  console.log ("Info User:", getInfoUser().role);
 
   const Menu = (clase) => {
     return (
@@ -170,6 +173,7 @@ export default function Pages() {
                   fontSize: 20,
                   color: isDarkMode ? "var(--secondary)" : "var(--other)",
                 }}
+                
                 secondary="Empleado"
               />
             </ListItem>
@@ -181,39 +185,37 @@ export default function Pages() {
                 {isDarkMode ? <DarkModeIcon /> : <LightModeIcon />}
               </IconButton>
             </Tooltip>
-            <Tooltip title="Ir a mi perfil" cursor="pointer">
+            {/* Avatar deshabilitado */}
+            <Tooltip title="Ir a mi perfil (deshabilitado)">
               <Avatar
                 sx={{
-                  bgcolor: "var(--other)",
-                  "&:hover": {
-                    cursor: "pointer",
-                    bgcolor: "var(--primary)",
-                  },
-                  color: "#fff",
+                  backgroundColor: "var(--other)",
+                  pointerEvents: "none",
                 }}
-
-                onClick={() => { }}              >
+              >
                 UE
               </Avatar>
             </Tooltip>
           </Toolbar>
+
           <Divider />
+
           <ListItemButton
             onClick={() => goTo("/empleado")}
             selected={selectedIndex === 0}
             sx={{
               borderRadius: "5px",
-              "&.Mui-selected": {
-                backgroundColor: "var(--other)",
-                color: "#ffffff",
+              backgroundColor: selectedIndex === 0 ? "var(--other)" : "#fff",
+              color: selectedIndex === 0 ? "#fff" : "#000",
+              "&:hover": {
+                backgroundColor: "gray(--other)",
+                color: "#090707ff",
               },
             }}
-            className="side-item"
           >
             <ListItemIcon>
               <ConfirmationNumberIcon
-                className={`side-icon ${selectedIndex === 0 ? "color-white " : "gray"
-                  }`}
+                className={selectedIndex === 0 ? "color-white" : "gray"}
               />
             </ListItemIcon>
             <ListItemText primary="Entradas y salidas" />
@@ -224,40 +226,41 @@ export default function Pages() {
             selected={selectedIndex === 1}
             sx={{
               borderRadius: "5px",
-              "&.Mui-selected": {
-                backgroundColor: "var(--other)",
-                color: "#ffffff",
+              backgroundColor: selectedIndex === 1 ? "var(--other)" : "#fff",
+              color: selectedIndex === 1 ? "#fff" : "#000",
+              "&:hover": {
+                backgroundColor: "gray(--other)",
+                color: "#090707ff"
               },
             }}
-            className="side-item"
           >
             <ListItemIcon>
               <Icon
                 path={mdiBadgeAccount}
                 size={1}
-                className={`side-icon ${selectedIndex === 1 ? "color-white " : "gray"
-                  }`}
+                className={selectedIndex === 1 ? "color-white" : "gray"}
               />
             </ListItemIcon>
             <ListItemText primary="Pensiones de usuarios" />
           </ListItemButton>
 
+          {/* CAJONES */}
           <ListItemButton
             onClick={() => goTo("/empleado/cajones")}
             selected={selectedIndex === 2}
             sx={{
               borderRadius: "5px",
-              "&.Mui-selected": {
-                backgroundColor: "var(--other)",
-                color: "#ffffff",
+              backgroundColor: selectedIndex === 2 ? "var(--other)" : "#fff",
+              color: selectedIndex === 2 ? "#fff" : "#000",
+              "&:hover": {
+                backgroundColor: "gray(--other)",
+                color: "#090707ff"
               },
             }}
-            className="side-item"
           >
             <ListItemIcon>
               <LocalParkingIcon
-                className={`side-icon ${selectedIndex === 2 ? "color-white " : "gray"
-                  }`}
+                className={selectedIndex === 2 ? "color-white" : "gray"}
               />
             </ListItemIcon>
             <ListItemText primary="Cajones" />
@@ -268,37 +271,32 @@ export default function Pages() {
             selected={selectedIndex === 3}
             sx={{
               borderRadius: "5px",
-              "&.Mui-selected": {
-                backgroundColor: "var(--other)",
-                color: "#ffffff",
+              backgroundColor: selectedIndex === 3 ? "var(--other)" : "#fff",
+              color: selectedIndex === 3 ? "#fff" : "#000",
+              "&:hover": {
+                backgroundColor: "gray(--other)",
+                color: "#090707ff"
               },
             }}
-            className="side-item"
           >
             <ListItemIcon>
-              <PersonAddICon
-                className={`side-icon ${selectedIndex === 5 ? "color-white " : "gray"
-                  }`}
+              <PersonAddIcon
+                className={selectedIndex === 3 ? "color-white" : "gray"}
               />
             </ListItemIcon>
             <ListItemText primary="Registrar empleado pensionado" />
           </ListItemButton>
         </Box>
 
-        {/* Botón de cerrar sesión al final */}
         <Box sx={{ marginTop: "auto", paddingTop: 2 }}>
           <Divider sx={{ marginBottom: 1 }} />
 
           <ListItemButton
             sx={{
               borderRadius: "5px",
-              color: "error.main",
-              "&:hover": {
-                backgroundColor: "rgba(211, 47, 47, 0.1)",
-              },
             }}
             onClick={() => {
-              removeToken();
+              removeAllStorage();
               goTo("/login");
             }}
           >
@@ -339,7 +337,6 @@ export default function Pages() {
               sx={{ mr: 2 }}
               onClick={() => {
                 setDrawerOpen(!drawerOpen);
-                console.log("click", drawerOpen);
               }}
             >
               <MenuIcon />
@@ -358,6 +355,7 @@ export default function Pages() {
             </Typography>
           </Toolbar>
         </AppBar>
+
         <Drawer
           anchor="left"
           variant="temporary"
@@ -366,6 +364,7 @@ export default function Pages() {
         >
           <Menu clase="" />
         </Drawer>
+
         <MainHeader titulo={pageTitle} breads={links} />
         {showPerfil ? <Perfil /> : <Outlet />}
       </Box>

@@ -209,14 +209,15 @@ export default function EmpleadoRouter() {
       {/* Logout fijo abajo */}
       <Box sx={{ p: 2 }}>
         <Divider sx={{ mb: 1 }} />
+
         <ListItemButton
-          onClick={handleLogout}
           sx={{
             borderRadius: "5px",
-            color: "error.main",
-            "&:hover": { backgroundColor: "rgba(211, 47, 47, 0.1)" },
           }}
-          
+          onClick={() => {
+            removeAllStorage();
+            goTo("/login");
+          }}
         >
           <ListItemIcon>
             <LogoutIcon
@@ -233,11 +234,11 @@ export default function EmpleadoRouter() {
     <Box
       sx={{
         display: "flex",
-        flexDirection: { xs: "column", md: "row" }, 
+        flexDirection: { xs: "column", md: "row" },
         height: "100vh",
       }}
     >
-    
+
       {isMobile ? (
         <Drawer
           anchor="left"
@@ -263,7 +264,7 @@ export default function EmpleadoRouter() {
         </Box>
       )}
 
-  
+
       <Box
         sx={{
           flex: 1,
@@ -272,7 +273,7 @@ export default function EmpleadoRouter() {
           height: "100%",
         }}
       >
-      
+
         {isMobile && (
           <AppBar position="sticky" sx={{ bgcolor: bg, color: "var(--text)" }}>
             <Toolbar>
