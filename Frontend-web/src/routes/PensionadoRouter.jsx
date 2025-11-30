@@ -65,6 +65,10 @@ export default function AdminRouter() {
   const { isDarkMode, toggleDarkMode } = useDarkContext();
 
   React.useEffect(() => {
+    getToken();
+        if (!getToken()) {
+          goTo("*");
+        }
     switch (true) {
       case path.includes("entradas"):
         setSelectedIndex(1);
@@ -308,6 +312,8 @@ export default function AdminRouter() {
           </ListItemIcon>
           <ListItemText primary="Mis vehículos" />
         </ListItemButton>
+          {/* CERRAR SESIÓN */}
+        
       </List>
         </Box>
 

@@ -68,6 +68,8 @@ export default function AdminRouter() {
   const { isDarkMode, toggleDarkMode } = useDarkContext();
 
   React.useEffect(() => {
+    getToken();
+    if (!getToken()) goTo("*");
     switch (true) {
       case path.includes("reportes"):
         setSelectedIndex(1);
@@ -221,9 +223,8 @@ export default function AdminRouter() {
                 <Icon
                   path={mdiCarCog}
                   size={1}
-                  className={`side-icon ${
-                    selectedIndex === 0 ? "color-white " : "gray"
-                  }`}
+                  className={`side-icon ${selectedIndex === 0 ? "color-white " : "gray"
+                    }`}
                 />
               </ListItemIcon>
               <ListItemText primary="Gestionar" />
@@ -245,9 +246,8 @@ export default function AdminRouter() {
                 <Icon
                   path={mdiFileChart}
                   size={1}
-                  className={`side-icon ${
-                    selectedIndex === 1 ? "color-white " : "gray"
-                  }`}
+                  className={`side-icon ${selectedIndex === 1 ? "color-white " : "gray"
+                    }`}
                 />
               </ListItemIcon>
               <ListItemText primary="Reportes" />
@@ -281,9 +281,8 @@ export default function AdminRouter() {
                 <Icon
                   path={mdiAccountCreditCard}
                   size={1}
-                  className={`side-icon ${
-                    selectedIndex === 2 ? "color-white " : "gray"
-                  }`}
+                  className={`side-icon ${selectedIndex === 2 ? "color-white " : "gray"
+                    }`}
                 />
               </ListItemIcon>
               <ListItemText primary="Tipos de pensión" />
@@ -303,9 +302,8 @@ export default function AdminRouter() {
             >
               <ListItemIcon>
                 <FolderSharedIcon
-                  className={`side-icon ${
-                    selectedIndex === 3 ? "color-white " : "gray"
-                  }`}
+                  className={`side-icon ${selectedIndex === 3 ? "color-white " : "gray"
+                    }`}
                 />
               </ListItemIcon>
               <ListItemText primary="Pensiones de usuarios" />
@@ -329,9 +327,8 @@ export default function AdminRouter() {
             <Icon
               path={mdiCash}
               size={1}
-              className={`side-icon ${
-                selectedIndex === 4 ? "color-white " : "gray"
-              }`}
+              className={`side-icon ${selectedIndex === 4 ? "color-white " : "gray"
+                }`}
             />
           </ListItemIcon>
           <ListItemText primary="Tarifas" />
@@ -350,9 +347,8 @@ export default function AdminRouter() {
         >
           <ListItemIcon>
             <LocalParkingIcon
-              className={`side-icon ${
-                selectedIndex === 5 ? "color-white " : "gray"
-              }`}
+              className={`side-icon ${selectedIndex === 5 ? "color-white " : "gray"
+                }`}
             />
           </ListItemIcon>
           <ListItemText primary="Cajones" />
@@ -372,9 +368,8 @@ export default function AdminRouter() {
         >
           <ListItemIcon>
             <PeopleIcon
-              className={`side-icon ${
-                selectedIndex === 6 ? "color-white " : "gray"
-              }`}
+              className={`side-icon ${selectedIndex === 6 ? "color-white " : "gray"
+                }`}
             />
           </ListItemIcon>
           <ListItemText primary="Usuarios" />
@@ -394,9 +389,8 @@ export default function AdminRouter() {
         >
           <ListItemIcon>
             <DirectionsCar
-              className={`side-icon ${
-                selectedIndex === 8 ? "color-white " : "gray"
-              }`}
+              className={`side-icon ${selectedIndex === 8 ? "color-white " : "gray"
+                }`}
             />
           </ListItemIcon>
           <ListItemText primary="Vehículos" />
@@ -404,7 +398,6 @@ export default function AdminRouter() {
       </List>
         </Box>
 
-        {/* Logout fijo abajo */}
         <Box sx={{ p: 2 }}>
           <Divider sx={{ mb: 1 }} />
           <ListItemButton
