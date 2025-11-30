@@ -11,6 +11,7 @@ import Pages from "../modules/cajon/pages/Pages";
 import AdminGestionarEntradasSalidas from "../modules/entradas_salidas/pages/AdminGestionarEntradasSalidas";
 import AdminGestionarReportesGanancias from "../modules/entradas_salidas/pages/AdminGestionarReportesGanancias";
 import PensionadoEstacionamiento from "../modules/entradas_salidas/pages/PensionadoEstacionamiento";
+import PensionadoVerEntradasSalidas from "../modules/entradas_salidas/pages/PensionadoVerEntradasSalidas";
 import AdminGestionTarifas from "../modules/tarifas/pages/AdminGestionTarifas";
 import GestionTiposPension from "../modules/tipo_pension/pages/GestionTiposPension";
 import PensionesUsuario from "../modules/usuario_pension/pages/PensionesUsuarios";
@@ -78,7 +79,7 @@ export default function Rutas() {
         <Route path="/pensionados" element={<ProtectedRoute allowedRoles={['CLIENTE_PENSIONADO']}><PensionadoRouter /></ProtectedRoute>}>
           <Route index element={<CajonesPage isPensionado />} />
           <Route path="entradas" element={<PensionadoEstacionamiento />} />
-          <Route path="historial" element={<PensionadoEstacionamiento />} />
+          <Route path="historial" element={<PensionadoVerEntradasSalidas />} />
           <Route path="mi_pension" element={<MiPension/>} />
           <Route path="mis_vehiculos" element={<Pages />} />
           <Route path="perfil" element={<Perfil />} />
