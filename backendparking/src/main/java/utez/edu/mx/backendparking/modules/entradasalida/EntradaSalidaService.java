@@ -21,6 +21,7 @@ public interface EntradaSalidaService {
     EntradaSalidaResponseDto marcarSalidaVisitante(Integer folioTicket);
     EntradaSalidaResponseDto marcarSalidaPensionado(String uuidCodigoQR);
     Page<EntradaSalidaResponseDto> searchAndSortPaginated(String search, String sortBy, String sortOrder, int page, int size);
+    Page<EntradaSalidaResponseDto> searchAndSortPaginatedByPensionado(String search, String sortBy, String sortOrder, int page, int size);
     Page<ReporteGananciasResponseDto> generarReporteGananciasPorHora(LocalDate fechaInicial, LocalDate fechaFinal, String sortOrder, int page, int size);
     ReporteGananciasTotalesResponseDto generarReporteGananciasTotales(LocalDate fechaInicial, LocalDate fechaFinal);
     String searchCodigoEntradaSalida();

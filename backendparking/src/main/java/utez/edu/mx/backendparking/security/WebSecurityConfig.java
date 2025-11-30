@@ -45,6 +45,25 @@ public class WebSecurityConfig {
                         .requestMatchers("/api/pensionado/private/**").hasAnyRole("ADMINISTRADOR","EMPLEADO")
                         .requestMatchers("/api/pensionado/cliente/**").hasRole("CLIENTE_PENSIONADO")
 
+                        //--GESTION DE USUARIOS
+                        .requestMatchers("/api/auth/private/registrarEmpleado").hasRole("ADMINISTRADOR")
+
+                        //--- GESTION DE TARIFAS
+                        .requestMatchers("/api/tarifa/**").hasRole("ADMINISTRADOR")
+                        //--- GESTION DE ENTRADAS Y SALIDAS
+                        .requestMatchers("/api/entrada-salida/search/paginated").hasAnyRole("ADMINISTRADOR","EMPLEADO")
+                        .requestMatchers("/api/entrada-salida/pensionado/search/paginated").hasRole("CLIENTE_PENSIONADO")
+                        .requestMatchers("/api/entrada-salida/get-by-id/**").hasAnyRole("ADMINISTRADOR","EMPLEADO")
+                        .requestMatchers("/api/entrada-salida/visitante").hasAnyRole("ADMINISTRADOR","EMPLEADO")
+                        .requestMatchers("/api/entrada-salida/visitante/salida-datos/**").hasAnyRole("ADMINISTRADOR","EMPLEADO")
+                        .requestMatchers("/api/entrada-salida/visitante/salida/**").hasAnyRole("ADMINISTRADOR","EMPLEADO")
+                        .requestMatchers("/api/entrada-salida/reportes/ganancias-por-hora").hasRole("ADMINISTRADOR")
+                        .requestMatchers("/api/entrada-salida/reportes/ganancias-totales").hasRole("ADMINISTRADOR")
+                        .requestMatchers("/api/entrada-salida/actualizar-datos/**").hasAnyRole("ADMINISTRADOR","EMPLEADO")
+                        .requestMatchers("/api/entrada-salida/solicitar-codigo").hasRole("CLIENTE_PENSIONADO")
+                        //--- VEHICULOS
+                        .requestMatchers("/api/vehiculos/estacionado/verificar").hasAnyRole("CLIENTE_PENSIONADO")
+                        .requestMatchers("/api/vehiculos/mis-vehiculos").hasAnyRole("CLIENTE_PENSIONADO")
                         .anyRequest().permitAll())
                 .addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
