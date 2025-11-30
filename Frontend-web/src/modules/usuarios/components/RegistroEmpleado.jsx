@@ -248,7 +248,7 @@ export default function RegistroEmpleado() {
                       }}
                     >
                       <Typography variant="body2" color="primary">
-                        ℹ️ <strong>Contraseña automática:</strong> El empleado podrá acceder con su correo y la contraseña será su apellido seguido de "123"
+                         <strong>Contraseña automática:</strong> El empleado podrá acceder con su correo y la contraseña será su apellido seguido de "123". Se recomienda que al iniciar sesión en su cuenta, cambie dicha contraseña desde su perfil de usuario.
                         {values.apellidos && (
                           <span style={{ display: "block", marginTop: 8, fontWeight: "bold" }}>
                             Contraseña: {values.apellidos}123

@@ -12,10 +12,10 @@ export default function useRegistroEmpleado() {
     
     try {
       const payload = {
-        nombre: empleadoData.nombre,
-        apellidos: empleadoData.apellidos,
-        correo: empleadoData.correo,
-        telefono: empleadoData.telefono
+        nombre: empleadoData.nombre.trim(),
+        apellidos: empleadoData.apellidos.trim(),
+        correo: empleadoData.correo.trim(),
+        telefono: empleadoData.telefono.trim()
       };
 
       const response = await registrarEmpleado(payload);

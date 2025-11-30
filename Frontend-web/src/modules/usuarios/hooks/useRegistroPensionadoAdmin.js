@@ -32,7 +32,6 @@ export default function useRegistroPensionadoAdmin() {
     apellidos: "",
     correo: "",
     telefono: "",
-    contra: "",
     
     // Paso 2: Vehículos
     vehiculos: [],
@@ -151,26 +150,42 @@ export default function useRegistroPensionadoAdmin() {
     setErrorRegistro(null);
     
     try {
+      // Aplicar trim a los campos de texto
+      const nombreTrim = formData.nombre.trim();
+      const apellidosTrim = formData.apellidos.trim();
+      const correoTrim = formData.correo.trim();
+      const telefonoTrim = formData.telefono.trim();
+      
+      // Generar contraseña automática: apellidos + "123"
+      const contraseñaGenerada = apellidosTrim + "123";
+      
       // Preparar datos según el DTO del backend
       const payload = {
         pensionId: formData.pensionId,
-        nombre: formData.nombre,
-        apellidos: formData.apellidos,
-        correo: formData.correo,
-        telefono: formData.telefono,
-        contra: formData.contra,
+        nombre: nombreTrim,
+        apellidos: apellidosTrim,
+        correo: correoTrim,
+        telefono: telefonoTrim,
+        contra: contraseñaGenerada,
         vehiculos: formData.vehiculos.map(v => ({
           tipoVehiculoId: v.tipoVehiculoId,
-          placa: v.placa.toUpperCase(),
-          modelo: v.modelo,
-          descripcion: v.descripcion,
+          placa: v.placa.trim().toUpperCase(),
+          modelo: v.modelo.trim(),
+          descripcion: v.descripcion.trim(),
         })),
       };
 
       const response = await registrarPensionado(payload);
       
       setRegistroExitoso(true);
-      setDatosRegistro(response.data.data);
+      // Combinar la respuesta del backend con los datos locales para asegurar que tenemos todo
+      setDatosRegistro({
+        ...response.data.data,
+        nombre: nombreTrim,
+        apellidos: apellidosTrim,
+        correo: correoTrim,
+        telefono: telefonoTrim,
+      });
       
       return {
         success: true,
