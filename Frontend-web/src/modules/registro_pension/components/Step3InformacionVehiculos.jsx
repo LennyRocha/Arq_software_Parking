@@ -197,13 +197,6 @@ export default function Step3InformacionVehiculos({
                           backgroundColor: "#f9fbff",
                           minHeight: 56,
                         }}
-                        startAdornment={
-                          loadingTipos ? (
-                            <CircularProgress size={20} sx={{ ml: 1 }} />
-                          ) : (
-                            <CarIcon sx={{ ml: 1, mr: 1, color: "action.active" }} />
-                          )
-                        }
                       >
                         <MenuItem value="" disabled>
                           Selecciona el tipo de vehículo
