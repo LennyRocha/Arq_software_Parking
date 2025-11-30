@@ -1,5 +1,5 @@
 import * as React from "react";
-import {getToken, removeToken } from "../utils/AuthService";
+import { getToken, removeAllStorage } from "../utils/AuthService";
 
 //Components MUI Lists
 import List from "@mui/material/List";
@@ -19,7 +19,6 @@ import DirectionsCar from "@mui/icons-material/DirectionsCar";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import LogoutIcon from "@mui/icons-material/Logout";
-
 
 //Material Design Icons Js
 import Icon from "@mdi/react";
@@ -104,6 +103,11 @@ export default function AdminRouter() {
     }
   };
 
+  const handleLogout = () => {
+    removeAllStorage();
+    goTo("/");
+  };
+
   const [drawerOpen, setDrawerOpen] = React.useState(false);
   const toggleDrawer = (open) => (event) => {
     if (
@@ -128,70 +132,61 @@ export default function AdminRouter() {
 
   const Menu = (clase) => {
     return (
-      <List
-        sx={{
-          width: "100%",
-          maxWidth: 256,
-          padding: "10px",
-          boxSizing: "border-box",
-          height: "100vh",
-          overflowY: "auto",
-        }}
-        className={`no_scroll ${clase.clase}`}
-        component="nav"
-      >
-        <Toolbar
-          disableGutters
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            width: "100%",
-            position: "sticky",
-          }}
-        >
-          <ListItem sx={{ gap: 1, padding: 1, borderRadius: 2 }}>
-            <ListItemAvatar>
-              <Avatar
-                alt="logo"
-                src={logo}
-                variant="square"
-                sx={{ width: 50, height: 40, objectFit: "fill" }}
+      <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }} className={clase.clase}>
+        <Box sx={{ flex: 1, overflowY: "auto", p: 1 }}>
+          <Toolbar
+            disableGutters
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              width: "100%",
+              mb: 1,
+            }}
+          >
+            <ListItem sx={{ gap: 1, padding: 1, borderRadius: 2 }}>
+              <ListItemAvatar>
+                <Avatar
+                  alt="logo"
+                  src={logo}
+                  variant="square"
+                  sx={{ width: 50, height: 40, objectFit: "fill" }}
+                />
+              </ListItemAvatar>
+              <ListItemText
+                primary="parKing"
+                primaryTypographyProps={{
+                  fontFamily: "Exo 2, sans-serif",
+                  fontWeight: "bold",
+                  fontSize: 20,
+                  color: isDarkMode ? "var(--secondary)" : "var(--other)",
+                }}
+                secondary="Pensionado"
               />
-            </ListItemAvatar>
-            <ListItemText
-              primary="parKing"
-              primaryTypographyProps={{
-                fontFamily: "Exo 2, sans-serif",
-                fontWeight: "bold",
-                fontSize: 20,
-                color: isDarkMode ? "var(--secondary)" : "var(--other)",
-              }}
-              secondary="Pensionado"
-            />
-          </ListItem>
-          <Tooltip title="Cambiar modo" cursor="pointer">
-            <IconButton color={isDarkMode ? "primary"  : "tertiary" } onClick={toggleDarkMode}>
-              {isDarkMode ? <DarkModeIcon /> : <LightModeIcon />}
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Ir a mi perfil" cursor="pointer">
-            <Avatar
-              sx={{
-                bgcolor: "var(--other)",
-                "&:hover": {
-                  cursor: "pointer",
-                  bgcolor: "var(--primary)",
-                },
-                color: "#fff",
-              }}
-              onClick={() => goTo(`/pensionados/perfil`)}
-            >
-              UP
-            </Avatar>
-          </Tooltip>
-        </Toolbar>
-        <Divider />
+            </ListItem>
+            <Tooltip title="Cambiar modo" cursor="pointer">
+              <IconButton color={isDarkMode ? "primary"  : "tertiary" } onClick={toggleDarkMode}>
+                {isDarkMode ? <DarkModeIcon /> : <LightModeIcon />}
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Ir a mi perfil" cursor="pointer">
+              <Avatar
+                sx={{
+                  bgcolor: "var(--other)",
+                  "&:hover": {
+                    cursor: "pointer",
+                    bgcolor: "var(--primary)",
+                  },
+                  color: "#fff",
+                }}
+                onClick={() => goTo(`/pensionados/perfil`)}
+              >
+                UP
+              </Avatar>
+            </Tooltip>
+          </Toolbar>
+          <Divider />
+        <List component="nav">
         <ListItemButton
           onClick={() => goTo("/pensionados")}
           selected={selectedIndex === 0}
@@ -337,6 +332,26 @@ export default function AdminRouter() {
           </ListItemButton>
         </Box>
       </List>
+        </Box>
+
+        {/* Logout fijo abajo */}
+        <Box sx={{ p: 2 }}>
+          <Divider sx={{ mb: 1 }} />
+          <ListItemButton
+            onClick={handleLogout}
+            sx={{
+              borderRadius: "5px",
+              color: "error.main",
+              "&:hover": { backgroundColor: "rgba(211, 47, 47, 0.1)" },
+            }}
+          >
+            <ListItemIcon>
+              <LogoutIcon sx={{ color: "error.main" }} />
+            </ListItemIcon>
+            <ListItemText primary="Cerrar sesión" />
+          </ListItemButton>
+        </Box>
+      </Box>
     );
   };
 

@@ -3,6 +3,7 @@ import * as React from "react";
 import api from "../utils/api.js";
 import { useState } from "react";
 import sweetAlert from "../utils/sweetAlert.js";
+import { useTheme } from "@mui/material/styles";
 import {
     Box,
     TextField,
@@ -18,11 +19,10 @@ import { Visibility, VisibilityOff, Edit, CheckCircle, Cancel } from "@mui/icons
 import { getInfoUser, getToken } from "../utils/AuthService.jsx";
 
 export default function Perfil() {
-
-    const [showPassword, setShowPassword] = useState(false);
-    const [loading, setLoading] = useState(true);
-
-    const [editableFields, setEditableFields] = useState({
+    const theme = useTheme();
+    const [showPassword, setShowPassword] = React.useState(false);
+    const [loading, setLoading] = React.useState(true);
+    const [editableFields, setEditableFields] = React.useState({
         nombre: false,
         apellido: false,
         correo: false,
@@ -30,7 +30,59 @@ export default function Perfil() {
         password: false,
     });
 
-    const [formData, setFormData] = useState({
+    // Helper para estilos de TextField adaptados al tema
+    const getTextFieldStyles = (isEditable, isDisabled = false) => ({
+        backgroundColor: isDisabled 
+            ? (theme.palette.mode === 'dark' ? theme.palette.action.disabledBackground : "#fafafa")
+            : (isEditable 
+                ? (theme.palette.mode === 'dark' ? theme.palette.action.hover : "#e6e6e6")
+                : (theme.palette.mode === 'dark' ? theme.palette.background.paper : "#fafafa")),
+        borderTopLeftRadius: "10px",
+        borderTopRightRadius: "10px",
+        mb: 3,
+        borderBottom: isEditable
+            ? `4px solid ${theme.palette.primary.main}`
+            : `3px solid ${theme.palette.mode === 'dark' ? theme.palette.divider : "#103f3d"}`,
+        "& .MuiFilledInput-root": {
+            backgroundColor: "transparent",
+            border: "none !important",
+            "&::before": {
+                borderBottom: "none !important",
+            },
+            "&::after": {
+                borderBottom: "none !important",
+            },
+            "&.Mui-disabled": {
+                backgroundColor: "transparent",
+            }
+        },
+        "& .MuiFilledInput-underline:before": {
+            borderBottom: "none !important",
+        },
+        "& .MuiFilledInput-underline:after": {
+            borderBottom: "none !important",
+        },
+        "& .MuiInputBase-input": {
+            color: theme.palette.text.primary,
+            WebkitTextFillColor: theme.palette.text.primary,
+        },
+        "& .MuiInputBase-input.Mui-disabled": {
+            color: theme.palette.text.secondary,
+            WebkitTextFillColor: theme.palette.text.secondary,
+        },
+        "& .MuiInputLabel-root": {
+            color: theme.palette.text.secondary,
+        },
+        transition: "0.3s",
+    });
+
+    const getLabelProps = () => ({
+        style: {
+            color: theme.palette.mode === 'dark' ? theme.palette.text.secondary : "#2c6f6b",
+            fontSize: "17px",
+        },
+    });
+    const [formData, setFormData] = React.useState({
         status: "",
         nombre: "",
         apellido: "",
@@ -215,192 +267,199 @@ export default function Perfil() {
                     <Avatar sx={{ width: 150, height: 150, bgcolor: "#e0e0e0" }} />
                 </Box>
 
-                <TextField
-                    variant="filled"
-                    fullWidth
-                    label="Estatus"
-                    value={formData.status}
-                    disabled
-                    sx={{ mb: 3 }}
-                />
-
-                {getInfoUser().role === "CLIENTE_PENSIONADO" && (
-                    <Box sx={{ display: "flex", gap: 2, mb: 3 }}>
-                        <TextField variant="filled" fullWidth label="Tipo de pensión" value={formData.tipoPension} disabled />
-                        <TextField variant="filled" fullWidth label="Expiración" value={formData.expiracionPension} disabled />
+                <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                    <Box>
+                        <TextField
+                            variant="filled"
+                            fullWidth
+                            label="Estatus"
+                            value={formData.status}
+                            disabled
+                            InputLabelProps={getLabelProps()}
+                            sx={getTextFieldStyles(false, true)}
+                        />
                     </Box>
                 )}
 
-                <TextField
-                    inputRef={refs.nombre}
-                    variant="filled"
-                    fullWidth
-                    label="Nombre"
-                    value={formData.nombre}
-                    onChange={handleChange("nombre")}
-                    disabled={!editableFields.nombre}
-                    InputProps={{
-                        endAdornment: (
-                            <InputAdornment position="end">
+                        <TextField
+                            variant="filled"
+                            fullWidth
+                            label="Nombre (s)"
+                            value={formData.nombre}
+                            name="nombre"
+                            onChange={handleChange("nombre")}
+                            disabled={!editableFields.nombre}
+                            autoFocus={editableFields.nombre}
+                            InputProps={{
+                                endAdornment: (
+                                    <InputAdornment position="end">
+                                        {fieldValidation.nombre !== null && (
+                                            <>
+                                                {fieldValidation.nombre ? (
+                                                    <CheckCircle sx={{ color: "#4caf50", mr: 1, fontSize: "20px" }} />
+                                                ) : (
+                                                    <Cancel sx={{ color: "#f44336", mr: 1, fontSize: "20px" }} />
+                                                )}
+                                            </>
+                                        )}
+                                        <IconButton edge="end" size="small" onClick={() => handleEditClick("nombre")}>
+                                            <Edit fontSize="small" />
+                                        </IconButton>
+                                    </InputAdornment>
+                                ),
+                            }}
+                            InputLabelProps={getLabelProps()}
+                            sx={getTextFieldStyles(editableFields.nombre)}
+                        />
+                    </Box>
 
-                                {fieldValidation.nombre !== null && (
-                                    fieldValidation.nombre ? (
-                                        <Tooltip title="Correcto">
-                                            <CheckCircle sx={{ color: "green" }} />
-                                        </Tooltip>
-                                    ) : (
-                                        <Tooltip title={validationMessages.nombre}>
-                                            <Cancel sx={{ color: "red" }} />
-                                        </Tooltip>
-                                    )
-                                )}
+                    <Box>
+                        <TextField
+                            variant="filled"
+                            fullWidth
+                            label="Apellido (s)"
+                            value={formData.apellido}
+                            onChange={handleChange("apellido")}
+                            disabled={!editableFields.apellido}
+                            autoFocus={editableFields.apellido}
+                            InputLabelProps={getLabelProps()}
+                            sx={getTextFieldStyles(editableFields.apellido)}
+                            InputProps={{
+                                endAdornment: (
+                                    <InputAdornment position="end">
+                                        {fieldValidation.apellido !== null && (
+                                            <>
+                                                {fieldValidation.apellido ? (
+                                                    <CheckCircle sx={{ color: "#4caf50", mr: 1, fontSize: "20px" }} />
+                                                ) : (
+                                                    <Cancel sx={{ color: "#f44336", mr: 1, fontSize: "20px" }} />
+                                                )}
+                                            </>
+                                        )}
+                                        <IconButton edge="end" size="small" onClick={() => handleEditClick("apellido")}>
+                                            <Edit fontSize="small" />
+                                        </IconButton>
+                                    </InputAdornment>
+                                ),
+                            }}
+                        />
+                    </Box>
 
-                                <IconButton onClick={() => handleEditClick("nombre")}>
-                                    <Edit />
-                                </IconButton>
-                            </InputAdornment>
-                        ),
-                    }}
-                    sx={{ mb: 3 }}
-                />
+                    <Box>
+                        <TextField
+                            variant="filled"
+                            fullWidth
+                            type="email"
+                            label="Correo"
+                            value={formData.correo}
+                            onChange={handleChange("correo")}
+                            disabled={!editableFields.correo}
+                            autoFocus={editableFields.correo}
+                            InputLabelProps={getLabelProps()}
+                            sx={getTextFieldStyles(editableFields.correo)}
+                            InputProps={{
+                                endAdornment: (
+                                    <InputAdornment position="end">
+                                        {fieldValidation.correo !== null && (
+                                            <>
+                                                {fieldValidation.correo ? (
+                                                    <CheckCircle sx={{ color: "#4caf50", mr: 1, fontSize: "20px" }} />
+                                                ) : (
+                                                    <Cancel sx={{ color: "#f44336", mr: 1, fontSize: "20px" }} />
+                                                )}
+                                            </>
+                                        )}
+                                        <IconButton edge="end" size="small" onClick={() => handleEditClick("correo")}>
+                                            <Edit fontSize="small" />
+                                        </IconButton>
+                                    </InputAdornment>
+                                ),
+                            }}
+                        />
+                    </Box>
 
-                <TextField
-                    inputRef={refs.apellido}
-                    variant="filled"
-                    fullWidth
-                    label="Apellido"
-                    value={formData.apellido}
-                    onChange={handleChange("apellido")}
-                    disabled={!editableFields.apellido}
-                    InputProps={{
-                        endAdornment: (
-                            <InputAdornment position="end">
+                    <Box>
+                        <TextField
+                            variant="filled"
+                            fullWidth
+                            label="Teléfono"
+                            value={formData.telefono}
+                            onChange={handleChange("telefono")}
+                            disabled={!editableFields.telefono}
+                            autoFocus={editableFields.telefono}
+                            InputLabelProps={getLabelProps()}
+                            sx={getTextFieldStyles(editableFields.telefono)}
+                            InputProps={{
+                                endAdornment: (
+                                    <InputAdornment position="end">
+                                        {fieldValidation.telefono !== null && (
+                                            <>
+                                                {fieldValidation.telefono ? (
+                                                    <CheckCircle sx={{ color: "#4caf50", mr: 1, fontSize: "20px" }} />
+                                                ) : (
+                                                    <Cancel sx={{ color: "#f44336", mr: 1, fontSize: "20px" }} />
+                                                )}
+                                            </>
+                                        )}
+                                        <IconButton edge="end" size="small" onClick={() => handleEditClick("telefono")}>
+                                            <Edit fontSize="small" />
+                                        </IconButton>
+                                    </InputAdornment>
+                                ),
+                            }}
+                        />
+                    </Box>
 
-                                {fieldValidation.apellido !== null && (
-                                    fieldValidation.apellido ? (
-                                        <Tooltip title="Correcto">
-                                            <CheckCircle sx={{ color: "green" }} />
-                                        </Tooltip>
-                                    ) : (
-                                        <Tooltip title={validationMessages.apellido}>
-                                            <Cancel sx={{ color: "red" }} />
-                                        </Tooltip>
-                                    )
-                                )}
+                    <Box>
+                        <TextField
+                            variant="filled"
+                            fullWidth
+                            label="Contraseña"
+                            type={showPassword ? "text" : "password"}
+                            value={formData.password}
+                            onChange={handleChange("password")}
+                            disabled={!editableFields.password}
+                            autoFocus={editableFields.password}
+                            InputLabelProps={getLabelProps()}
+                            sx={getTextFieldStyles(editableFields.password)}
+                            InputProps={{
+                                endAdornment: (
+                                    <InputAdornment position="end">
+                                        <IconButton onClick={editableFields.password ? handleClickShowPassword : () => handleEditClick("password")} edge="end" size="small">
+                                            {editableFields.password ? (showPassword ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />) : <Edit fontSize="small" />}
+                                        </IconButton>
+                                    </InputAdornment>
+                                ),
+                            }}
+                        />
+                    </Box>
 
-                                <IconButton onClick={() => handleEditClick("apellido")}>
-                                    <Edit />
-                                </IconButton>
-                            </InputAdornment>
-                        ),
-                    }}
-                    sx={{ mb: 3 }}
-                />
-
-                <TextField
-                    inputRef={refs.correo}
-                    variant="filled"
-                    fullWidth
-                    label="Correo"
-                    value={formData.correo}
-                    onChange={handleChange("correo")}
-                    disabled={!editableFields.correo}
-                    InputProps={{
-                        endAdornment: (
-                            <InputAdornment position="end">
-
-                                {fieldValidation.correo !== null && (
-                                    fieldValidation.correo ? (
-                                        <Tooltip title="Correcto">
-                                            <CheckCircle sx={{ color: "green" }} />
-                                        </Tooltip>
-                                    ) : (
-                                        <Tooltip title={validationMessages.correo}>
-                                            <Cancel sx={{ color: "red" }} />
-                                        </Tooltip>
-                                    )
-                                )}
-
-                                <IconButton onClick={() => handleEditClick("correo")}>
-                                    <Edit />
-                                </IconButton>
-                            </InputAdornment>
-                        ),
-                    }}
-                    sx={{ mb: 3 }}
-                />
-
-                <TextField
-                    inputRef={refs.telefono}
-                    variant="filled"
-                    fullWidth
-                    label="Teléfono"
-                    value={formData.telefono}
-                    onChange={handleChange("telefono")}
-                    disabled={!editableFields.telefono}
-                    InputProps={{
-                        endAdornment: (
-                            <InputAdornment position="end">
-
-                                {fieldValidation.telefono !== null && (
-                                    fieldValidation.telefono ? (
-                                        <Tooltip title="Correcto">
-                                            <CheckCircle sx={{ color: "green" }} />
-                                        </Tooltip>
-                                    ) : (
-                                        <Tooltip title={validationMessages.telefono}>
-                                            <Cancel sx={{ color: "red" }} />
-                                        </Tooltip>
-                                    )
-                                )}
-
-                                <IconButton onClick={() => handleEditClick("telefono")}>
-                                    <Edit />
-                                </IconButton>
-                            </InputAdornment>
-                        ),
-                    }}
-                    sx={{ mb: 3 }}
-                />
-
-                <TextField
-                    inputRef={refs.password}
-                    variant="filled"
-                    fullWidth
-                    label="Nueva contraseña"
-                    type={showPassword ? "text" : "password"}
-                    value={formData.password}
-                    onChange={handleChange("password")}
-                    disabled={!editableFields.password}
-                    InputProps={{
-                        endAdornment: (
-                            <>
-                                <IconButton onClick={() => setShowPassword(prev => !prev)}>
-                                    {showPassword ? <VisibilityOff /> : <Visibility />}
-                                </IconButton>
-
-                                <IconButton onClick={() => handleEditClick("password")}>
-                                    <Edit />
-                                </IconButton>
-                            </>
-                        ),
-                    }}
-                    sx={{ mb: 4 }}
-                />
-
-                
-                <Button
-                    variant="contained"
-                    fullWidth
-                    onClick={handleSubmit}
-                    disabled={!isAnyFieldEditable}   
-                    sx={{ padding: 1.5, bgcolor: "#0c4b4b" }}
-                >
-                    Guardar cambios
-                </Button>
-
-
-
+                    <Button
+                        fullWidth
+                        variant="contained"
+                        onClick={handleSubmit}
+                        disabled={!Object.values(editableFields).some(value => value === true)}
+                        sx={{
+                            backgroundColor: "var(--primary)",
+                            color: "#fff",
+                            p: 1.5,
+                            mt: 2,
+                            fontFamily: "Roboto, sans-serif",
+                            fontWeight: "bold",
+                            "&:hover": { 
+                                backgroundColor: "var(--primary)", 
+                                opacity: 0.9 
+                            },
+                            "&:disabled": {
+                                backgroundColor: "#cccccc",
+                                color: "#999999",
+                                opacity: 0.6,
+                            },
+                        }}
+                    >
+                        Guardar
+                    </Button>
+                </Box>
             </Paper>
         </Box>
     );

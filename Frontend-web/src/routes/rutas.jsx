@@ -1,6 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
 import AdminRouter from "./AdminRouter";
+import ProtectedRoute from "../components/ProtectedRoute";
 import LandingPage from "../modules/LandingPage";
 import Login from "../modules/Login";
 import RegistroPension from "../modules/RegistroPension";
@@ -50,7 +51,7 @@ export default function Rutas() {
         </Route>
 
         {/* Rutas del admin */}
-        <Route path="/admin" element={<AdminRouter />}>
+        <Route path="/admin" element={<ProtectedRoute allowedRoles={['ADMINISTRADOR']}><AdminRouter /></ProtectedRoute>}>
           <Route index element={<AdminGestionarEntradasSalidas />} />
           <Route path="reportes" element={<AdminGestionarReportesGanancias />} />
           <Route path="tipos_de_pension" element={<GestionTiposPension />} />
@@ -64,17 +65,19 @@ export default function Rutas() {
           <Route path="gestion_usuarios_nuevoempleado" element={<UsuarioTablaAdmin />} />
           <Route path="gestion_vehiculos" element={<Pages />} />
           <Route path="perfil" element={<Perfil />} />
+          <Route path="perfil" element={<Perfil />} />
         </Route>
         {/* Rutas del empleado */}
-        <Route path="/empleado" element={<EmpleadoRouter />}>
+        <Route path="/empleado" element={<ProtectedRoute allowedRoles={['EMPLEADO']}><EmpleadoRouter /></ProtectedRoute>}>
           <Route index element={<AdminGestionarEntradasSalidas />} />
           <Route path="pensiones" element={<PensionesUsuario />} />
           <Route path="cajones" element={<Pages />} />
           <Route path="nuevo_pensionado" element={<RegistroUsuarioPensionadoEmpleado />} />
           <Route path="nuevo_pensionado/vehiculo" element={<RegistroVehiculoEmpleado />} />
+          <Route path="perfil" element={<Perfil />} />
         </Route>
         {/* Rutas del pensionado */}
-        <Route path="/pensionados" element={<PensionadoRouter />}>
+        <Route path="/pensionados" element={<ProtectedRoute allowedRoles={['CLIENTE_PENSIONADO']}><PensionadoRouter /></ProtectedRoute>}>
           <Route index element={<CajonesPage isPensionado />} />
           <Route path="entradas" element={<PensionadoEstacionamiento />} />
           <Route path="historial" element={<PensionadoEstacionamiento />} />
@@ -84,7 +87,6 @@ export default function Rutas() {
 
         </Route>
         {/* Perfil y otros */}
-        <Route path="/private/perfil" element={<Pages />} />
         <Route path="*" element={<Err />} />
       </Routes>
     </Router>

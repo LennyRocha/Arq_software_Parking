@@ -87,6 +87,22 @@ public interface PagoRepository extends JpaRepository<Pago, Long> {
     @Query("""
         SELECT p FROM Pago p 
         WHERE p.usuarioPension.id = :usuarioPensionId 
+        AND (
+            CAST(p.cantidadPago AS string) LIKE %:search% OR
+            CAST(p.fechaPago AS string) LIKE %:search% OR
+            CAST(p.fechaInicio AS string) LIKE %:search% OR
+            CAST(p.fechaFin AS string) LIKE %:search%
+        )
+        """)
+    Page<Pago> findByUsuarioPensionIdWithSearch(
+        @Param("usuarioPensionId") Long usuarioPensionId, 
+        @Param("search") String search, 
+        Pageable pageable
+    );
+
+    @Query("""
+        SELECT p FROM Pago p 
+        WHERE p.usuarioPension.id = :usuarioPensionId 
         AND p.fechaFin = :fechaFinalizacion 
         ORDER BY p.fechaPago DESC 
         LIMIT 1

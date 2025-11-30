@@ -1,5 +1,5 @@
 import * as React from "react";
-import { getInfoUser, getToken, removeToken } from "../utils/AuthService";
+import { getInfoUser, getToken, removeAllStorage } from "../utils/AuthService";
 import LogoutIcon from "@mui/icons-material/Logout";
 
 import {
@@ -84,6 +84,11 @@ export default function EmpleadoRouter() {
     setDrawerOpen(open);
   };
 
+  const handleLogout = () => {
+    removeAllStorage();
+    goTo("/");
+  };
+
   const Menu = () => (
     <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
       <Box sx={{ flex: 1, overflowY: "auto", p: 1 }}>
@@ -123,7 +128,7 @@ export default function EmpleadoRouter() {
                 "&:hover": { cursor: "pointer", bgcolor: "var(--primary)" },
                 color: "#fff",
               }}
-              onClick={() => goTo(`/private/perfil`)}
+              onClick={() => goTo(`/empleado/perfil`)}
             >
               UE
             </Avatar>
@@ -205,6 +210,7 @@ export default function EmpleadoRouter() {
       <Box sx={{ p: 2 }}>
         <Divider sx={{ mb: 1 }} />
         <ListItemButton
+          onClick={handleLogout}
           sx={{
             borderRadius: "5px",
             color: "error.main",
@@ -219,9 +225,7 @@ export default function EmpleadoRouter() {
         >
           <ListItemIcon>
             <LogoutIcon
-              className={`side-icon ${selectedIndex === 3 ? "color-red " : "red"
-                }`
-              }
+              sx={{ color: "error.main" }}
             />
           </ListItemIcon>
           <ListItemText primary="Cerrar sesión" />
