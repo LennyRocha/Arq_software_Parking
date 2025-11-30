@@ -31,7 +31,7 @@ public class AuthAndCreateUsersController {
 
     @PostMapping("/private/registrarEmpleado")
     @Operation(summary = "Registrar empleado",description="Administrador registra empleados", security = @SecurityRequirement(name = "bearerAuth"))
-    public ResponseEntity<ApiResponse<?>> createEmpleado(@RequestBody EmpleadoRegisterDto empleadoRegisterDto) {
+    public ResponseEntity<ApiResponse<?>> createEmpleado(@RequestBody @Valid EmpleadoRegisterDto empleadoRegisterDto) {
         ApiResponse<?> response = authUserService.createEmpleado(empleadoRegisterDto);
 
         return ResponseEntity.status(response.getStatus()).body(response);

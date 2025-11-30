@@ -45,6 +45,9 @@ public class WebSecurityConfig {
                         .requestMatchers("/api/pensionado/private/**").hasAnyRole("ADMINISTRADOR","EMPLEADO")
                         .requestMatchers("/api/pensionado/cliente/**").hasRole("CLIENTE_PENSIONADO")
 
+                        //--GESTION DE USUARIOS
+                        .requestMatchers("/api/auth/private/registrarEmpleado").hasRole("ADMINISTRADOR")
+
                         .anyRequest().permitAll())
                 .addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();

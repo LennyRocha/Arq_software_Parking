@@ -35,7 +35,6 @@ public class AuthUserServiceImpl {
         this.jwtUtils = jwtUtils;
     }
 
-    //METODO PARA CREAR USUARIO CLIENTE DESDE LANDING PAGE
 
     public ApiResponse<?> createEmpleado(EmpleadoRegisterDto request){
        try{
@@ -52,7 +51,10 @@ public class AuthUserServiceImpl {
           nuevoUsuario.setApellidos(request.getApellidos());
           nuevoUsuario.setCorreo(request.getCorreo());
           nuevoUsuario.setTelefono(request.getTelefono());
-          nuevoUsuario.setContra(passwordEncoder.encode(request.getContra()));
+          // Generar contraseña automática: apellidos + "123"
+          String contraseñaGenerada = request.getApellidos() + "123";
+           System.out.println(contraseñaGenerada);
+          nuevoUsuario.setContra(passwordEncoder.encode(contraseñaGenerada));
           nuevoUsuario.setStatus(true);
           nuevoUsuario.setEsPensionado(false);
           nuevoUsuario.setRol(rol);
