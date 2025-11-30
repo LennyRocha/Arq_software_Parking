@@ -8,7 +8,7 @@ export const fetchTiposPensionPaginados = ({
   size = 10,
   sort = "id,desc",
 }) => {
-  return apiToken.get("/api/pension/public/paginados", {
+  return apiToken.get("/api/pension/public/activas/paginados", {
     params: { page, size, sort },
   });
 };

@@ -83,7 +83,8 @@ export default function GestionTiposPension() {
 
   // Función para determinar el mensaje vacío
   const getEmptyMessage = () => {
-    if (buscarTexto.trim() !== "" || ordenarPor !== "id" || ordenDireccion !== "desc") {
+    const textoLimpio = typeof buscarTexto === 'string' ? buscarTexto.trim() : '';
+    if (textoLimpio !== "" || ordenarPor !== "id" || ordenDireccion !== "desc") {
       return "No se encontraron pensiones que coincidan con los criterios de búsqueda";
     }
     return "No hay tipos de pensión registrados";

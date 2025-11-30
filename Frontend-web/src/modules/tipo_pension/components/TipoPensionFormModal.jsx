@@ -84,7 +84,7 @@ export default function TipoPensionFormModal({
           name="nombre"
           isObligatory={true}
           type="text"
-          placeholder="Ejemplo: Coche-Basic"
+          placeholder="Ejemplo: Pensión-RangoTiempo"
           isWrong={formik.touched.nombre && Boolean(formik.errors.nombre)}
           errorMessage={formik.touched.nombre && formik.errors.nombre}
         />
@@ -102,7 +102,7 @@ export default function TipoPensionFormModal({
         />
 
         <CustomInputLabel
-          labelText="Costo"
+          labelText="Costo ($ MXN)"
           value={formik.values.costo}
           onChange={formik.handleChange}
           name="costo"

@@ -29,11 +29,24 @@ export const usuarioPensionColumns = ({ onVerHistorial, onAbrirRenovar, setLoadi
       if (!row.fechaFinalizacion) return "N/A";
       // Agregar 'T00:00:00' para evitar problemas de zona horaria
       const date = new Date(row.fechaFinalizacion + 'T00:00:00');
-      return date.toLocaleDateString("es-MX", {
+      const hoy = new Date();
+      hoy.setHours(0, 0, 0, 0);
+      const fechaFin = new Date(row.fechaFinalizacion + 'T00:00:00');
+      fechaFin.setHours(0, 0, 0, 0);
+      
+      const estaVencida = fechaFin < hoy;
+      
+      const fechaFormateada = date.toLocaleDateString("es-MX", {
         year: "numeric",
         month: "2-digit",
         day: "2-digit",
       });
+      
+      return (
+        <span style={{ color: estaVencida ? '#d32f2f' : 'inherit', fontWeight: estaVencida ? 'bold' : 'normal' }}>
+          {fechaFormateada}
+        </span>
+      );
     }
   },
   {

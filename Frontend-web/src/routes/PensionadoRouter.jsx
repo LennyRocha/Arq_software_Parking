@@ -1,4 +1,5 @@
 import * as React from "react";
+import { getToken, removeAllStorage } from "../utils/AuthService";
 
 //Components MUI Lists
 import List from "@mui/material/List";
@@ -17,6 +18,7 @@ import MenuBookIcon from "@mui/icons-material/MenuBook";
 import DirectionsCar from "@mui/icons-material/DirectionsCar";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
+import LogoutIcon from "@mui/icons-material/Logout";
 
 //Material Design Icons Js
 import Icon from "@mdi/react";
@@ -63,6 +65,10 @@ export default function AdminRouter() {
   const { isDarkMode, toggleDarkMode } = useDarkContext();
 
   React.useEffect(() => {
+    getToken();
+        if (!getToken()) {
+          goTo("*");
+        }
     switch (true) {
       case path.includes("entradas"):
         setSelectedIndex(1);
@@ -96,6 +102,11 @@ export default function AdminRouter() {
       default:
         break;
     }
+  };
+
+  const handleLogout = () => {
+    removeAllStorage();
+    goTo("/");
   };
 
   const [drawerOpen, setDrawerOpen] = React.useState(false);
@@ -314,7 +325,29 @@ export default function AdminRouter() {
           </ListItemIcon>
           <ListItemText primary="Mis vehículos" />
         </ListItemButton>
+          {/* CERRAR SESIÓN */}
+        
       </List>
+        </Box>
+
+        {/* Logout fijo abajo */}
+        <Box sx={{ p: 2 }}>
+          <Divider sx={{ mb: 1 }} />
+          <ListItemButton
+            onClick={handleLogout}
+            sx={{
+              borderRadius: "5px",
+              color: "error.main",
+              "&:hover": { backgroundColor: "rgba(211, 47, 47, 0.1)" },
+            }}
+          >
+            <ListItemIcon>
+              <LogoutIcon sx={{ color: "error.main" }} />
+            </ListItemIcon>
+            <ListItemText primary="Cerrar sesión" />
+          </ListItemButton>
+        </Box>
+      </Box>
     );
   };
 

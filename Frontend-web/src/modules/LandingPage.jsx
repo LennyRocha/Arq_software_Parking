@@ -39,7 +39,7 @@ import {
 } from "@mui/icons-material";
 import { useDarkContext } from "../context/DarkContext";
 import { useNavigate } from "react-router-dom";
-import { searchTiposPensionPaginados } from "./tipo_pension/api/TiposPensionApi";
+import { searchTiposPensionActivasPaginados } from "./tipo_pension/api/TiposPensionApi";
 import LoadingBackdrop from "../components/LoadingBackdrop";
 import ParkingGrid from "./cajon/components/ParkingGrid";
 import fondo from "../img/parking_back.jpg";
@@ -121,7 +121,7 @@ export default function LandingPage() {
   const cargarTiposPension = async () => {
     setLoading(true);
     try {
-      const response = await searchTiposPensionPaginados({
+      const response = await searchTiposPensionActivasPaginados({
         page,
         size: rowsPerPage,
         sort: "duracionDias,asc",

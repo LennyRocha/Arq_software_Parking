@@ -45,7 +45,25 @@ public class EntradaSalidaController {
                 .body(ApiResponse.success(HttpStatus.OK, EntradaSalidaMessages.ENDPOINT_ENTRADA_SALIDA_GET_ALL, resultado));
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/pensionado/search/paginated")
+    @Operation(summary = "Buscar y paginar entradas y salidas del pensionado autenticado",
+            description = "Busca las entradas y salidas del usuario pensionado autenticado por folio. " +
+                    "Permite ordenar por fecha y hora de entrada (descendente por defecto) o por tipo de vehículo. " +
+                    "Soporta paginación con parámetros de página y tamaño. " +
+                    "Utiliza el token JWT para identificar al usuario automáticamente.")
+    public ResponseEntity<ApiResponse<Page<EntradaSalidaResponseDto>>> searchAndSortPaginatedByPensionado(
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false, defaultValue = "fecha") String sortBy,
+            @RequestParam(required = false, defaultValue = "desc") String sortOrder,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Page<EntradaSalidaResponseDto> resultado = entradaSalidaService.searchAndSortPaginatedByPensionado(search, sortBy, sortOrder, page, size);
+        return ResponseEntity.ok()
+                .body(ApiResponse.success(HttpStatus.OK, EntradaSalidaMessages.ENDPOINT_ENTRADA_SALIDA_GET_ALL, resultado));
+    }
+
+    @GetMapping("/get-by-id/{id}")
     @Operation(summary = "Obtener entrada/salida por ID",
             description = "Obtiene los detalles completos de un registro de entrada/salida específico mediante su ID.")
     public ResponseEntity<ApiResponse<EntradaSalidaResponseDto>> findById(@PathVariable Long id) {
@@ -109,7 +127,7 @@ public class EntradaSalidaController {
     }
 
     @PutMapping("/pensionado/salida/{folioTicket}")
-    @Operation(summary = "marcar salida de pensionado",
+    @Operation(summary = "Marcar salida de pensionado",
             description = "Marca la salida de un vehículo pensionado del estacionamiento. " +
                     "Calcula y guarda la hora de salida.")
     public ResponseEntity<ApiResponse<EntradaSalidaResponseDto>> marcarSalidaPensionado(@PathVariable String uuidCodigoQR) {

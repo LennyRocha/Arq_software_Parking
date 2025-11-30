@@ -24,3 +24,5 @@ mercadopago.public.key=TEST-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 mercadopago.success.url=http://localhost:5173/registro-pension?status=approved
 mercadopago.failure.url=http://localhost:5173/registro-pension?status=rejected
 mercadopago.pending.url=http://localhost:5173/registro-pension?status=pending
+
+websocket.server.url=http://localhost:5000

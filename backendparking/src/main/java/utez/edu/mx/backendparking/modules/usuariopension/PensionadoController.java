@@ -47,8 +47,7 @@ public class PensionadoController {
 
 
     @GetMapping("/private/paginados")
-    @Operation(summary = "Obtener usuarios pensionados paginados",
-            description = "Obtener lista de usuarios pensionados con paginación, ordenamiento y búsqueda.")
+    @Operation(summary = "Obtener usuarios pensionados paginados", description = "Obtener lista de usuarios pensionados con paginación, ordenamiento y búsqueda.",security = @SecurityRequirement(name = "bearerAuth"))
     @Parameter(name = "page", description = "Número de página (0 por defecto)", example = "0")
     @Parameter(name = "size", description = "Tamaño de la página (10 por defecto)", example = "10")
     @Parameter(name = "sort", description = "Campo para ordenar. Formato: campo,dirección", example = "id,desc")
@@ -81,23 +80,30 @@ public class PensionadoController {
     }
 
     @GetMapping("/private/historial-pagos/{usuariopensionId}")
-    @Operation(summary = "Obtener historial de pagos de un usuario",
-            description = "Obtener el historial de pagos paginado de un usuario específico. Para funciones de admin y empleado")
-    public ResponseEntity<ApiResponse<Page<PagoResponseDto>>> getHistorialPagos(@PathVariable Long usuariopensionId, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, @RequestParam(defaultValue = "fechaPago,desc") String sort) {
+    @Operation(summary = "Obtener historial de pagos de un usuario", description = "Obtener el historial de pagos paginado de un usuario específico. Para funciones de admin y empleado",security = @SecurityRequirement(name = "bearerAuth"))
+    public ResponseEntity<ApiResponse<Page<PagoResponseDto>>> getHistorialPagos(
+            @PathVariable Long usuariopensionId, 
+            @RequestParam(defaultValue = "0") int page, 
+            @RequestParam(defaultValue = "10") int size, 
+            @RequestParam(defaultValue = "fechaPago,desc") String sort,
+            @RequestParam(required = false) String search) {
 
         String[] sortArray = sort.split(",");
         Sort sortObject = PaginationUtils.getSortFromParams(sortArray);
         Pageable pageable = PageRequest.of(page, size, sortObject);
 
-        Page<PagoResponseDto> historialPagos = pensionadoService.findHistorialPagosByUsuarioPension(usuariopensionId, pageable);
+        Page<PagoResponseDto> historialPagos = pensionadoService.findHistorialPagosByUsuarioPension(usuariopensionId, pageable, search);
 
         return ResponseEntity.ok(ApiResponse.success(HttpStatus.OK, "Historial de pagos obtenido correctamente", historialPagos));
     }
 
     @GetMapping("/cliente/mi-historial-pagos")
-    @Operation(summary = "Obtener historial de pagos del usuario autenticado",
-            description = "Obtener el historial de pagos paginado del usuario pensionado autenticado. Para usuarios pensionados",security = @SecurityRequirement(name = "bearerAuth"))
-    public ResponseEntity<ApiResponse<Page<PagoResponseDto>>> getMiHistorialPagos(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, @RequestParam(defaultValue = "fechaPago,desc") String sort) {
+    @Operation(summary = "Obtener historial de pagos del usuario autenticado", description = "Obtener el historial de pagos paginado del usuario pensionado autenticado. Para usuarios pensionados",security = @SecurityRequirement(name = "bearerAuth"))
+    public ResponseEntity<ApiResponse<Page<PagoResponseDto>>> getMiHistorialPagos(
+            @RequestParam(defaultValue = "0") int page, 
+            @RequestParam(defaultValue = "10") int size, 
+            @RequestParam(defaultValue = "fechaPago,desc") String sort,
+            @RequestParam(required = false) String search) {
 
         Usuario usuario=SecurityUtils.getCurrentUser();
         ERole role=usuario.getRol().getName();
@@ -115,13 +121,13 @@ public class PensionadoController {
         Sort sortObject = PaginationUtils.getSortFromParams(sortArray);
         Pageable pageable = PageRequest.of(page, size, sortObject);
 
-        Page<PagoResponseDto> historialPagos = pensionadoService.findHistorialPagosByUsuarioPension(usuarioPensionId, pageable);
+        Page<PagoResponseDto> historialPagos = pensionadoService.findHistorialPagosByUsuarioPension(usuarioPensionId, pageable, search);
 
         return ResponseEntity.ok(ApiResponse.success(HttpStatus.OK, "Historial de pagos obtenido correctamente", historialPagos));
     }
 
     @PostMapping("/private/{usuarioPensionId}/renovar")
-    @Operation(summary = "Renovar pensión de usuario", description = "Renovar la pensión de un usuario específico con un nuevo tipo de pensión.")
+    @Operation(summary = "Renovar pensión de usuario", description = "Renovar la pensión de un usuario específico con un nuevo tipo de pensión.",security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<ApiResponse<Void>> renovarPension(@PathVariable Long usuarioPensionId, @RequestBody @Valid RenovarPensionRequestDto dto) {
 
         pensionadoService.renovarPension(usuarioPensionId, dto);
@@ -131,8 +137,7 @@ public class PensionadoController {
 
 
     @PostMapping("/cliente/renovar")
-    @Operation(summary = "Renovar pensión del usuario autenticado", 
-            description = "Renovar la pensión del usuario pensionado autenticado con un nuevo tipo de pensión",security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(summary = "Renovar pensión del usuario autenticado", description = "Renovar la pensión del usuario pensionado autenticado con un nuevo tipo de pensión",security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<ApiResponse<Void>> renovarMiPension(@RequestBody @Valid RenovarPensionRequestDto dto) {
 
         Usuario usuario=SecurityUtils.getCurrentUser();

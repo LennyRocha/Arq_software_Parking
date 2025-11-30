@@ -1,4 +1,4 @@
-import apiToken from "../../../utils/api";
+import apiToken from "../../../utils/apiToken";
 
 /**
  * Verificar si el pensionado tiene un vehículo estacionado actualmente

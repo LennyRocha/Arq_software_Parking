@@ -1,60 +1,65 @@
 import * as React from "react";
+import { getInfoUser, getToken, removeAllStorage } from "../utils/AuthService";
+import LogoutIcon from "@mui/icons-material/Logout";
 
-//Components MUI Lists
-import List from "@mui/material/List";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
-import Divider from "@mui/material/Divider";
+import {
+  Avatar,
+  Drawer,
+  List,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  ListItem,
+  ListItemAvatar,
+  Toolbar,
+  Tooltip,
+  Box,
+  AppBar,
+  Typography,
+  IconButton,
+  Divider,
+  useMediaQuery,
+} from "@mui/material";
 
-//Icons
-import PersonAddICon from "@mui/icons-material/PersonAdd";
+// MUI Icons
+import MenuIcon from "@mui/icons-material/Menu";
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import ConfirmationNumberIcon from "@mui/icons-material/ConfirmationNumber";
 import LocalParkingIcon from "@mui/icons-material/LocalParking";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 
-//Material Design Icons Js
+
 import Icon from "@mdi/react";
 import { mdiBadgeAccount } from "@mdi/js";
 
-//Logo
-import logo from "../img/logo_parking_hd_no_titulo.png";
 
-//Components MUI List Items
-import {
-  Avatar,
-  Drawer,
-  ListItem,
-  ListItemAvatar,
-  Toolbar,
-  Tooltip,
-} from "@mui/material";
-
-//Components MUI AppBar
-import Box from "@mui/material/Box";
-import AppBar from "@mui/material/AppBar";
-import Typography from "@mui/material/Typography";
-import IconButton from "@mui/material/IconButton";
-import MenuIcon from "@mui/icons-material/Menu";
-
-//Router
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
+
+
 import { useDarkContext } from "../context/DarkContext";
 
-//Use themes
+
 import { useTheme } from "@mui/material/styles";
+
+
+import logo from "../img/logo_parking_hd_no_titulo.png";
 
 export default function EmpleadoRouter() {
   const location = useLocation();
   const path = location.pathname;
   const goTo = useNavigate();
+  const { isDarkMode, toggleDarkMode } = useDarkContext();
+  const theme = useTheme();
+  const bg = theme.palette.background.default;
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   const [selectedIndex, setSelectedIndex] = React.useState(0);
-
-  const { isDarkMode, toggleDarkMode } = useDarkContext();
+  const [drawerOpen, setDrawerOpen] = React.useState(false);
 
   React.useEffect(() => {
+    if (!getToken()) goTo("*");
+
     switch (true) {
       case path.includes("pensiones"):
         setSelectedIndex(1);
@@ -70,52 +75,24 @@ export default function EmpleadoRouter() {
     }
   }, [path]);
 
-  const [drawerOpen, setDrawerOpen] = React.useState(false);
   const toggleDrawer = (open) => (event) => {
     if (
       event.type === "keydown" &&
       (event.key === "Tab" || event.key === "Shift")
-    ) {
+    )
       return;
-    }
     setDrawerOpen(open);
   };
 
-  React.useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth > 768) {
-        setDrawerOpen(false);
-      }
-    };
+  const handleLogout = () => {
+    removeAllStorage();
+    goTo("/");
+  };
 
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  const Menu = (clase) => {
-    return (
-      <List
-        sx={{
-          width: "100%",
-          maxWidth: 256,
-          padding: "10px",
-          boxSizing: "border-box",
-          height: "100vh",
-          overflowY: "auto",
-        }}
-        className={`no_scroll ${clase.clase}`}
-        component="nav"
-      >
-        <Toolbar
-          disableGutters
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            width: "100%",
-            position: "sticky",
-          }}
-        >
+  const Menu = () => (
+    <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
+      <Box sx={{ flex: 1, overflowY: "auto", p: 1 }}>
+        <Toolbar disableGutters sx={{ mb: 1 }}>
           <ListItem sx={{ gap: 1, padding: 1, borderRadius: 2 }}>
             <ListItemAvatar>
               <Avatar
@@ -148,167 +125,179 @@ export default function EmpleadoRouter() {
             <Avatar
               sx={{
                 bgcolor: "var(--other)",
-                "&:hover": {
-                  cursor: "pointer",
-                  bgcolor: "var(--primary)",
-                },
+                "&:hover": { cursor: "pointer", bgcolor: "var(--primary)" },
                 color: "#fff",
               }}
-              onClick={() => goTo(`/private/perfil/${24}`)}
+              onClick={() => goTo(`/empleado/perfil`)}
             >
               UE
             </Avatar>
           </Tooltip>
         </Toolbar>
+
         <Divider />
-        <ListItemButton
-          onClick={() => goTo("/empleado")}
-          selected={selectedIndex === 0}
-          sx={{
-            borderRadius: "5px",
-            "&.Mui-selected": {
-              backgroundColor: "var(--other)",
-              color: "#ffffff",
-            },
-          }}
-          className="side-item"
-        >
-          <ListItemIcon>
-            <ConfirmationNumberIcon
-              className={`side-icon ${
-                selectedIndex === 0 ? "color-white " : "gray"
-              }`}
-            />
-          </ListItemIcon>
-          <ListItemText primary="Entradas y salidas" />
-        </ListItemButton>
+
+        <List>
+          <ListItemButton
+            onClick={() => goTo("/empleado")}
+            selected={selectedIndex === 0}
+            sx={{
+              borderRadius: "5px",
+              "&.Mui-selected": { backgroundColor: "var(--other)", color: "#fff" },
+            }}
+          >
+            <ListItemIcon>
+              <ConfirmationNumberIcon
+                className={selectedIndex === 0 ? "color-white" : "gray"}
+              />
+            </ListItemIcon>
+            <ListItemText primary="Entradas y salidas" />
+          </ListItemButton>
+
+          <ListItemButton
+            onClick={() => goTo("/empleado/pensiones")}
+            selected={selectedIndex === 1}
+            sx={{
+              borderRadius: "5px",
+              "&.Mui-selected": { backgroundColor: "var(--other)", color: "#fff" },
+            }}
+          >
+            <ListItemIcon>
+              <Icon
+                path={mdiBadgeAccount}
+                size={1}
+                className={selectedIndex === 1 ? "color-white" : "gray"}
+              />
+            </ListItemIcon>
+            <ListItemText primary="Pensiones de usuarios" />
+          </ListItemButton>
+
+          <ListItemButton
+            onClick={() => goTo("/empleado/cajones")}
+            selected={selectedIndex === 2}
+            sx={{
+              borderRadius: "5px",
+              "&.Mui-selected": { backgroundColor: "var(--other)", color: "#fff" },
+            }}
+          >
+            <ListItemIcon>
+              <LocalParkingIcon
+                className={selectedIndex === 2 ? "color-white" : "gray"}
+              />
+            </ListItemIcon>
+            <ListItemText primary="Cajones" />
+          </ListItemButton>
+
+          <ListItemButton
+            onClick={() => goTo("/empleado/nuevo_pensionado")}
+            selected={selectedIndex === 3}
+            sx={{
+              borderRadius: "5px",
+              "&.Mui-selected": { backgroundColor: "var(--other)", color: "#fff" },
+            }}
+          >
+            <ListItemIcon>
+              <PersonAddIcon
+                className={selectedIndex === 3 ? "color-white" : "gray"}
+              />
+            </ListItemIcon>
+            <ListItemText primary="Registrar usuario pensionado" />
+          </ListItemButton>
+        </List>
+      </Box>
+
+      {/* Logout fijo abajo */}
+      <Box sx={{ p: 2 }}>
+        <Divider sx={{ mb: 1 }} />
 
         <ListItemButton
-          onClick={() => goTo("/empleado/pensiones")}
-          selected={selectedIndex === 1}
           sx={{
             borderRadius: "5px",
-            "&.Mui-selected": {
-              backgroundColor: "var(--other)",
-              color: "#ffffff",
-            },
           }}
-          className="side-item"
+          onClick={() => {
+            removeAllStorage();
+            goTo("/login");
+          }}
         >
           <ListItemIcon>
-            <Icon
-              path={mdiBadgeAccount}
-              size={1}
-              className={`side-icon ${
-                selectedIndex === 1 ? "color-white " : "gray"
-              }`}
+            <LogoutIcon
+              sx={{ color: "error.main" }}
             />
           </ListItemIcon>
-          <ListItemText primary="Pensiones de usuarios" />
+          <ListItemText primary="Cerrar sesión" />
         </ListItemButton>
-
-        <ListItemButton
-          onClick={() => goTo("/empleado/cajones")}
-          selected={selectedIndex === 2}
-          sx={{
-            borderRadius: "5px",
-            "&.Mui-selected": {
-              backgroundColor: "var(--other)",
-              color: "#ffffff",
-            },
-          }}
-          className="side-item"
-        >
-          <ListItemIcon>
-            <LocalParkingIcon
-              className={`side-icon ${
-                selectedIndex === 2 ? "color-white " : "gray"
-              }`}
-            />
-          </ListItemIcon>
-          <ListItemText primary="Cajones" />
-        </ListItemButton>
-        <ListItemButton
-          onClick={() => goTo("/empleado/nuevo_pensionado")}
-          selected={selectedIndex === 5}
-          sx={{
-            borderRadius: "5px",
-            "&.Mui-selected": {
-              backgroundColor: "var(--other)",
-              color: "#ffffff",
-            },
-          }}
-          className="side-item"
-        >
-          <ListItemIcon>
-            <PersonAddICon
-              className={`side-icon ${
-                selectedIndex === 5 ? "color-white " : "gray"
-              }`}
-            />
-          </ListItemIcon>
-          <ListItemText primary="Registrar empleado pensionado" />
-        </ListItemButton>
-      </List>
-    );
-  };
-
-  const theme = useTheme();
-  const bg = theme.palette.background.default;
+      </Box>
+    </Box>
+  );
 
   return (
     <Box
-      sx={{ flexGrow: 1, height: "100vh", padding: 0 }}
-      className="grid-side"
+      sx={{
+        display: "flex",
+        flexDirection: { xs: "column", md: "row" },
+        height: "100vh",
+      }}
     >
-      <Menu clase="side-bar-layout" />
-      <Box sx={{ flex: 1, overflowY: "auto", height: "100vh" }}>
-        <AppBar
-          position="sticky"
-          sx={{
-            bgcolor: bg,
-            color: "var(--text)",
-          }}
-          className="appbar"
-        >
-          <Toolbar>
-            <IconButton
-              size="large"
-              edge="start"
-              color="inherit"
-              aria-label="menu"
-              sx={{ mr: 2 }}
-              onClick={() => {
-                setDrawerOpen(!drawerOpen);
-                console.log("click", drawerOpen);
-              }}
-            >
-              <MenuIcon />
-            </IconButton>
-            <Typography
-              variant="h6"
-              component="div"
-              sx={{
-                flexGrow: 1,
-                textAlign: "left",
-                fontWeight: "bold",
-              }}
-              className="custom-font"
-            >
-              Panel de empleados
-            </Typography>
-          </Toolbar>
-        </AppBar>
+
+      {isMobile ? (
         <Drawer
           anchor="left"
           variant="temporary"
           open={drawerOpen}
           onClose={toggleDrawer(false)}
+          PaperProps={{ sx: { width: 256, display: "flex", flexDirection: "column" } }}
         >
-          <Menu clase="" />
+          <Menu />
         </Drawer>
-        <Outlet />
+      ) : (
+        <Box
+          sx={{
+            width: 256,
+            flexShrink: 0,
+            display: "flex",
+            flexDirection: "column",
+            height: "100vh",
+            borderRight: "1px solid #ddd",
+          }}
+        >
+          <Menu />
+        </Box>
+      )}
+
+
+      <Box
+        sx={{
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          height: "100%",
+        }}
+      >
+
+        {isMobile && (
+          <AppBar position="sticky" sx={{ bgcolor: bg, color: "var(--text)" }}>
+            <Toolbar>
+              <IconButton
+                size="large"
+                edge="start"
+                color="inherit"
+                sx={{ mr: 2 }}
+                onClick={() => setDrawerOpen(!drawerOpen)}
+              >
+                <MenuIcon />
+              </IconButton>
+              <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: "bold" }}>
+                Panel de empleados
+              </Typography>
+            </Toolbar>
+          </AppBar>
+        )}
+
+        <Box sx={{ flex: 1, overflowY: "auto" }}>
+          <Outlet />
+        </Box>
       </Box>
+
     </Box>
   );
 }
