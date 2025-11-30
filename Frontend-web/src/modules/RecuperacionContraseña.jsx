@@ -39,18 +39,14 @@ export default function RecuperacionContraseña() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
-
         try {
-            const response = await api.post(
-                `/api/email/send/${formData.email.trim()}`,
-                {
-                    subject: "Recuperación de contraseña",
-                    message: "Tu código de verificación es:",
-                }
-            );
+            // 1️⃣ Enviar correo
+            const response = await api.post(`/api/email/send/${formData.email.trim()}`, {
+                subject: "Recuperación de contraseña",
+                message: "Tu código de verificación es:",
+            });
 
             const apiResponse = response.data;
-
             if (!apiResponse.success) {
                 sweetAlert({
                     title: "Error al enviar el correo",
@@ -61,8 +57,26 @@ export default function RecuperacionContraseña() {
                 return;
             }
 
+            // Guardar el código de recuperación
             const code = apiResponse.data.code;
             localStorage.setItem("codigoRecuperacion", code);
+
+            // 2️⃣ Obtener ID del usuario
+            try {
+                const respuesta = await api.get(`/api/auth/buscarId/${formData.email.trim()}`);
+                const userId = respuesta.data.data.id;
+                localStorage.setItem("userId", userId);
+                console.log("ID guardado en localStorage:", userId);
+            } catch (error) {
+                console.error("Error obteniendo el ID:", error);
+                sweetAlert({
+                    title: "Error",
+                    text: "No se pudo obtener el ID del usuario",
+                    icon: "error",
+                });
+                setLoading(false);
+                return;
+            }
 
             sweetAlert({
                 title: "Código enviado",
@@ -73,12 +87,14 @@ export default function RecuperacionContraseña() {
             navigate("/actualizacion-contra");
 
         } catch (error) {
+            console.error("Error enviando el correo:", error);
             sweetAlert({
                 title: "Error",
                 text: "No se pudo enviar el correo",
                 icon: "error",
             });
         }
+
 
         setLoading(false);
     };
@@ -199,8 +215,8 @@ export default function RecuperacionContraseña() {
                                     formData.email.trim() === ""
                                         ? "4px solid #103f3d"
                                         : /\S+@\S+\.\S+/.test(formData.email)
-                                        ? "4px solid #2ecc71"
-                                        : "4px solid #e74c3c",
+                                            ? "4px solid #2ecc71"
+                                            : "4px solid #e74c3c",
                                 "& .MuiFilledInput-root": {
                                     backgroundColor: "transparent",
                                 },

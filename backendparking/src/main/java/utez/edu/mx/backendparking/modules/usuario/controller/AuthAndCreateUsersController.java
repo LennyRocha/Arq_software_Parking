@@ -67,4 +67,12 @@ public class AuthAndCreateUsersController {
 
         return ResponseEntity.status(response.getStatus()).body(response);
     }
+    
+  @GetMapping("/buscarId/{correo}")
+public ResponseEntity<ApiResponse<?>> buscarIdPorCorreo(@PathVariable String correo) {
+    ApiResponse<?> response = authUserService.buscarIdPorCorreo(correo);
+    return ResponseEntity.status(response.getStatus()).body(response);
+}
+
+
 }
