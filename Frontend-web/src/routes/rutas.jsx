@@ -15,12 +15,10 @@ import PensionadoVerEntradasSalidas from "../modules/entradas_salidas/pages/Pens
 import AdminGestionTarifas from "../modules/tarifas/pages/AdminGestionTarifas";
 import GestionTiposPension from "../modules/tipo_pension/pages/GestionTiposPension";
 import PensionesUsuario from "../modules/usuario_pension/pages/PensionesUsuarios";
-import UsuarioTablaAdmin from "../modules/usuarios/pages/UsuarioTablaAdmin";
-import RegistroUsuarioPensionado from "../modules/usuarios/components/RegistroUsuarioPensionado";
-import RegistroVehiculoAdmin from "../modules/usuarios/components/RegistroVehiculoAdmin";
+import GestionUsuarios from "../modules/usuarios/pages/GestionUsuarios";
+import RegistroPensionadoAdmin from "../modules/usuarios/components/RegistroPensionadoAdmin";
+import RegistroPensionadoEmpleado from "../modules/usuarios/components/RegistroPensionadoEmpleado";
 import RegistroEmpleado from "../modules/usuarios/components/RegistroEmpleado";
-import RegistroUsuarioPensionadoEmpleado from "../modules/usuarios/components/RegistroUsuarioPensionadoEmpleado";
-import RegistroVehiculoEmpleado from "../modules/usuarios/components/RegistroVehiculoEmpleado";
 import CajonesPage from "../modules/cajon/pages/CajonesPage";
 import MiPension from "../modules/usuario_pension/pages/MiPension";
 import RecuperacionContraseña from "../modules/RecuperacionContraseña";
@@ -58,11 +56,9 @@ export default function Rutas() {
           <Route path="pensiones_de_usuarios" element={<PensionesUsuario />} />
           <Route path="tarifas" element={<AdminGestionTarifas />} />
           <Route path="cajones" element={<CajonesPage isPensionado={false} />} />
-          <Route path="gestion_usuarios" element={<UsuarioTablaAdmin/>} />
-          <Route path="usuarios/registrar" element={<RegistroUsuarioPensionado/>} />
-          <Route path="usuarios/registrar/vehiculo" element={<RegistroVehiculoAdmin/>} />
+          <Route path="gestion_usuarios" element={<GestionUsuarios/>} />
+          <Route path="usuarios/registrar" element={<RegistroPensionadoAdmin/>} />
           <Route path="usuarios/registrar-empleado" element={<RegistroEmpleado/>} />
-          <Route path="gestion_usuarios_nuevoempleado" element={<UsuarioTablaAdmin/>} />
           <Route path="gestion_vehiculos" element={<Pages />} />
           <Route path="perfil" element={<Perfil />} />
         </Route>
@@ -71,8 +67,7 @@ export default function Rutas() {
           <Route index element={<AdminGestionarEntradasSalidas />} />
           <Route path="pensiones" element={<PensionesUsuario />} />
           <Route path="cajones" element={<Pages />} />
-          <Route path="nuevo_pensionado" element={<RegistroUsuarioPensionadoEmpleado />} />
-          <Route path="nuevo_pensionado/vehiculo" element={<RegistroVehiculoEmpleado />} />
+          <Route path="nuevo_pensionado" element={<RegistroPensionadoEmpleado />} />
           <Route path="perfil" element={<Perfil />} />
         </Route>
         {/* Rutas del pensionado */}
