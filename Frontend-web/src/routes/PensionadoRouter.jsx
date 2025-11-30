@@ -1,4 +1,5 @@
 import * as React from "react";
+import {getToken, removeToken } from "../utils/AuthService";
 
 //Components MUI Lists
 import List from "@mui/material/List";
@@ -17,6 +18,8 @@ import MenuBookIcon from "@mui/icons-material/MenuBook";
 import DirectionsCar from "@mui/icons-material/DirectionsCar";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
+import LogoutIcon from "@mui/icons-material/Logout";
+
 
 //Material Design Icons Js
 import Icon from "@mdi/react";
@@ -63,6 +66,10 @@ export default function AdminRouter() {
   const { isDarkMode, toggleDarkMode } = useDarkContext();
 
   React.useEffect(() => {
+    getToken();
+        if (!getToken()) {
+          goTo("*");
+        }
     switch (true) {
       case path.includes("entradas"):
         setSelectedIndex(1);
@@ -178,7 +185,7 @@ export default function AdminRouter() {
                 },
                 color: "#fff",
               }}
-              onClick={() => goTo(`/private/perfil/${24}`)}
+              onClick={() => goTo(`/pensionados/perfil`)}
             >
               UP
             </Avatar>
@@ -310,6 +317,25 @@ export default function AdminRouter() {
           </ListItemIcon>
           <ListItemText primary="Mis vehículos" />
         </ListItemButton>
+          {/* CERRAR SESIÓN */}
+        <Box sx={{ marginTop: "auto", paddingTop: 2 }}>
+          <Divider sx={{ marginBottom: 1 }} />
+
+          <ListItemButton
+            sx={{
+              borderRadius: "5px",
+            }}
+            onClick={() => {
+              removeToken();
+              goTo("/login");
+            }}
+          >
+            <ListItemIcon>
+              <LogoutIcon sx={{ color: "error.main" }} />
+            </ListItemIcon>
+            <ListItemText primary="Cerrar sesión" />
+          </ListItemButton>
+        </Box>
       </List>
     );
   };

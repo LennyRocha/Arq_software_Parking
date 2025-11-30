@@ -23,6 +23,8 @@ import CajonesPage from "../modules/cajon/pages/CajonesPage";
 import MiPension from "../modules/usuario_pension/pages/MiPension";
 import RecuperacionContraseña from "../modules/RecuperacionContraseña";
 import ActualizacionContra from "../modules/ActualizacionContra";
+import Perfil from "../modules/cajon/pages/PagesAdmin";
+import P from "../modules/cajon/pages/PagesPensionado";
 
 const Err = () => <h1>404 - Not Found!</h1>;
 
@@ -31,14 +33,14 @@ export default function Rutas() {
     <Router>
       <Routes>
         <Route index element={<LandingPage />} />
-        
+
         {/* Autenticación y registro */}
         <Route path="/login" element={<Login />} />
         <Route path="/registro-pension" element={<RegistroPension />} />
         <Route path="/registro-pension/:id" element={<RegistroPension />} />
         <Route path="/recuperacion-contraseña" element={<RecuperacionContraseña />} />
         <Route path="/actualizacion-contra" element={<ActualizacionContra />} />
-        
+
         {/* Autenticación legacy */}
         <Route path="/auth">
           <Route index element={<Navigate to="/login" replace />} />
@@ -51,16 +53,17 @@ export default function Rutas() {
         <Route path="/admin" element={<AdminRouter />}>
           <Route index element={<AdminGestionarEntradasSalidas />} />
           <Route path="reportes" element={<AdminGestionarReportesGanancias />} />
-          <Route path="tipos_de_pension" element={<GestionTiposPension/>} />
+          <Route path="tipos_de_pension" element={<GestionTiposPension />} />
           <Route path="pensiones_de_usuarios" element={<PensionesUsuario />} />
           <Route path="tarifas" element={<AdminGestionTarifas />} />
           <Route path="cajones" element={<CajonesPage isPensionado={false} />} />
-          <Route path="gestion_usuarios" element={<UsuarioTablaAdmin/>} />
-          <Route path="usuarios/registrar" element={<RegistroUsuarioPensionado/>} />
-          <Route path="usuarios/registrar/vehiculo" element={<RegistroVehiculoAdmin/>} />
-          <Route path="usuarios/registrar-empleado" element={<RegistroEmpleado/>} />
-          <Route path="gestion_usuarios_nuevoempleado" element={<UsuarioTablaAdmin/>} />
+          <Route path="gestion_usuarios" element={<UsuarioTablaAdmin />} />
+          <Route path="usuarios/registrar" element={<RegistroUsuarioPensionado />} />
+          <Route path="usuarios/registrar/vehiculo" element={<RegistroVehiculoAdmin />} />
+          <Route path="usuarios/registrar-empleado" element={<RegistroEmpleado />} />
+          <Route path="gestion_usuarios_nuevoempleado" element={<UsuarioTablaAdmin />} />
           <Route path="gestion_vehiculos" element={<Pages />} />
+          <Route path="perfil" element={<Perfil />} />
         </Route>
         {/* Rutas del empleado */}
         <Route path="/empleado" element={<EmpleadoRouter />}>
@@ -75,8 +78,10 @@ export default function Rutas() {
           <Route index element={<CajonesPage isPensionado />} />
           <Route path="entradas" element={<PensionadoEstacionamiento />} />
           <Route path="historial" element={<PensionadoEstacionamiento />} />
-          <Route path="mi_pension" element={<MiPension/>} />
+          <Route path="mi_pension" element={<MiPension />} />
           <Route path="mis_vehiculos" element={<Pages />} />
+          <Route path="perfil" element={<P />} />
+
         </Route>
         {/* Perfil y otros */}
         <Route path="/private/perfil" element={<Pages />} />

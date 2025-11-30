@@ -1,4 +1,6 @@
 import * as React from "react";
+import { getToken, removeToken } from "../utils/AuthService";
+
 
 //Components MUI Lists
 import List from "@mui/material/List";
@@ -19,6 +21,8 @@ import DirectionsCar from "@mui/icons-material/DirectionsCar";
 import FolderSharedIcon from "@mui/icons-material/FolderShared";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
+import LogoutIcon from "@mui/icons-material/Logout";
+
 
 //Material Design Icons Js
 import Icon from "@mdi/react";
@@ -66,6 +70,8 @@ export default function AdminRouter() {
   const { isDarkMode, toggleDarkMode } = useDarkContext();
 
   React.useEffect(() => {
+    getToken();
+    if (!getToken()) goTo("*");
     switch (true) {
       case path.includes("reportes"):
         setSelectedIndex(1);
@@ -190,7 +196,7 @@ export default function AdminRouter() {
                 },
                 color: "#fff",
               }}
-              onClick={() => goTo(`/private/perfil/${24}`)}
+              onClick={() => goTo(`/admin/perfil`)}
             >
               UA
             </Avatar>
@@ -223,9 +229,8 @@ export default function AdminRouter() {
                 <Icon
                   path={mdiCarCog}
                   size={1}
-                  className={`side-icon ${
-                    selectedIndex === 0 ? "color-white " : "gray"
-                  }`}
+                  className={`side-icon ${selectedIndex === 0 ? "color-white " : "gray"
+                    }`}
                 />
               </ListItemIcon>
               <ListItemText primary="Gestionar" />
@@ -247,9 +252,8 @@ export default function AdminRouter() {
                 <Icon
                   path={mdiFileChart}
                   size={1}
-                  className={`side-icon ${
-                    selectedIndex === 1 ? "color-white " : "gray"
-                  }`}
+                  className={`side-icon ${selectedIndex === 1 ? "color-white " : "gray"
+                    }`}
                 />
               </ListItemIcon>
               <ListItemText primary="Reportes" />
@@ -283,9 +287,8 @@ export default function AdminRouter() {
                 <Icon
                   path={mdiAccountCreditCard}
                   size={1}
-                  className={`side-icon ${
-                    selectedIndex === 2 ? "color-white " : "gray"
-                  }`}
+                  className={`side-icon ${selectedIndex === 2 ? "color-white " : "gray"
+                    }`}
                 />
               </ListItemIcon>
               <ListItemText primary="Tipos de pensión" />
@@ -305,9 +308,8 @@ export default function AdminRouter() {
             >
               <ListItemIcon>
                 <FolderSharedIcon
-                  className={`side-icon ${
-                    selectedIndex === 3 ? "color-white " : "gray"
-                  }`}
+                  className={`side-icon ${selectedIndex === 3 ? "color-white " : "gray"
+                    }`}
                 />
               </ListItemIcon>
               <ListItemText primary="Pensiones de usuarios" />
@@ -331,9 +333,8 @@ export default function AdminRouter() {
             <Icon
               path={mdiCash}
               size={1}
-              className={`side-icon ${
-                selectedIndex === 4 ? "color-white " : "gray"
-              }`}
+              className={`side-icon ${selectedIndex === 4 ? "color-white " : "gray"
+                }`}
             />
           </ListItemIcon>
           <ListItemText primary="Tarifas" />
@@ -352,9 +353,8 @@ export default function AdminRouter() {
         >
           <ListItemIcon>
             <LocalParkingIcon
-              className={`side-icon ${
-                selectedIndex === 5 ? "color-white " : "gray"
-              }`}
+              className={`side-icon ${selectedIndex === 5 ? "color-white " : "gray"
+                }`}
             />
           </ListItemIcon>
           <ListItemText primary="Cajones" />
@@ -374,9 +374,8 @@ export default function AdminRouter() {
         >
           <ListItemIcon>
             <PeopleIcon
-              className={`side-icon ${
-                selectedIndex === 6 ? "color-white " : "gray"
-              }`}
+              className={`side-icon ${selectedIndex === 6 ? "color-white " : "gray"
+                }`}
             />
           </ListItemIcon>
           <ListItemText primary="Usuarios" />
@@ -396,13 +395,30 @@ export default function AdminRouter() {
         >
           <ListItemIcon>
             <DirectionsCar
-              className={`side-icon ${
-                selectedIndex === 8 ? "color-white " : "gray"
-              }`}
+              className={`side-icon ${selectedIndex === 8 ? "color-white " : "gray"
+                }`}
             />
           </ListItemIcon>
           <ListItemText primary="Vehículos" />
         </ListItemButton>
+        {/* CERRAR SESIÓN */}
+        <Box sx={{ marginTop: "auto", paddingTop: 2 }}>
+          <Divider sx={{ marginBottom: 1 }} />
+
+          <ListItemButton
+            sx={{ borderRadius: "5px" }}
+            onClick={() => {
+              removeToken();
+              goTo("/login");
+            }}
+          >
+            <ListItemIcon>
+              <LogoutIcon sx={{ color: "error.main" }} />
+            </ListItemIcon>
+            <ListItemText primary="Cerrar sesión" />
+          </ListItemButton>
+        </Box>
+
       </List>
     );
   };

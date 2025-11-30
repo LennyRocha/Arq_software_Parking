@@ -205,20 +205,23 @@ export default function EmpleadoRouter() {
       <Box sx={{ p: 2 }}>
         <Divider sx={{ mb: 1 }} />
         <ListItemButton
-          onClick={() => goTo("/empleado/nuevo_pensionado")}
-          selected={selectedIndex === 3}
           sx={{
             borderRadius: "5px",
             color: "error.main",
-            "&:hover": { backgroundColor: "rgba(211, 47, 47, 0.1)" },
+            "&:hover": {
+              backgroundColor: "rgba(211, 47, 47, 0.1)",
+            },
           }}
-          
+          onClick={() => {
+            removeToken();
+            goTo("/login");
+          }}
         >
           <ListItemIcon>
-            <PersonAddICon
-              className={`side-icon ${
-                selectedIndex === 3 ? "color-white " : "gray"
-              }`}
+            <LogoutIcon
+              className={`side-icon ${selectedIndex === 3 ? "color-red " : "red"
+                }`
+              }
             />
           </ListItemIcon>
           <ListItemText primary="Cerrar sesión" />
@@ -231,11 +234,11 @@ export default function EmpleadoRouter() {
     <Box
       sx={{
         display: "flex",
-        flexDirection: { xs: "column", md: "row" }, 
+        flexDirection: { xs: "column", md: "row" },
         height: "100vh",
       }}
     >
-    
+
       {isMobile ? (
         <Drawer
           anchor="left"
@@ -261,7 +264,7 @@ export default function EmpleadoRouter() {
         </Box>
       )}
 
-  
+
       <Box
         sx={{
           flex: 1,
@@ -270,7 +273,7 @@ export default function EmpleadoRouter() {
           height: "100%",
         }}
       >
-      
+
         {isMobile && (
           <AppBar position="sticky" sx={{ bgcolor: bg, color: "var(--text)" }}>
             <Toolbar>
