@@ -70,7 +70,7 @@ export default function TableFilters({
           label={searchPlaceholder}
           placeholder={searchPlaceholder}
           value={searchText}
-          onChange={onSearchChange}
+          onChange={(e) => onSearchChange(e.target.value)}
         />
       </FormControl>
 
