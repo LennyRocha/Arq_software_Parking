@@ -1,12 +1,12 @@
 import React from "react";
 import { getAxiosErrorMessage } from "../../../utils/getAxiosMessage";
-import vehiculoInterface from "./vehiculoInterface";
-import vehicleYup from "../../../models/yup/vehicleYup";
-import Vehicle from "../../../models/Vehicle";
+import cajonYup from "../../../models/yup/cajonYup";
 import api from "../../../utils/api";
 import sweetAlert from "../../../utils/sweetAlert";
+import cajonInterface from "./cajonInterface";
+import Cajon from "../../../models/Cajon";
 
-export default function usePutVehiculos(getVehiculos, vehiculo, idUser) {
+export default function usePutCajones(restartCall, cajon,) {
     const [isLoading, setLoading] = React.useState(false);
     const [errorData, setErrorData] = React.useState(null);
 
@@ -15,7 +15,7 @@ export default function usePutVehiculos(getVehiculos, vehiculo, idUser) {
         sweetAlert({
             icon: "info",
             title: "¡Confirmación!",
-            text: `Estás por modificar los datos de ${vehiculo.modelo}. ¿Deseas continuar?`,
+            text: `Estás por modificar los datos de ${cajon.name}. ¿Deseas continuar?`,
             confirmText: "Actualizar",
             denyText: "Cancelar",
             showCancelButton: true,
@@ -28,11 +28,11 @@ export default function usePutVehiculos(getVehiculos, vehiculo, idUser) {
                         sweetAlert({
                             icon: "success",
                             title: "¡Éxito!",
-                            text: result.value?.message ?? "Vehículo actualizado correctamente.",
+                            text: result.value?.message ?? "Cajón actualizado correctamente.",
                             confirmText: "Aceptar",
                         })
                             .then(() => {
-                                getVehiculos()
+                                restartCall()
                             });
                     } else {
                         sweetAlert({
@@ -49,21 +49,22 @@ export default function usePutVehiculos(getVehiculos, vehiculo, idUser) {
     const onSubmit = async (data) => {
         if (isLoading) return;
 
-        const vehic = new Vehicle({
-            id: vehiculo.id,
-            id_user: data.id_user,
-            id_type: data.id_type,
-            placa: data.placa,
-            modelo: data.modelo,
-            desc: data.desc,
-            status: data.estatus,
+        const cajonObj = new Cajon({
+            id: cajon.id,
+            name: data.name,
+            ubicacion: data.ubicacion,
+            tipoVehiculo: data.tipoVehiculo,
+            disponible: data.disponible,
+            paraPensionados: data.paraPensionados,
+            piso: data.piso,
+            estatus: data.estatus
         });
 
         setLoading(true);
         setErrorData(null);
 
         try {
-            const res = await api.put(vehiculoInterface.byId(vehiculo.id), vehic.toJson());
+            const res = await api.put(cajonInterface.byId(cajon.id), cajonObj.toJson());
         } catch (err) {
             const errorObject = {
                 tipo: err.response ? "Error de la API" : "Error de Axios",
@@ -77,13 +78,14 @@ export default function usePutVehiculos(getVehiculos, vehiculo, idUser) {
     };
 
     const defaultValues = React.useMemo(() => ({
-        id_user: idUser,
-        modelo: vehiculo.modelo,
-        id_type: vehiculo.idTipoVehiculo,
-        placa: vehiculo.placa,
-        desc: vehiculo.descripcion,
-        estatus: vehiculo.estatus
-    }), [vehiculo]);
+        name: cajon.name,
+        tipoVehiculo: cajon.tipoVehiculo,
+        ubicacion: cajon.ubicacion,
+        disponible: cajon.disponible,
+        paraPensionados: cajon.paraPensionados,
+        piso: cajon.piso,
+        estatus: cajon.estatus
+    }), [cajon]);
 
-    return { isLoading, errorData, preSubmit, defaultValues, vehicleYup };
+    return { isLoading, errorData, preSubmit, defaultValues, cajonYup };
 }

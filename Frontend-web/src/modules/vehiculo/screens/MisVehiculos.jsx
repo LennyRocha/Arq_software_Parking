@@ -77,7 +77,7 @@ export default function MisVehiculos() {
         titulo="Mis vehículos"
         breads={[
           {
-            nombre: "Usuario pensionado",
+            nombre: "Inicio",
             ruta: "/pensionados",
             disabled: false,
           },

@@ -17,6 +17,8 @@ import UsuarioTablaAdmin from "../modules/usuarios/pages/UsuarioTablaAdmin";
 import CajonesPage from '../modules/cajon/pages/CajonesPage'
 import MisVehiculos from "../modules/vehiculo/screens/MisVehiculos";
 import NuevoVehiculo from "../modules/vehiculo/screens/NuevoVehiculo";
+import CajonesTabla from "../modules/cajon/pages/CajonesTabla";
+import NuevoCajon from "../modules/cajon/pages/NuevoCajon";
 
 const Err = () => <h1>404 - Not Found!</h1>;
 
@@ -46,7 +48,9 @@ export default function Rutas() {
           <Route path="tipos_de_pension" element={<GestionTiposPension/>} />
           <Route path="pensiones_de_usuarios" element={<PensionesUsuario />} />
           <Route path="tarifas" element={<AdminGestionTarifas />} />
-          <Route path="cajones" element={<CajonesPage isPensionado={false} />} />
+          <Route path="cajones" element={<CajonesTabla />} />
+          <Route path="nuevo_cajon" element={<NuevoCajon />} />
+          <Route path="estacionamiento" element={<CajonesPage isPensionado={false} isAdmin />} />
           <Route path="gestion_usuarios" element={<UsuarioTablaAdmin/>} />
             <Route path="gestion_usuarios_nuevoempleado" element={<UsuarioTablaAdmin/>} />
           <Route path="gestion_vehiculos" element={<Pages />} />

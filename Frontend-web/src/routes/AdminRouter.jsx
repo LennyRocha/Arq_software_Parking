@@ -80,6 +80,8 @@ export default function AdminRouter() {
         setSelectedIndex(4);
         break;
       case path.includes("cajones"):
+      case path.includes("cajon"):
+      case path.includes("estacionamiento"):
         setSelectedIndex(5);
         break;
       case path.includes("gestion_usuarios"):

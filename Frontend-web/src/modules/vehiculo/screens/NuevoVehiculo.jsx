@@ -96,33 +96,42 @@ export default function NuevoVehiculo() {
             gap: 2,
           }}
         >
-          <ButtonGroup variant="contained" color="tertiary">
-            <Button
-              variant={idCar === 1 ? "contained" : "outlined"}
-              sx={{ flex: 1 }}
-              onClick={() => setIdCar(1)}
+          <div>
+            <Typography color="gray" variant="body2" sx={{ textAlign: "left" }}>
+              Tipo de vehículo
+            </Typography>
+            <ButtonGroup
+              variant="contained"
+              color="tertiary"
+              sx={{ flex: 1, width: "100%" }}
             >
-              Coche
-            </Button>
-            <Button
-              variant={idCar === 2 ? "contained" : "outlined"}
-              sx={{ flex: 1 }}
-              onClick={() => setIdCar(2)}
-            >
-              Camioneta
-            </Button>
-            <Button
-              variant={idCar === 3 ? "contained" : "outlined"}
-              sx={{ flex: 1 }}
-              onClick={() => setIdCar(3)}
-            >
-              Moto
-            </Button>
-          </ButtonGroup>
+              <Button
+                variant={idCar === 1 ? "contained" : "outlined"}
+                sx={{ flex: 1, width: "100%" }}
+                onClick={() => setIdCar(1)}
+              >
+                Coche
+              </Button>
+              <Button
+                variant={idCar === 2 ? "contained" : "outlined"}
+                sx={{ flex: 1 }}
+                onClick={() => setIdCar(2)}
+              >
+                Camioneta
+              </Button>
+              <Button
+                variant={idCar === 3 ? "contained" : "outlined"}
+                sx={{ flex: 1 }}
+                onClick={() => setIdCar(3)}
+              >
+                Moto
+              </Button>
+            </ButtonGroup>
+          </div>
           <img
             src={vehiculos[idCar]}
             alt="vehiculo_seleccionado"
-            style={{ aspectRatio: 16 / 9, width: "80%", margin: "auto" }}
+            style={{ aspectRatio: 16 / 9, width: "80%", margin: "0 auto" }}
           />
         </Box>
         <Box

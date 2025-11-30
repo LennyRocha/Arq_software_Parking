@@ -24,3 +24,6 @@ npm install @mdi/react @mdi/js
 
 #socket.io
 npm install socket.io-client
+
+#number field mui
+npm install @base-ui-components/react

@@ -1,31 +1,32 @@
 import cajonYup from './yup/cajonYup'
 export default class Cajon {
-  constructor({ id, identif, ubicacion, ocupado, para_pensionado, estatus, piso }) {
+  constructor({ id, name, tipoVehiculo, ubicacion, disponible, paraPensionados, estatus, piso }) {
     this.id = id;
-    this.identificador = identif;
+    this.name = name;
+    this.tipoVehiculo = tipoVehiculo;
     this.ubicacion = ubicacion;
-    this.ocupado = ocupado;
-    this.para_pensionado = para_pensionado;
+    this.disponible = disponible;
+    this.paraPensionados = paraPensionados;
     this.estatus = estatus;
-    this.piso = piso
+    this.piso = piso;
   }
 
   static getYup() {
     return cajonYup;
   }
 
-  get getId() {
-    return this.id;
-  }
-
   toJson() {
     return {
-      id: this.id || null,
-      identificador_cajon: this.identificador,
-      desripcion_ubicacion: this.ubicacion,
-      ocupado: this.ocupado,
-      para_pensionado: this.para_pensionado,
-      numero_piso: this.piso,
+      id: this.id ?? null,
+      name: this.name,
+      tipoVehiculo: {
+        id: this.tipoVehiculo.id,
+        nombre: this.tipoVehiculo.nombre
+      },
+      ubicacion: this.ubicacion,
+      disponible: this.disponible,
+      paraPensionados: this.paraPensionados,
+      piso: this.piso,
       estatus: this.estatus,
     };
   }

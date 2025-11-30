@@ -2,6 +2,7 @@ package utez.edu.mx.backendparking.modules.cajon.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
@@ -68,21 +69,21 @@ public class CajonController {
     @PostMapping
     @Operation(summary = "Registrar un cajón",
             description = "Este endpoint es utilizado para registrar un cajón")
-    public ApiResponse<Cajon> crearCajon (@RequestBody CajonDto cajon) {
+    public ApiResponse<Cajon> crearCajon (@Valid @RequestBody CajonDto cajon) {
         return cajonService.createCajon(cajon);
     }
 
     @PostMapping("/varios")
     @Operation(summary = "Registrar muchos cajones",
             description = "Este endpoint es utilizado para registrar más de un cajón a la vez")
-    public ApiResponse<List<Cajon>> crearCajones (@RequestBody List<CajonDto> cajones) {
+    public ApiResponse<List<Cajon>> crearCajones (@Valid @RequestBody List<CajonDto> cajones) {
         return cajonService.createCajones(cajones);
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Actualizar un cajón",
             description = "Este endpoint es utilizado para actualizar un cajón")
-    public ApiResponse<Cajon> actualizarCajon (@PathVariable Long id, @RequestBody CajonDto cajon) {
+    public ApiResponse<Cajon> actualizarCajon (@Valid @PathVariable Long id, @RequestBody CajonDto cajon) {
         return cajonService.updateCajon(id, cajon);
     }
 

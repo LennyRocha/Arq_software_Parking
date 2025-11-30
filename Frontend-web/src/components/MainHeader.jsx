@@ -68,7 +68,6 @@ export default function MainHeader({ titulo, breads }) {
   return (
     <Box
       sx={{
-        padding: "2rem .25rem",
         borderBottom: "1px solid var(--border)",
         bgcolor: "var(--background)",
         display: "flex",

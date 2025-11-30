@@ -271,36 +271,16 @@ const ParkingGrid = ({ columnsConfig = {} }) => {
           const lgRow = Math.floor(index / config.lg.itemsPerRow) + 1;
 
           const setBackground = () => {
-            if (!cajon.disponible) {
-              return "transparent";
-            } else if (cajon.paraPensionados && cajon.estatus) {
-              return "var(--other)";
-            } else if (
-              cajon.disponible &&
-              !cajon.paraPensionados &&
-              !cajon.estatus
-            ) {
-              return "var(--card)";
-            } else if (!cajon.estatus) {
-              return "var(--gray)";
-            }
-            return "var(--card)";
+            if (!cajon.disponible) return "transparent";
+            if (!cajon.estatus) return "var(--gray)"; // cualquier cajón inactivo
+            if (cajon.paraPensionados) return "var(--other)"; // disponible y pensionado
+            return "var(--card)"; // disponible normal
           };
 
           const setBorder = () => {
-            if (!cajon.disponible) {
-              return "transparent";
-            } else if (cajon.paraPensionados && cajon.estatus) {
-              return "var(--other)";
-            } else if (
-              cajon.disponible &&
-              !cajon.paraPensionados &&
-              !cajon.estatus
-            ) {
-              return "var(--card-text)";
-            } else if (!cajon.estatus) {
-              return "var(--dark)";
-            }
+            if (!cajon.disponible) return "transparent";
+            if (!cajon.estatus) return "var(--dark)";
+            if (cajon.paraPensionados) return "var(--other)";
             return "var(--card-text)";
           };
 
@@ -577,7 +557,6 @@ const ParkingGrid = ({ columnsConfig = {} }) => {
               sx={{
                 width: "5rem",
                 height: "2.5rem",
-                border: "1px solid var(--card-text)",
                 border: "1px solid var(--dark)",
                 backgroundColor: "var(--gray)",
               }}
