@@ -201,7 +201,7 @@ export default function EmpleadoRouter() {
                 className={selectedIndex === 3 ? "color-white" : "gray"}
               />
             </ListItemIcon>
-            <ListItemText primary="Registrar empleado pensionado" />
+            <ListItemText primary="Registrar usuario pensionado" />
           </ListItemButton>
         </List>
       </Box>
@@ -292,7 +292,7 @@ export default function EmpleadoRouter() {
           </AppBar>
         )}
 
-        <Box sx={{ flex: 1, overflowY: "auto", p: { xs: 1, md: 3 } }}>
+        <Box sx={{ flex: 1, overflowY: "auto" }}>
           <Outlet />
         </Box>
       </Box>
