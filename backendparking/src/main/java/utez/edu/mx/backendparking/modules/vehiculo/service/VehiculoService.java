@@ -160,8 +160,7 @@ public class VehiculoService {
     public ApiResponse<VehiculoEstacionadoResponseDto> verificarVehiculoEstacionado() {
         try {
             // Obtener el usuario autenticado actual
-            //Usuario usuarioActual = SecurityUtils.getCurrentUser();
-            Usuario usuarioActual = usuarioRepository.findById((long)3).get();
+            Usuario usuarioActual = SecurityUtils.getCurrentUser();
 
             // Buscar si el usuario tiene una pensión activa
             Optional<UsuarioPension> usuarioPensionOpt = usuarioPensionRepository.findByUsuarioIdAndEstatusTrue(usuarioActual.getId());
@@ -220,8 +219,7 @@ public class VehiculoService {
     public ApiResponse<List<VehiculoResponseDto>> getMisVehiculos() {
         try {
             // Obtener el usuario autenticado actual
-            //Usuario usuarioActual = SecurityUtils.getCurrentUser();
-            Usuario usuarioActual = usuarioRepository.findById((long)3).get();
+            Usuario usuarioActual = SecurityUtils.getCurrentUser();
 
             // Buscar todos los vehículos del usuario
             List<Vehiculo> vehiculos = vehiculoRepository.findByUsuarioId(usuarioActual.getId());

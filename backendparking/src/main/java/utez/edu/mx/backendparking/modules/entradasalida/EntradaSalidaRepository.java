@@ -23,6 +23,13 @@ public interface EntradaSalidaRepository extends JpaRepository<EntradaSalida, Lo
            """)
     Page<EntradaSalida> findByFolioOrUsuarioNombre(@Param("search") String search, Pageable pageable);
 
+    @Query("""
+           SELECT DISTINCT e FROM EntradaSalida e LEFT JOIN e.usuario u
+           WHERE (:search IS NULL OR :search = '' OR CAST(e.folioTicket AS string) LIKE CONCAT('%', :search, '%'))
+           AND e.usuario.id = :usuarioId
+           """)
+    Page<EntradaSalida> findByUsuarioIdAndFolioOrUsuarioNombre(@Param("search") String search, @Param("usuarioId") Long usuarioId, Pageable pageable);
+
     @Query("SELECT COALESCE(SUM(e.cantidadPago), 0.0) FROM EntradaSalida e " +
            "WHERE e.usuario IS NULL " +
            "AND e.fecha = :fecha " +
