@@ -23,6 +23,14 @@ const cajonInterface = {
 
     postMany: function () {
         return `${prefix}/varios`
+    },
+
+    contar: function () {
+        return `${prefix}/contar`
+    },
+
+    reservar: function () {
+        return `${prefix}/reservar`
     }
 };
 

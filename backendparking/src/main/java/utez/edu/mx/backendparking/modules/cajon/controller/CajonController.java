@@ -66,6 +66,13 @@ public class CajonController {
         return cajonService.getCajonPorUbicacion(ubi);
     }
 
+    @GetMapping("/contar")
+    @Operation(summary = "Contar cajones que no son para pensionados",
+            description = "Este endpoint es utilizado para que el admin vea cuantos cajones hay que no son para pensionados")
+    public ApiResponse<Integer> countThem () {
+        return cajonService.getAvailableCount();
+    }
+
     @PostMapping
     @Operation(summary = "Registrar un cajón",
             description = "Este endpoint es utilizado para registrar un cajón")

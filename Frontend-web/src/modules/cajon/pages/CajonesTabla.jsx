@@ -22,7 +22,6 @@ import {
   Typography,
   ButtonGroup,
 } from "@mui/material";
-import NumberField from "../../../components/NumberField";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Add } from "@mui/icons-material";
@@ -39,8 +38,17 @@ import useTiposVehiculos from "../../vehiculo/hooks/useTiposVehiculos";
 import CustomDialog from "../../../components/CustomDialog";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+import useReservarCajones from "../hooks/useReservarCajones";
+import useCountCajones from "../hooks/useCountCajones";
 
 export default function CajonesTabla() {
+  const {
+    data:countData,
+    isLoading: loadingCount,
+    errorData: errorCount,
+    restartCall: callCount,
+  } = useCountCajones();
+  const [reservedList, setReservedList] = React.useState([]);
   const navigate = useNavigate();
   const {
     data,
@@ -103,10 +111,15 @@ export default function CajonesTabla() {
     openDialog: openPut,
     closeDialog: closePut,
   } = useDialogController();
+  const {
+    open: isGetOpen,
+    openDialog: openGet,
+    closeDialog: closeGet,
+  } = useDialogController();
 
   return (
     <Box sx={{ flex: 1, overflow: "auto" }}>
-      <LoadingBackdrop isOpen={isLoading || load} />
+      <LoadingBackdrop isOpen={isLoading || load || loadingCount} />
       <MainHeader
         titulo="Cajones"
         breads={[
@@ -249,6 +262,7 @@ export default function CajonesTabla() {
                   startIcon={<Icon path={mdiCarKey} size={1} />}
                   color="secondary"
                   sx={{ width: { xs: "50%", md: "120px" } }}
+                  onClick={openSet}
                 >
                   Reservar
                 </Button>
@@ -318,7 +332,14 @@ export default function CajonesTabla() {
                       >
                         <TableCell>{index + 1}</TableCell>
                         <TableCell>{row.name}</TableCell>
-                        <TableCell>{row.ubicacion}</TableCell>
+                        <TableCell sx={{ maxWidth: 200, overflow: "hidden" }}>
+                          <Typography
+                            variant="body2"
+                            sx={{ textWrap: "wrap", lineBreak: "anywhere" }}
+                          >
+                            {row.ubicacion}
+                          </Typography>
+                        </TableCell>
                         <TableCell
                           sx={{
                             display: "flex",
@@ -399,6 +420,22 @@ export default function CajonesTabla() {
         restart={restartCall}
         setCajon={setCurrentCajon}
         list={list}
+      />
+
+      <ModalReservar
+        open={isSetOpen}
+        closeDialog={closeSet}
+        count={countData ? countData.data : 0 }
+        setList={setReservedList}
+        openGet={openGet}
+        restart={restartCall}
+      />
+
+      <ModalLista
+        open={isGetOpen}
+        closeDialog={closeGet}
+        list={reservedList}
+        setList={setReservedList}
       />
     </Box>
   );
@@ -569,12 +606,13 @@ function ModalEditar({ open, closeDialog, cajon, restart, setCajon, list }) {
             name="piso"
             defaultValue={1}
             render={({ field, fieldState }) => (
-              <NumberField
+              <TextField
+                {...field}
+                type="number"
                 label="Piso"
-                min={1}
-                max={3}
-                controlStyle={{ width: "100%" }}
                 size="small"
+                fullWidth
+                inputProps={{ min: 1, max: 3 }}
                 defaultValue={field.value}
                 onChange={(value) => field.onChange(value)}
                 onBlur={field.onBlur}
@@ -586,6 +624,109 @@ function ModalEditar({ open, closeDialog, cajon, restart, setCajon, list }) {
           />
         </Box>
       </Box>
+    </CustomDialog>
+  );
+}
+
+function ModalReservar({
+  count,
+  open,
+  closeDialog,
+  setList,
+  openGet,
+  restart,
+}) {
+  const {
+    isLoading,
+    errorData,
+    onSubmit,
+    returnedList,
+    conteoYup,
+    defaultValues,
+  } = useReservarCajones(restart, openGet, closeDialog);
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { errors, isValid, isDirty },
+  } = useForm({
+    defaultValues,
+    resolver: yupResolver(conteoYup),
+    mode: "onChange",
+    reValidateMode: "onChange",
+  });
+  React.useEffect(() => {
+    setList(returnedList);
+  }, [returnedList]);
+  function closeAndClear() {
+    reset();
+    closeDialog();
+  }
+  return (
+    <CustomDialog
+      isOpen={open}
+      handleClose={closeAndClear}
+      isForm
+      titulo={"Reservar cajones"}
+      onSubmit={handleSubmit(onSubmit)}
+      textSubmit="Guardar"
+      textCancel="Cancelar"
+      isLoading={isLoading}
+      onCancel={closeAndClear}
+      valid={isValid && isDirty}
+    >
+      <Typography variant="subtitle1">
+        Reserva un cierto número de cajones para su uso exclusivo de usuarios
+        pensionados. Los cajones se seleccionaran al azar.
+      </Typography>
+      <Controller
+        control={control}
+        name="conteo"
+        render={({ field, fieldState }) => (
+          <TextField
+            {...field}
+            type="number"
+            label="Cajones a reservar"
+            size="small"
+            fullWidth
+            inputProps={{ min: 0, max: count }}
+            error={!!fieldState.error || field.value > count}
+            helperText={
+              fieldState.error?.message ||
+              (field.value > count
+                ? "No puedes elegir un valor mayor al total"
+                : "Límite: todos los cajones no exclusivos")
+            }
+            disabled={isLoading}
+          />
+        )}
+      />
+    </CustomDialog>
+  );
+}
+
+function ModalLista({ list, open, closeDialog, setList }) {
+  function closeAndClear() {
+    setList([]);
+    closeDialog();
+  }
+  return (
+    <CustomDialog
+      isOpen={open}
+      handleClose={closeAndClear}
+      titulo={"Cajones reservados"}
+      showCancel={false}
+      textConfirm="Cerrar"
+      onConfirm={closeAndClear}
+    >
+      {list.map((c, index) => (
+        <Box key={index}>
+          <Typography variant="body1">{c.name}</Typography>
+          <Typography variant="subtitle2" color="gray">
+            {c.ubicacion}
+          </Typography>
+        </Box>
+      ))}
     </CustomDialog>
   );
 }

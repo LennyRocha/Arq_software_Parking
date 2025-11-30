@@ -37,7 +37,7 @@ export default function useDeleteCajon(restart,) {
 
                 sweetAlert({
                     icon: "success",
-                    title: "¡Éxito!",
+                    title: "¡Operación exitosa!",
                     text: result.value?.message ?? "Estatus del cajón actualizado correctamente.",
                     confirmText: "Aceptar",
                 });

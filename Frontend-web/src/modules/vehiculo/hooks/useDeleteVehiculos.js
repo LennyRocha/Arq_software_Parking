@@ -25,7 +25,7 @@ export default function useDeleteVehiculos(getVehiculos, vehiculo) {
                 if (!errorData) {
                     sweetAlert({
                         icon: "success",
-                        title: "¡Éxito!",
+                        title: "¡Operación exitosa!",
                         text: result.value?.message ?? "Vehículo actualizado correctamente.",
                         confirmText: "Aceptar",
                     })

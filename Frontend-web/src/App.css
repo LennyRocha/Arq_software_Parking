@@ -78,6 +78,10 @@
   }
 }
 
+.side-bar-layout{
+  position: relative;
+}
+
 /*Sidebar principal*/
 @media (max-width: 768px) {
   .side-bar-layout {

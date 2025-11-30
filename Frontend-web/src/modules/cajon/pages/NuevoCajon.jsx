@@ -108,7 +108,13 @@ export default function NuevoCajon() {
             }}
           >
             <div>
-              <Typography color="gray" variant="body2" sx={{ textAlign: "left" }}>Tipo de vehículo</Typography>
+              <Typography
+                color="gray"
+                variant="body2"
+                sx={{ textAlign: "left" }}
+              >
+                Tipo de vehículo
+              </Typography>
               <ButtonGroup
                 variant="contained"
                 color="tertiary"
@@ -216,11 +222,13 @@ export default function NuevoCajon() {
             name="piso"
             defaultValue={1}
             render={({ field, fieldState }) => (
-              <NumberField
+              <TextField
+                {...field}
+                type="number"
                 label="Piso"
-                min={1}
-                max={3}
                 size="small"
+                fullWidth
+                inputProps={{ min: 1, max: 3 }}
                 defaultValue={field.value}
                 onChange={(value) => field.onChange(value)}
                 onBlur={field.onBlur}

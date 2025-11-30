@@ -39,7 +39,7 @@ export default function CajonesPage({ isPensionado = true, isAdmin = false }) {
         component={"div"}
       >
         <ParkingGrid />
-        {isPensionado && (
+        {/* {isPensionado && (
           <Button
             color="tertiary"
             variant="contained"
@@ -47,7 +47,7 @@ export default function CajonesPage({ isPensionado = true, isAdmin = false }) {
           >
             Marcar entrada
           </Button>
-        )}
+        )} */}
       </Box>
     </div>
   );

@@ -67,12 +67,15 @@ function NumberField({
           <OutlinedInput
             label={label}
             inputRef={props.ref}
-            value={state.inputValue}
-            onBlur={props.onBlur}
+            value={value ?? state.inputValue} // usa el valor del Controller
+            onBlur={(e) => {
+              props.onBlur(e);
+              onBlurExternal?.(e); // propaga blur al Controller
+            }}
             style={style}
             onChange={(e) => {
-              props.onChange(e);
-              onChangeExternal?.(e);
+              props.onChange(e); // actualiza estado interno
+              onChangeExternal?.(e.target.value); // propaga cambio al Controller
             }}
             onKeyUp={props.onKeyUp}
             onKeyDown={props.onKeyDown}

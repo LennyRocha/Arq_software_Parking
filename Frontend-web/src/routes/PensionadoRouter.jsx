@@ -66,9 +66,9 @@ export default function AdminRouter() {
 
   React.useEffect(() => {
     getToken();
-        if (!getToken()) {
-          goTo("*");
-        }
+    if (!getToken()) {
+      goTo("*");
+    }
     switch (true) {
       case path.includes("entradas"):
         setSelectedIndex(1);
@@ -143,7 +143,6 @@ export default function AdminRouter() {
           overflowY: "auto",
         }}
         className={`no_scroll ${clase.clase}`}
-        component="nav"
       >
         <Toolbar
           disableGutters
@@ -193,7 +192,7 @@ export default function AdminRouter() {
                 },
                 color: "#fff",
               }}
-              onClick={() => goTo(`/private/perfil/${24}`)}
+              onClick={() => goTo(`/pensionados/perfil`)}
             >
               UP
             </Avatar>
@@ -325,13 +324,9 @@ export default function AdminRouter() {
           </ListItemIcon>
           <ListItemText primary="Mis vehículos" />
         </ListItemButton>
-          {/* CERRAR SESIÓN */}
-        
-      </List>
-        </Box>
+        {/* CERRAR SESIÓN */}
 
-        {/* Logout fijo abajo */}
-        <Box sx={{ p: 2 }}>
+        <Box sx={{ py: 1 }}>
           <Divider sx={{ mb: 1 }} />
           <ListItemButton
             onClick={handleLogout}
@@ -347,7 +342,7 @@ export default function AdminRouter() {
             <ListItemText primary="Cerrar sesión" />
           </ListItemButton>
         </Box>
-      </Box>
+      </List>
     );
   };
 

@@ -31,5 +31,6 @@ public interface CajonRepository extends JpaRepository<Cajon, Long> {
     @Query(value = "SELECT * FROM Cajon WHERE disponible = false AND para_pensionados = true ORDER BY RAND() LIMIT 1", nativeQuery = true)
     Optional<Cajon> findRandomCajonExclusivoToUnuse();
     Page<Cajon> findAllByNameContainingIgnoreCaseOrUbicacionContainingIgnoreCase(String name, String ubicacion, Pageable pageable);
+    Integer countAllByParaPensionadosIsFalse();
 
 }

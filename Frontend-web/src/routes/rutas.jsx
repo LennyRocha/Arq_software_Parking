@@ -19,7 +19,6 @@ import GestionUsuarios from "../modules/usuarios/pages/GestionUsuarios";
 import RegistroPensionadoAdmin from "../modules/usuarios/components/RegistroPensionadoAdmin";
 import RegistroPensionadoEmpleado from "../modules/usuarios/components/RegistroPensionadoEmpleado";
 import RegistroEmpleado from "../modules/usuarios/components/RegistroEmpleado";
-import CajonesPage from "../modules/cajon/pages/CajonesPage";
 import MiPension from "../modules/usuario_pension/pages/MiPension";
 import RecuperacionContraseña from "../modules/RecuperacionContraseña";
 import ActualizacionContra from "../modules/ActualizacionContra";
@@ -69,13 +68,12 @@ export default function Rutas() {
           <Route path="usuarios/registrar-empleado" element={<RegistroEmpleado/>} />
           <Route path="gestion_vehiculos" element={<Pages />} />
           <Route path="perfil" element={<Perfil />} />
-          <Route path="perfil" element={<Perfil />} />
         </Route>
         {/* Rutas del empleado */}
         <Route path="/empleado" element={<ProtectedRoute allowedRoles={['EMPLEADO']}><EmpleadoRouter /></ProtectedRoute>}>
           <Route index element={<AdminGestionarEntradasSalidas />} />
           <Route path="pensiones" element={<PensionesUsuario />} />
-          <Route path="cajones" element={<Pages />} />
+          <Route path="cajones" element={<CajonesPage isPensionado={false} />} />
           <Route path="nuevo_pensionado" element={<RegistroPensionadoEmpleado />} />
           <Route path="perfil" element={<Perfil />} />
         </Route>
@@ -87,7 +85,7 @@ export default function Rutas() {
           <Route path="mi_pension" element={<MiPension/>} />
           <Route path="nuevo_vehiculo" element={<NuevoVehiculo />} />
           <Route path="mis_vehiculos" element={<MisVehiculos />} />
-          <Route path="perfil" element={<P />} />
+          <Route path="perfil" element={<Perfil />} />
 
         </Route>
         {/* Perfil y otros */}
