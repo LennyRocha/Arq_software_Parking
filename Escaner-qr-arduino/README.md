@@ -1,166 +1,315 @@
-# ESP32-CAM QR Scanner - Sistema de Estacionamiento
+# 🚗 ESP32-CAM QR Scanner - Sistema de Estacionamiento
 
-Este proyecto implementa un escáner de códigos QR en tiempo real para un sistema de control de acceso a estacionamiento usando ESP32-CAM con cámara OV2640.
+Sistema de control de acceso para estacionamiento usando **ESP32-CAM** con detección de códigos QR en tiempo real.
 
-## 📋 Hardware Requerido
+## 📐 Arquitectura del Sistema
 
-- **ESP32-CAM** con módulo de cámara **OV2640**
-- **Pantalla LCD 16x2 ARD-380** (comunicación I2C)
-- **Programador FTDI** o ESP32-CAM-MB (para cargar el código)
-- Fuente de alimentación 5V
-
-## 🔌 Conexiones
-
-### LCD I2C (16x2)
-- **SDA** → GPIO 14 (o GPIO que uses para SDA)
-- **SCL** → GPIO 15 (o GPIO que uses para SCL)
-- **VCC** → 5V
-- **GND** → GND
-
-**Nota:** Los pines I2C por defecto del ESP32-CAM pueden variar. Verifica tu modelo específico.
-
-### ESP32-CAM
-La configuración de pines de la cámara ya está definida en el código para el modelo AI-THINKER.
-
-## 📚 Librerías Necesarias
-
-Instala las siguientes librerías desde el **Arduino Library Manager**:
-
-1. **ESP32** (Soporte de placa)
-   - En Arduino IDE: `Archivo` → `Preferencias` → `Gestor de URLs de placas adicionales`
-   - Agregar: `https://dl.espressif.com/dl/package_esp32_index.json`
-   - Luego: `Herramientas` → `Placa` → `Gestor de placas` → Buscar "ESP32" e instalar
-
-2. **ArduinoJson** (por Benoit Blanchon)
-   ```
-   Versión recomendada: 6.x o superior
-   ```
-
-3. **LiquidCrystal_I2C** (por Frank de Brabander)
-   ```
-   Para controlar pantallas LCD con módulo I2C
-   ```
-
-4. **quirc** (Librería de decodificación QR)
-   - Esta librería necesita ser instalada manualmente
-   - Descarga desde: https://github.com/dlbeer/quirc
-   - O busca una implementación compatible con ESP32
-
-### Instalación de quirc para ESP32
-
-Puedes usar la librería **ESP32QRCodeReader** que incluye quirc:
 ```
-Buscar en Library Manager: "ESP32 QRCode Reader" por Alastair D'Silva
+┌─────────────┐         ┌──────────────┐         ┌─────────────┐
+│  ESP32-CAM  │────────▶│ Servidor QR  │────────▶│  API Spring │
+│  (Cámara)   │  WiFi   │   (Python)   │  HTTP   │    Boot     │
+└─────────────┘         └──────────────┘         └─────────────┘
+      │
+      ▼
+┌─────────────┐
+│  LCD 16x2   │
+│  (Display)  │
+└─────────────┘
 ```
 
-O clonar directamente:
+**Flujo:**
+1. ESP32-CAM captura imagen cada 0.5s
+2. Envía JPEG al servidor Python vía HTTP
+3. Python detecta QR con OpenCV + pyzbar
+4. ESP32-CAM registra entrada/salida en API
+5. LCD muestra confirmación
+
+---
+
+## 📦 Hardware Requerido
+
+| Componente | Especificación |
+|------------|----------------|
+| **Microcontrolador** | ESP32-CAM AI-Thinker |
+| **Cámara** | OV2640 (incluida) |
+| **Display** | LCD 16x2 I2C (0x27 o 0x3F) |
+| **Programador** | ESP32-CAM-MB o FTDI USB |
+| **Alimentación** | 5V/2A mínimo |
+
+### 🔌 Conexiones
+
+**LCD I2C:**
+```
+LCD          ESP32-CAM
+────────────────────────
+SDA    →     GPIO 14
+SCL    →     GPIO 15
+VCC    →     5V
+GND    →     GND
+```
+
+**ESP32-CAM:** Configuración AI-Thinker (pines predefinidos en código)
+
+---
+
+## 💻 Software Requerido
+
+### Arduino IDE (ESP32-CAM)
+
+**Librerías necesarias:**
+- ✅ **ESP32** (Board support)
+- ✅ **ArduinoJson** (v6.x)
+- ✅ **LiquidCrystal_I2C**
+- ✅ **esp_camera** (incluida con ESP32)
+- ✅ **WiFi, HTTPClient** (incluidas)
+
+**Instalación rápida:**
+```
+1. Tools → Board → Boards Manager → "esp32" → Install
+2. Sketch → Include Library → Manage Libraries
+3. Buscar e instalar: "ArduinoJson", "LiquidCrystal I2C"
+```
+
+### Servidor Python (QR Processor)
+
+**Dependencias:**
 ```bash
-cd ~/Arduino/libraries/
-git clone https://github.com/alvarowolfx/ESP32QRCodeReader.git
+pip install flask opencv-python pyzbar pillow numpy
 ```
+
+---
 
 ## ⚙️ Configuración
 
-Antes de cargar el código, modifica las siguientes constantes en el archivo `.ino`:
+### 1️⃣ Configurar WiFi y Servidor
+
+Edita `ESP32-CAM_QR_Scanner/ESP32-CAM_QR_Scanner.ino`:
 
 ```cpp
-const char* WIFI_SSID = "TU_WIFI";              // Tu red WiFi
-const char* WIFI_PASSWORD = "TU_PASSWORD";      // Contraseña WiFi
-const char* API_BASE_URL = "http://tu-servidor.com";  // URL base del API
+const char* WIFI_SSID = "TuWiFi";
+const char* WIFI_PASSWORD = "TuPassword";
+const char* API_BASE_URL = "http://192.168.x.x:8080";  // API Spring Boot
+const char* PYTHON_SERVER = "http://192.168.x.x:5000"; // Servidor Python
 ```
 
-### Dirección I2C del LCD
+**Obtener IP de tu PC:**
+```powershell
+ipconfig
+```
+Busca: `Dirección IPv4`
 
-Si tu LCD no funciona, verifica la dirección I2C. Puede ser `0x27` o `0x3F`:
+### 2️⃣ Configurar Firewall (Windows)
+
+**Permitir conexiones en puerto 5000:**
+
+```powershell
+# Ejecutar como Administrador
+netsh advfirewall firewall add rule name="Python QR Server" dir=in action=allow protocol=TCP localport=5000
+```
+
+### 3️⃣ Ajustar LCD (si es necesario)
+
+Si el LCD no funciona, cambia la dirección I2C:
 
 ```cpp
-#define LCD_ADDRESS 0x27  // Cambiar a 0x3F si es necesario
+#define LCD_ADDRESS 0x27  // Probar también: 0x3F
 ```
 
-Para encontrar la dirección, usa el sketch **I2C Scanner**.
+---
 
-## 🚀 Funcionamiento
+## 🚀 Instalación y Uso
 
-### Formato de Códigos QR
+### Paso 1: Iniciar Servidor Python
 
-1. **Entrada** (formato: `codigoQR|idVehiculo`)
-   - Ejemplo: `ABC123DEF456|42`
-   - El sistema enviará:
-     ```json
-     {
-       "uuidCodigoQR": "ABC123DEF456",
-       "vehiculo": {
-         "id": 42
-       }
-     }
-     ```
-   - Endpoint: `POST /api/entrada-salida/pensionado`
+```bash
+cd Escaner-qr-arduino
+python python_qr_server.py
+```
 
-2. **Salida** (formato: `folioTicket`)
-   - Ejemplo: `XYZ789GHI012`
-   - Endpoint: `POST /api/entrada-salida/pensionado/salida/XYZ789GHI012`
+**Debe mostrar:**
+```
+=== Servidor QR Scanner ===
+URL: http://192.168.x.x:5000/scan-qr
+* Running on http://192.168.x.x:5000
+```
+
+### Paso 2: Cargar Código al ESP32-CAM
+
+1. **Conectar programador** (ESP32-CAM-MB o FTDI)
+2. **Arduino IDE:**
+   - `Tools` → `Board` → **"AI Thinker ESP32-CAM"**
+   - `Tools` → `Port` → Seleccionar puerto COM
+   - `Tools` → `Upload Speed` → **115200**
+3. **Upload** (→)
+4. **Presionar RESET** en ESP32-CAM
+
+### Paso 3: Verificar Funcionamiento
+
+**Monitor Serial (115200 baud):**
+```
+=== ESP32-CAM QR Scanner ===
+WiFi OK: 192.168.x.x
+Camera OK
+Sistema listo
+
+⏱️ Escaneando... (cada 0.5s)
+📸 Capturando imagen... 📦 Imagen: 9420 bytes
+  🌐 Enviando a: http://192.168.x.x:5000/scan-qr
+  📡 Respuesta HTTP: 200
+○ No QR
+```
+
+✅ **Si ves `HTTP: 200`** → Todo funciona correctamente
+
+❌ **Si ves `HTTP: -1` o `connection refused`** → Revisar `SOLUCION_FIREWALL.md`
+
+---
+
+## 📱 Formato de Códigos QR
+
+### Entrada (con ID de vehículo)
+```
+Formato: codigoQR|idVehiculo
+Ejemplo: ABC123DEF456|42
+
+POST /api/entrada-salida/pensionado
+Body: {
+  "uuidCodigoQR": "ABC123DEF456",
+  "vehiculo": {"id": 42}
+}
+```
+
+### Salida (solo folio)
+```
+Formato: folioTicket
+Ejemplo: XYZ789GHI012
+
+POST /api/entrada-salida/pensionado/salida/XYZ789GHI012
+```
 
 ### Mensajes en LCD
 
-- **Entrada exitosa:** "Entrada Registrada OK"
-- **Salida exitosa:** "Salida Registrada OK"
-- **Error:** "Error Entrada/Salida - Intente de nuevo"
-- **Esperando:** "Escanee codigo QR..."
+| Evento | LCD Línea 1 | LCD Línea 2 |
+|--------|-------------|-------------|
+| Inicio | `Escanee QR...` | (vacío) |
+| Procesando | `Procesando...` | (vacío) |
+| ✅ Entrada OK | `Entrada OK` | (vacío) |
+| ✅ Salida OK | `Salida OK` | (vacío) |
+| ❌ Error | `Error Entrada/Salida` | (vacío) |
 
-## 📝 Carga del Código
+---
 
-1. Conecta el **ESP32-CAM** al programador FTDI
-2. Presiona el botón **RESET** mientras conectas (modo flash)
-3. En Arduino IDE:
-   - Selecciona: `Herramientas` → `Placa` → `AI Thinker ESP32-CAM`
-   - Puerto: El puerto COM correspondiente
-   - Upload Speed: `115200`
-4. Carga el sketch
-5. Presiona **RESET** después de cargar
+## 🧪 Pruebas
 
-## 🔍 Debugging
+### Generar QR de Prueba
 
-Monitor Serial a **115200 baudios** muestra:
-- Estado de conexión WiFi
-- IP asignada
-- Códigos QR detectados
-- Respuestas del servidor
-- Errores de comunicación
+```bash
+python test_sistema.py
+```
 
-## ⚠️ Notas Importantes
+Esto genera:
+- `test_qr_entrada.png` → QR de entrada
+- `test_qr_salida.png` → QR de salida
 
-- El ESP32-CAM requiere **al menos 5V/2A** de alimentación estable
-- El escaneo QR funciona mejor con **buena iluminación**
-- Mantén el código QR a **10-30cm** de la cámara
-- Hay un **cooldown de 3 segundos** entre escaneos del mismo código
-- La resolución está optimizada a **QVGA (320x240)** para mejor rendimiento
+Imprime estos QR y pruébalos con la cámara.
+
+### Verificar Servidor
+
+```bash
+curl http://192.168.x.x:5000/health
+```
+
+**Respuesta esperada:**
+```json
+{"status":"ok"}
+```
+
+---
 
 ## 🛠️ Troubleshooting
 
-### La cámara no inicializa
-- Verifica las conexiones del módulo de cámara
-- Asegúrate de tener suficiente corriente (min 2A)
-- Revisa que el modelo de ESP32-CAM sea AI-THINKER
+### ❌ Connection Refused (HTTP: -1)
 
-### El LCD no muestra nada
-- Verifica la dirección I2C (prueba 0x27 o 0x3F)
-- Ajusta el contraste del LCD con el potenciómetro
-- Verifica las conexiones SDA/SCL
+**Causa:** Firewall bloqueando puerto 5000
 
-### No detecta códigos QR
-- Mejora la iluminación del área
-- Ajusta la distancia al código QR
-- Verifica que el QR tenga buen contraste
+**Solución:**
+```powershell
+# Como Administrador
+netsh advfirewall firewall add rule name="Python QR Server" dir=in action=allow protocol=TCP localport=5000
+```
 
-### Error de WiFi
-- Verifica SSID y contraseña
-- Asegúrate de estar en rango del router
-- El ESP32 solo soporta WiFi 2.4GHz (no 5GHz)
+Ver: `SOLUCION_FIREWALL.md`
+
+### ❌ Camera Error
+
+**Causas:**
+- Módulo de cámara mal conectado
+- Alimentación insuficiente (< 2A)
+- Modelo incorrecto en Arduino IDE
+
+**Solución:**
+1. Verificar conexión del ribbon cable
+2. Usar fuente 5V/2A o superior
+3. Seleccionar "AI Thinker ESP32-CAM" en Tools → Board
+
+### ❌ LCD no muestra nada
+
+**Solución:**
+1. Probar dirección I2C: `0x27` o `0x3F`
+2. Ajustar potenciómetro de contraste
+3. Verificar conexiones SDA/SCL
+
+### ❌ No detecta QR
+
+**Mejoras:**
+- 💡 Aumentar iluminación
+- 📏 Distancia óptima: 15-30cm
+- 🖨️ Imprimir QR más grande
+- 🔳 Mejor contraste (fondo blanco)
+
+---
+
+## 📁 Estructura del Proyecto
+
+```
+Escaner-qr-arduino/
+├── ESP32-CAM_QR_Scanner/
+│   └── ESP32-CAM_QR_Scanner.ino    ← Código Arduino
+├── python_qr_server.py              ← Servidor QR (Python)
+├── test_sistema.py                  ← Generador de QR de prueba
+├── README.md                        ← Este archivo
+├── COMO_PROBAR.md                   ← Guía de pruebas detallada
+├── INSTRUCCIONES.md                 ← Instalación paso a paso
+└── SOLUCION_FIREWALL.md             ← Solución a problemas de red
+```
+
+---
+
+## ⚡ Características
+
+- ✅ Escaneo en tiempo real (2 FPS)
+- ✅ Detección automática entrada/salida
+- ✅ Procesamiento QR con OpenCV (alta precisión)
+- ✅ Cooldown de 3s para evitar duplicados
+- ✅ Reconexión automática WiFi
+- ✅ Debug detallado en Serial Monitor
+- ✅ Pantalla LCD con feedback visual
+
+---
 
 ## 📄 Licencia
 
-Este proyecto es de código abierto para uso educativo.
+Proyecto de código abierto para uso educativo.
 
-## 👨‍💻 Autor
+---
 
-Sistema de Estacionamiento - Control de Acceso QR
+## 👨‍💻 Soporte
+
+Para más detalles, consulta:
+- 📖 **COMO_PROBAR.md** - Guía de pruebas completa
+- 🔧 **SOLUCION_FIREWALL.md** - Problemas de conexión
+- 📚 **INSTRUCCIONES.md** - Setup detallado
+
+---
+
+**🚀 ¡Sistema listo para usar!**

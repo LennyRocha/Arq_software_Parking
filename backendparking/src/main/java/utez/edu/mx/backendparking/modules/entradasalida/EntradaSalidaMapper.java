@@ -5,6 +5,7 @@ import utez.edu.mx.backendparking.modules.entradasalida.dto.EntradaSalidaCreateV
 import utez.edu.mx.backendparking.modules.entradasalida.dto.EntradaSalidaResponseDto;
 import utez.edu.mx.backendparking.modules.usuario.Usuario;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 
 public class EntradaSalidaMapper {
@@ -15,6 +16,7 @@ public class EntradaSalidaMapper {
         entradaSalida.setUsuario(usuario);
         entradaSalida.setVehiculo(dto.getVehiculo());
         entradaSalida.setHoraEntrada(LocalTime.now());
+        entradaSalida.setFecha(LocalDate.now());
         // El tipo de vehículo se obtiene del vehículo asociado
         if (dto.getVehiculo() != null) {
             entradaSalida.setTipoVehiculo(dto.getVehiculo().getTipoVehiculo());

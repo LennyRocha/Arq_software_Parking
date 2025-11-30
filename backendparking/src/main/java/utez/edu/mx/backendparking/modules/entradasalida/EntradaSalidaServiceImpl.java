@@ -133,6 +133,8 @@ public class EntradaSalidaServiceImpl implements EntradaSalidaService {
         entradaSalida.setVencimientoPension(vencimientoHoy);
 
         // Guardar la entidad
+        entradaSalida.setVehiculo(vehiculo);
+        entradaSalida.setTipoVehiculo(vehiculo.getTipoVehiculo());
         EntradaSalida savedEntradaSalida = entradaSalidaRepository.save(entradaSalida);
 
         // Cambiar ultima entrada del usuario y guardar

@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+
+# Imágenes de prueba generadas
+test_qr_*.png
+test_qr_*.jpg
+
+# Logs
+*.log
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Arduino
+*.hex
+*.elf
+*.bin
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Archivos temporales
+*.tmp
+*.bak
+*~
