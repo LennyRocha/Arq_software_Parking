@@ -44,6 +44,10 @@ public class WebSecurityConfig {
                         .requestMatchers("/api/pensionado/public/**").permitAll()//porque hay registro publico desde la landing page
                         .requestMatchers("/api/pensionado/private/**").hasAnyRole("ADMINISTRADOR","EMPLEADO")
                         .requestMatchers("/api/pensionado/cliente/**").hasRole("CLIENTE_PENSIONADO")
+
+                        //--GESTION DE USUARIOS
+                        .requestMatchers("/api/auth/private/registrarEmpleado").hasRole("ADMINISTRADOR")
+
                         //--- GESTION DE TARIFAS
                         .requestMatchers("/api/tarifa/**").hasRole("ADMINISTRADOR")
                         //--- GESTION DE ENTRADAS Y SALIDAS

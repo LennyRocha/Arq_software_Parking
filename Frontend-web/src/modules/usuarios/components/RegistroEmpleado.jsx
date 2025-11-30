@@ -1,510 +1,297 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Grid,
   TextField,
   Box,
   Typography,
-  InputAdornment,
-  IconButton,
   Paper,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
   Button,
-  Dialog,
-  DialogContent,
-  DialogActions,
+  Container,
 } from "@mui/material";
 import {
   Person as PersonIcon,
   Email as EmailIcon,
   Phone as PhoneIcon,
-  Lock as LockIcon,
-  Visibility,
-  VisibilityOff,
-  Done as DoneIcon,
+  ArrowBack as ArrowBackIcon,
 } from "@mui/icons-material";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { useNavigate } from "react-router-dom";
 import MainHeader from "../../../components/MainHeader";
+import LoadingBackdrop from "../../../components/LoadingBackdrop";
+import CustomSweetAlert from "../../../components/CustomSweetAlert";
+import useRegistroEmpleado from "../hooks/useRegistroEmpleado";
 
 const links = [
-  { nombre: "Usuarios", ruta: "/admin/usuarios", disabled: false },
+  { nombre: "Usuarios", ruta: "/admin/gestion_usuarios", disabled: false },
   { nombre: "Registrar empleado", ruta: "/admin/usuarios/registrar-empleado", disabled: true },
 ];
 
-// Roles disponibles (se pueden cargar del backend después)
-const rolesDisponibles = [
-  { id: 1, name: "ADMINISTRADOR", label: "Administrador" },
-  { id: 2, name: "EMPLEADO", label: "Empleado" },
-];
-
-// Schema de validación
+// Schema de validación según requerimientos
 const registroEmpleadoSchema = Yup.object().shape({
-  estatus: Yup.string().required("El estatus es requerido"),
-  rolId: Yup.mixed().required("El rol es requerido"),
-  nombreCompleto: Yup.string()
-    .required("El nombre completo es requerido")
-    .min(2, "El nombre completo debe tener al menos 2 caracteres"),
+  nombre: Yup.string()
+    .required("El nombre no puede estar vacío")
+    .max(50, "El nombre debe tener una longitud máxima de 50 caracteres")
+    .matches(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/, "El nombre solo puede contener letras"),
+  
+  apellidos: Yup.string()
+    .required("El apellido no puede estar vacío")
+    .max(50, "El apellido debe tener una longitud máxima de 50 caracteres")
+    .matches(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/, "El apellido solo puede contener letras"),
+  
   correo: Yup.string()
-    .email("Correo electrónico inválido")
-    .required("El correo es requerido"),
+    .required("El correo electrónico no puede estar vacío")
+    .email("El correo electrónico debe tener un formato válido")
+    .max(50, "El correo electrónico debe tener una longitud máxima de 50 caracteres"),
+  
   telefono: Yup.string()
-    .required("El teléfono es requerido")
-    .matches(/^[0-9]{10}$/, "El teléfono debe tener 10 dígitos"),
-  contra: Yup.string()
-    .required("La contraseña es requerida")
-    .min(6, "La contraseña debe tener al menos 6 caracteres"),
+    .required("El teléfono no puede estar vacío")
+    .matches(/^[0-9]{10}$/, "El teléfono debe tener exactamente 10 dígitos numéricos")
+    .max(10, "El teléfono debe tener una longitud máxima de 10 caracteres"),
 });
 
 const initialValues = {
-  estatus: "Activo",
-  rolId: "",
-  nombreCompleto: "",
+  nombre: "",
+  apellidos: "",
   correo: "",
   telefono: "",
-  contra: "",
 };
 
-export default function RegistroEmpleado({ onCancel, onSubmit }) {
+export default function RegistroEmpleado() {
   const navigate = useNavigate();
-  const [showPassword, setShowPassword] = useState(false);
-  const [openModalExito, setOpenModalExito] = useState(false);
+  const { loading, registrar } = useRegistroEmpleado();
 
-  const handleCancel = () => {
-    if (onCancel) {
-      onCancel();
-    } else {
-      navigate("/admin/gestion_usuarios");
+  const handleSubmit = async (values, { setSubmitting, resetForm }) => {
+    // Solicitar confirmación
+    const confirmResult = await CustomSweetAlert.confirm({
+      title: "Registrar empleado",
+      text: "¿Está seguro que desea registrar este empleado?",
+      confirmButtonText: "Registrar",
+    });
+
+    if (confirmResult.isConfirmed) {
+      const response = await registrar(values);
+      
+      if (response.success) {
+        resetForm();
+        await CustomSweetAlert.success({
+          title: "¡Éxito!",
+          text: "Empleado registrado exitosamente"
+        });
+        navigate("/admin/gestion_usuarios");
+      } else {
+        await CustomSweetAlert.error({
+          text: response.error || "Hubo un problema al completar el registro"
+        });
+      }
     }
-  };
-
-  const handleCerrarModalExito = () => {
-    setOpenModalExito(false);
-    navigate("/admin/gestion_usuarios");
+    
+    setSubmitting(false);
   };
 
   const formFieldSx = {
     "& .MuiInputBase-root": {
       borderRadius: 3,
-      backgroundColor: "#fbfbff",
-      border: "1px solid rgba(15, 23, 42, 0.08)",
+      backgroundColor: "#f9fbff",
     },
     "& .MuiOutlinedInput-root": {
       borderRadius: 3,
     },
   };
 
-  const handleSubmit = (values) => {
-    if (onSubmit) {
-      onSubmit(values);
-    } else {
-      // Aquí irá la lógica para enviar al backend
-      console.log("Datos del empleado:", values);
-      // Después de registrar exitosamente, mostrar el modal
-      setOpenModalExito(true);
-    }
-  };
-
   return (
     <>
+      <LoadingBackdrop isOpen={loading} onClose={() => {}} />
       <MainHeader titulo="REGISTRAR EMPLEADO" breads={links} icon={true} />
 
-      <Box
-        sx={{
-          padding: { xs: 2, sm: 3, md: 4 },
-          paddingTop: { xs: 3, sm: 4, md: 6 },
-          maxWidth: "1200px",
-          margin: "0 auto",
-        }}
-      >
-        <Box
+      <Container maxWidth="lg" sx={{ py: 6 }}>
+        <Button
+          startIcon={<ArrowBackIcon />}
+          onClick={() => navigate("/admin/gestion_usuarios")}
+          sx={{ mb: 3 }}
+        >
+          Volver a usuarios
+        </Button>
+
+        <Paper
+          elevation={3}
           sx={{
-            width: "100%",
-            display: "flex",
-            justifyContent: "center",
+            borderRadius: 4,
+            p: 4,
+            backgroundColor: "#ffffff",
           }}
         >
-          <Box
-            sx={{
-              width: "100%",
-              maxWidth: 960,
-              display: "flex",
-              flexDirection: "column",
-              gap: { xs: 2.5, md: 3.5 },
-              px: { xs: 0, md: 1 },
-            }}
+          <Typography
+            variant="h4"
+            sx={{ fontWeight: "bold", mb: 1, textAlign: "center" }}
           >
-            <Typography variant="h5" fontWeight={700} textAlign="center">
-              Información del empleado
-            </Typography>
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              textAlign="center"
-              sx={{ maxWidth: 640, mx: "auto" }}
-            >
-              Completa todos los campos para registrar un nuevo empleado en el sistema.
-              Todos los campos son requeridos.
-            </Typography>
+            Registro de Empleado
+          </Typography>
+          <Typography
+            variant="body1"
+            color="text.secondary"
+            sx={{ mb: 4, textAlign: "center" }}
+          >
+            Completa la información del nuevo empleado. La contraseña se generará automáticamente como: Apellido + "123"
+          </Typography>
 
-            <Paper
-              elevation={6}
-              sx={{
-                borderRadius: { xs: 3, md: 4 },
-                px: { xs: 3, md: 5 },
-                py: { xs: 4, md: 5 },
-                backgroundColor: "#ffffff",
-                boxShadow: "0 24px 40px rgba(15,23,42,0.08)",
-              }}
-            >
-              <Formik
-                initialValues={initialValues}
-                validationSchema={registroEmpleadoSchema}
-                onSubmit={handleSubmit}
-                validateOnChange={true}
-                validateOnBlur={true}
-              >
-                {({ values, errors, touched, handleChange, handleBlur, submitForm }) => (
-                  <Form>
+          <Formik
+            initialValues={initialValues}
+            validationSchema={registroEmpleadoSchema}
+            onSubmit={handleSubmit}
+            validateOnChange={true}
+            validateOnBlur={true}
+          >
+            {({ values, errors, touched, handleChange, handleBlur, isValid, dirty }) => (
+              <Form>
+                <Box sx={{ display: "flex", justifyContent: "center" }}>
+                  <Box sx={{ width: "100%", maxWidth: 800 }}>
+                    <Grid container spacing={3}>
+                      {/* Nombre */}
+                      <Grid item xs={12} md={6}>
+                    <TextField
+                      fullWidth
+                      label="Nombre *"
+                      name="nombre"
+                      value={values.nombre}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      error={touched.nombre && Boolean(errors.nombre)}
+                      helperText={touched.nombre && errors.nombre}
+                      placeholder="Ingrese el nombre"
+                      inputProps={{ maxLength: 50 }}
+                      required
+                      sx={formFieldSx}
+                      InputProps={{
+                        startAdornment: <PersonIcon sx={{ mr: 1, color: "action.active" }} />,
+                      }}
+                    />
+                  </Grid>
+
+                  {/* Apellidos */}
+                  <Grid item xs={12} md={6}>
+                    <TextField
+                      fullWidth
+                      label="Apellidos *"
+                      name="apellidos"
+                      value={values.apellidos}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      error={touched.apellidos && Boolean(errors.apellidos)}
+                      helperText={touched.apellidos && errors.apellidos}
+                      placeholder="Ingrese los apellidos"
+                      inputProps={{ maxLength: 50 }}
+                      required
+                      sx={formFieldSx}
+                      InputProps={{
+                        startAdornment: <PersonIcon sx={{ mr: 1, color: "action.active" }} />,
+                      }}
+                    />
+                  </Grid>
+
+                  {/* Correo */}
+                  <Grid item xs={12} md={6}>
+                    <TextField
+                      fullWidth
+                      label="Correo electrónico *"
+                      name="correo"
+                      type="email"
+                      value={values.correo}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      error={touched.correo && Boolean(errors.correo)}
+                      helperText={touched.correo && errors.correo}
+                      placeholder="correo@ejemplo.com"
+                      inputProps={{ maxLength: 50 }}
+                      required
+                      sx={formFieldSx}
+                      InputProps={{
+                        startAdornment: <EmailIcon sx={{ mr: 1, color: "action.active" }} />,
+                      }}
+                    />
+                  </Grid>
+
+                  {/* Teléfono */}
+                  <Grid item xs={12} md={6}>
+                    <TextField
+                      fullWidth
+                      label="Teléfono *"
+                      name="telefono"
+                      value={values.telefono}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      error={touched.telefono && Boolean(errors.telefono)}
+                      helperText={touched.telefono && errors.telefono}
+                      placeholder="1234567890"
+                      inputProps={{ 
+                        maxLength: 10,
+                        inputMode: 'numeric',
+                        pattern: '[0-9]*'
+                      }}
+                      required
+                      sx={formFieldSx}
+                      InputProps={{
+                        startAdornment: <PhoneIcon sx={{ mr: 1, color: "action.active" }} />,
+                      }}
+                    />
+                  </Grid>
+
+                  {/* Información de contraseña */}
+                  <Grid item xs={12}>
                     <Box
                       sx={{
-                        display: "flex",
-                        flexDirection: { xs: "column", md: "row" },
-                        gap: { xs: 3, md: 4 },
-                        width: "100%",
-                        mb: 4,
+                        p: 2,
+                        backgroundColor: "#e3f2fd",
+                        borderRadius: 2,
+                        border: "1px solid #90caf9",
+                        textAlign: "center",
                       }}
                     >
-                      {/* Estatus */}
-                      <Box sx={{ flex: 1, minWidth: 0 }}>
-                        <FormControl
-                          fullWidth
-                          error={touched.estatus && Boolean(errors.estatus)}
-                        >
-                          <InputLabel>Estatus *</InputLabel>
-                          <Select
-                            name="estatus"
-                            value={values.estatus}
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                            label="Estatus *"
-                            sx={{
-                              borderRadius: 3,
-                              backgroundColor: "#fbfbff",
-                              "& .MuiOutlinedInput-notchedOutline": {
-                                borderColor: "rgba(15, 23, 42, 0.08)",
-                              },
-                            }}
-                          >
-                            <MenuItem value="Activo">Activo</MenuItem>
-                            <MenuItem value="Inactivo">Inactivo</MenuItem>
-                          </Select>
-                          {touched.estatus && errors.estatus && (
-                            <Typography variant="caption" color="error" sx={{ mt: 0.5, ml: 2 }}>
-                              {errors.estatus}
-                            </Typography>
-                          )}
-                        </FormControl>
-                      </Box>
-
-                      {/* Rol */}
-                      <Box sx={{ flex: 1, minWidth: 0 }}>
-                        <FormControl
-                          fullWidth
-                          error={touched.rolId && Boolean(errors.rolId)}
-                        >
-                          <InputLabel shrink={true}>Rol *</InputLabel>
-                          <Select
-                            name="rolId"
-                            value={values.rolId}
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                            label="Rol *"
-                            displayEmpty
-                            sx={{
-                              borderRadius: 3,
-                              backgroundColor: "#fbfbff",
-                              "& .MuiOutlinedInput-notchedOutline": {
-                                borderColor: "rgba(15, 23, 42, 0.08)",
-                              },
-                            }}
-                          >
-                            <MenuItem value="" disabled>
-                              Selecciona el rol
-                            </MenuItem>
-                            {rolesDisponibles.map((rol) => (
-                              <MenuItem key={rol.id} value={String(rol.id)}>
-                                {rol.label}
-                              </MenuItem>
-                            ))}
-                          </Select>
-                          {touched.rolId && errors.rolId && (
-                            <Typography variant="caption" color="error" sx={{ mt: 0.5, ml: 2 }}>
-                              {errors.rolId}
-                            </Typography>
-                          )}
-                        </FormControl>
-                      </Box>
-                    </Box>
-
-                    {/* Título Datos del Usuario */}
-                    <Box sx={{ mb: 3 }}>
-                      <Typography variant="subtitle1" fontWeight={600} sx={{ textAlign: "left" }}>
-                        Datos del Usuario
+                      <Typography variant="body2" color="primary">
+                         <strong>Contraseña automática:</strong> El empleado podrá acceder con su correo y la contraseña será su apellido seguido de "123". Se recomienda que al iniciar sesión en su cuenta, cambie dicha contraseña desde su perfil de usuario.
+                        {values.apellidos && (
+                          <span style={{ display: "block", marginTop: 8, fontWeight: "bold" }}>
+                            Contraseña: {values.apellidos}123
+                          </span>
+                        )}
                       </Typography>
                     </Box>
+                  </Grid>
 
-                    <Grid container spacing={3} rowSpacing={3}>
-                      {/* Nombre Completo */}
-                      <Grid item xs={12}>
-                        <TextField
-                          fullWidth
-                          label="Nombre completo"
-                          name="nombreCompleto"
-                          value={values.nombreCompleto}
-                          onChange={handleChange}
-                          onBlur={handleBlur}
-                          error={touched.nombreCompleto && Boolean(errors.nombreCompleto)}
-                          helperText={touched.nombreCompleto && errors.nombreCompleto}
-                          placeholder="Ej: Juan Carlos Pérez García"
-                          sx={formFieldSx}
-                          InputProps={{
-                            startAdornment: (
-                              <InputAdornment position="start">
-                                <PersonIcon color="action" />
-                              </InputAdornment>
-                            ),
-                          }}
-                        />
-                      </Grid>
-
-                      {/* Correo */}
-                      <Grid item xs={12} md={6}>
-                        <TextField
-                          fullWidth
-                          label="Correo electrónico"
-                          name="correo"
-                          type="email"
-                          value={values.correo}
-                          onChange={handleChange}
-                          onBlur={handleBlur}
-                          error={touched.correo && Boolean(errors.correo)}
-                          helperText={touched.correo && errors.correo}
-                          placeholder="ejemplo@correo.com"
-                          sx={formFieldSx}
-                          InputProps={{
-                            startAdornment: (
-                              <InputAdornment position="start">
-                                <EmailIcon color="action" />
-                              </InputAdornment>
-                            ),
-                          }}
-                        />
-                      </Grid>
-
-                      {/* Teléfono */}
-                      <Grid item xs={12} md={6}>
-                        <TextField
-                          fullWidth
-                          label="Teléfono"
-                          name="telefono"
-                          value={values.telefono}
-                          onChange={handleChange}
-                          onBlur={handleBlur}
-                          error={touched.telefono && Boolean(errors.telefono)}
-                          helperText={touched.telefono && errors.telefono}
-                          placeholder="7771234567"
-                          inputProps={{ maxLength: 10 }}
-                          sx={formFieldSx}
-                          InputProps={{
-                            startAdornment: (
-                              <InputAdornment position="start">
-                                <PhoneIcon color="action" />
-                              </InputAdornment>
-                            ),
-                          }}
-                        />
-                      </Grid>
-
-                      {/* Contraseña */}
-                      <Grid item xs={12} md={6}>
-                        <TextField
-                          fullWidth
-                          label="Contraseña"
-                          name="contra"
-                          type={showPassword ? "text" : "password"}
-                          value={values.contra}
-                          onChange={handleChange}
-                          onBlur={handleBlur}
-                          error={touched.contra && Boolean(errors.contra)}
-                          helperText={touched.contra && errors.contra}
-                          placeholder="Mínimo 6 caracteres"
-                          sx={formFieldSx}
-                          InputProps={{
-                            startAdornment: (
-                              <InputAdornment position="start">
-                                <LockIcon color="action" />
-                              </InputAdornment>
-                            ),
-                            endAdornment: (
-                              <InputAdornment position="end">
-                                <IconButton
-                                  onClick={() => setShowPassword(!showPassword)}
-                                  edge="end"
-                                >
-                                  {showPassword ? <VisibilityOff /> : <Visibility />}
-                                </IconButton>
-                              </InputAdornment>
-                            ),
-                          }}
-                        />
-                      </Grid>
-                    </Grid>
-
-                    {/* Botones de acción */}
+                  {/* Botones */}
+                  <Grid item xs={12}>
                     <Box
                       sx={{
                         display: "flex",
                         justifyContent: "center",
                         gap: 2,
-                        mt: 4,
+                        mt: 2,
                       }}
                     >
                       <Button
                         variant="outlined"
-                        onClick={handleCancel}
-                        sx={{
-                          minWidth: 120,
-                        }}
+                        onClick={() => navigate("/admin/gestion_usuarios")}
+                        disabled={loading}
                       >
                         Cancelar
                       </Button>
                       <Button
                         type="submit"
                         variant="contained"
-                        onClick={submitForm}
-                        sx={{
-                          minWidth: 120,
-                          backgroundColor: "var(--primary)",
-                          "&:hover": {
-                            backgroundColor: "var(--primary)",
-                            opacity: 0.9,
-                          },
-                        }}
+                        disabled={!isValid || !dirty || loading}
                       >
-                        Registrar
+                        {loading ? "Registrando..." : "Registrar Empleado"}
                       </Button>
                     </Box>
-                  </Form>
-                )}
-              </Formik>
-            </Paper>
-          </Box>
-        </Box>
-      </Box>
-
-      {/* Modal de Éxito */}
-      <Dialog
-        open={openModalExito}
-        onClose={handleCerrarModalExito}
-        maxWidth="xs"
-        fullWidth
-        PaperProps={{
-          sx: {
-            borderRadius: 2,
-          },
-        }}
-      >
-        <DialogContent
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            py: 4,
-            px: 4,
-            pb: 1,
-          }}
-        >
-          {/* Ícono de éxito simple */}
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              mb: 2.5,
-            }}
-          >
-            {/* Círculo verde sólido */}
-            <Box
-              sx={{
-                width: 70,
-                height: 70,
-                borderRadius: "50%",
-                backgroundColor: "#4caf50",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <DoneIcon
-                sx={{
-                  fontSize: 48,
-                  color: "#ffffff",
-                }}
-              />
-            </Box>
-          </Box>
-
-          {/* Título */}
-          <Typography
-            variant="h6"
-            sx={{
-              fontWeight: "bold",
-              color: "#000000",
-              mb: 1.5,
-            }}
-          >
-            ¡Éxito!
-          </Typography>
-
-          {/* Mensaje */}
-          <Typography
-            variant="body2"
-            sx={{
-              color: "#000000",
-              textAlign: "center",
-              mb: 3,
-            }}
-          >
-            Usuario registrado exitosamente.
-          </Typography>
-        </DialogContent>
-        <DialogActions sx={{ px: 4, pb: 3.5, pt: 0, justifyContent: "center" }}>
-          <Button
-            onClick={handleCerrarModalExito}
-            variant="contained"
-            sx={{
-              backgroundColor: "#4caf50",
-              color: "#ffffff",
-              py: 0.75,
-              px: 3,
-              borderRadius: 1.5,
-              minWidth: 100,
-              textTransform: "none",
-              fontSize: "0.875rem",
-              "&:hover": {
-                backgroundColor: "#45a049",
-              },
-            }}
-          >
-            Aceptar
-          </Button>
-        </DialogActions>
-      </Dialog>
+                  </Grid>
+                </Grid>
+                  </Box>
+                </Box>
+              </Form>
+            )}
+          </Formik>
+        </Paper>
+      </Container>
     </>
   );
 }
-

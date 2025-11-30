@@ -14,7 +14,7 @@ import { ArrowBack as ArrowBackIcon } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import MainHeader from "../../../components/MainHeader";
 import useRegistroPensionadoAdmin from "../hooks/useRegistroPensionadoAdmin";
-import Step2InformacionPersonal from "../../registro_pension/components/Step2InformacionPersonal";
+import Step1InformacionPersonal from "./Step1InformacionPersonal";
 import Step3InformacionVehiculos from "../../registro_pension/components/Step3InformacionVehiculos";
 import Step0SeleccionPension from "./Step0SeleccionPension";
 import Step3Confirmacion from "./Step3Confirmacion";
@@ -149,7 +149,7 @@ export default function RegistroPensionadoAdmin() {
         );
       case 1:
         return (
-          <Step2InformacionPersonal
+          <Step1InformacionPersonal
             formData={formData}
             onSubmit={handleStep1Submit}
           />
@@ -167,6 +167,7 @@ export default function RegistroPensionadoAdmin() {
         return (
           <Step3Confirmacion
             datosRegistro={datosRegistro}
+            formData={formData}
             onVolverAUsuarios={handleVolverAUsuarios}
           />
         );
@@ -249,8 +250,8 @@ export default function RegistroPensionadoAdmin() {
                   <Button
                     variant="contained"
                     onClick={() => {
-                      if (window.step2SubmitRef) {
-                        window.step2SubmitRef();
+                      if (window.step1SubmitRef) {
+                        window.step1SubmitRef();
                       }
                     }}
                   >
