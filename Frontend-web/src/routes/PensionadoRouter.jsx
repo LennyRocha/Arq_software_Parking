@@ -66,9 +66,9 @@ export default function AdminRouter() {
 
   React.useEffect(() => {
     getToken();
-        if (!getToken()) {
-          goTo("*");
-        }
+    if (!getToken()) {
+      goTo("*");
+    }
     switch (true) {
       case path.includes("entradas"):
         setSelectedIndex(1);
@@ -80,6 +80,7 @@ export default function AdminRouter() {
         setSelectedIndex(3);
         break;
       case path.includes("vehiculos"):
+      case path.includes("vehiculo"):
         setSelectedIndex(4);
         break;
       default:
@@ -132,61 +133,72 @@ export default function AdminRouter() {
 
   const Menu = (clase) => {
     return (
-      <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }} className={clase.clase}>
-        <Box sx={{ flex: 1, overflowY: "auto", p: 1 }}>
-          <Toolbar
-            disableGutters
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              width: "100%",
-              mb: 1,
-            }}
-          >
-            <ListItem sx={{ gap: 1, padding: 1, borderRadius: 2 }}>
-              <ListItemAvatar>
-                <Avatar
-                  alt="logo"
-                  src={logo}
-                  variant="square"
-                  sx={{ width: 50, height: 40, objectFit: "fill" }}
-                />
-              </ListItemAvatar>
-              <ListItemText
-                primary="parKing"
-                primaryTypographyProps={{
-                  fontFamily: "Exo 2, sans-serif",
-                  fontWeight: "bold",
-                  fontSize: 20,
-                  color: isDarkMode ? "var(--secondary)" : "var(--other)",
-                }}
-                secondary="Pensionado"
-              />
-            </ListItem>
-            <Tooltip title="Cambiar modo" cursor="pointer">
-              <IconButton color={isDarkMode ? "primary"  : "tertiary" } onClick={toggleDarkMode}>
-                {isDarkMode ? <DarkModeIcon /> : <LightModeIcon />}
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Ir a mi perfil" cursor="pointer">
+      <List
+        sx={{
+          width: "100%",
+          maxWidth: 256,
+          padding: "10px",
+          boxSizing: "border-box",
+          height: "100vh",
+          overflowY: "auto",
+        }}
+        className={`no_scroll ${clase.clase}`}
+      >
+        <Toolbar
+          disableGutters
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            width: "100%",
+            position: "sticky",
+          }}
+        >
+          <ListItem sx={{ gap: 1, padding: 1, borderRadius: 2 }}>
+            <ListItemAvatar>
               <Avatar
-                sx={{
-                  bgcolor: "var(--other)",
-                  "&:hover": {
-                    cursor: "pointer",
-                    bgcolor: "var(--primary)",
-                  },
-                  color: "#fff",
-                }}
-                onClick={() => goTo(`/pensionados/perfil`)}
-              >
-                UP
-              </Avatar>
-            </Tooltip>
-          </Toolbar>
-          <Divider />
-        <List component="nav">
+                alt="logo"
+                src={logo}
+                variant="square"
+                sx={{ width: 50, height: 40, objectFit: "fill" }}
+              />
+            </ListItemAvatar>
+            <ListItemText
+              primary="parKing"
+              primaryTypographyProps={{
+                fontFamily: "Exo 2, sans-serif",
+                fontWeight: "bold",
+                fontSize: 20,
+                color: isDarkMode ? "var(--secondary)" : "var(--other)",
+              }}
+              secondary="Pensionado"
+            />
+          </ListItem>
+          <Tooltip title="Cambiar modo" cursor="pointer">
+            <IconButton
+              color={isDarkMode ? "primary" : "tertiary"}
+              onClick={toggleDarkMode}
+            >
+              {!isDarkMode ? <DarkModeIcon /> : <LightModeIcon />}
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Ir a mi perfil" cursor="pointer">
+            <Avatar
+              sx={{
+                bgcolor: "var(--other)",
+                "&:hover": {
+                  cursor: "pointer",
+                  bgcolor: "var(--primary)",
+                },
+                color: "#fff",
+              }}
+              onClick={() => goTo(`/pensionados/perfil`)}
+            >
+              UP
+            </Avatar>
+          </Tooltip>
+        </Toolbar>
+        <Divider />
         <ListItemButton
           onClick={() => goTo("/pensionados")}
           selected={selectedIndex === 0}
@@ -312,13 +324,9 @@ export default function AdminRouter() {
           </ListItemIcon>
           <ListItemText primary="Mis vehículos" />
         </ListItemButton>
-          {/* CERRAR SESIÓN */}
-        
-      </List>
-        </Box>
+        {/* CERRAR SESIÓN */}
 
-        {/* Logout fijo abajo */}
-        <Box sx={{ p: 2 }}>
+        <Box sx={{ py: 1 }}>
           <Divider sx={{ mb: 1 }} />
           <ListItemButton
             onClick={handleLogout}
@@ -334,7 +342,7 @@ export default function AdminRouter() {
             <ListItemText primary="Cerrar sesión" />
           </ListItemButton>
         </Box>
-      </Box>
+      </List>
     );
   };
 

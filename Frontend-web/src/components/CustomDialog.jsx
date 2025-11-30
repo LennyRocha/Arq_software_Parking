@@ -55,6 +55,7 @@
 import {
   Box,
   Button,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -85,6 +86,8 @@ export default function CustomDialog({
   allowOutsideClick = true,
   tituloLeft = false,
   showCancel = true,
+  valid = true,
+  isLoading = false,
 }) {
   const { isDarkMode } = useDarkContext();
 
@@ -124,7 +127,7 @@ export default function CustomDialog({
       PaperProps={{
         sx: {
           borderRadius: 2,
-          padding: 2,
+          padding: 1,
         },
       }}
     >
@@ -134,10 +137,11 @@ export default function CustomDialog({
           textAlign: tituloLeft ? "left" : "center",
           color: "var(--primary)",
           fontWeight: "bold",
-          fontSize: "2rem",
+          fontSize: { xs: "1.5rem", sm: "2rem" },
           paddingBottom: 3,
-          position: "relative",
           paddingTop: 2,
+          position: "relative",
+          paddingRight: { xs: "48px", sm: "16px" },
         }}
       >
         {titulo}
@@ -177,9 +181,18 @@ export default function CustomDialog({
             </Button>
           )}
           {isForm ? (
-            <Button type="submit" variant="contained" onClick={onSubmit}>
-              {textSubmit}
-            </Button>
+            isLoading ? (
+              <CircularProgress size={40} />
+            ) : (
+              <Button
+                type="submit"
+                variant="contained"
+                onClick={onSubmit}
+                disabled={!valid}
+              >
+                {textSubmit}
+              </Button>
+            )
           ) : (
             <Button onClick={handleConfirm} variant="contained">
               {textConfirm}

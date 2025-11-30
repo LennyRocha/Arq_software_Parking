@@ -7,6 +7,8 @@ import {
   Skeleton,
   Typography,
   IconButton,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import useCajones from "../hooks/useCajones";
 import React from "react";
@@ -27,6 +29,8 @@ const ParkingGrid = ({ columnsConfig = {} }) => {
     idCar,
     availableCount,
   } = useCajones();
+  const theme = useTheme();
+  const isXs = useMediaQuery(theme.breakpoints.down("md"));
   const defaultConfig = {
     xs: {
       columns: "1fr 1fr 0.25fr 1fr 1fr",
@@ -47,7 +51,7 @@ const ParkingGrid = ({ columnsConfig = {} }) => {
       roadColumns: [2, 5, 8],
     },
     lg: {
-      columns: "repeat(9, 1fr)",
+      columns: "1fr .5fr 1fr 1fr .5fr 1fr 1fr .5fr 1fr",
       positions: [1, 3, 4, 6, 7, 9],
       itemsPerRow: 6,
       roadColumns: [2, 5, 8],
@@ -104,27 +108,37 @@ const ParkingGrid = ({ columnsConfig = {} }) => {
         display: "flex",
         flex: 1,
         flexDirection: "column",
+        width: "100%",
       }}
     >
       <Box
         sx={{
           display: "flex",
-          flexDirection: { sm: "column", md: "row" },
-          justifyContent: "space-between",
+          flexDirection: { xs: "column", md: "row" },
+          justifyContent: { xs: "center", md: "space-between" },
           alignItems: "center",
+          gap: 2,
+          width: "100%", // importante
         }}
       >
-        <Box>
-          <Typography
-            variant="subtitle2"
-            sx={{ width: "100%", textAlign: { sm: "center", md: "left" } }}
-          >
-            Tipo de vehículo
-          </Typography>
+        {/* Primer bloque: tipo de vehículo */}
+        <Box
+          sx={{
+            width: { xs: "100%", md: "auto" },
+            textAlign: { xs: "center", md: "left" },
+          }}
+        >
+          <Typography variant="subtitle2">Tipo de vehículo</Typography>
+
           <ButtonGroup
             variant="contained"
             color="tertiary"
-            aria-label="Basic button group"
+            sx={{
+              flexWrap: "wrap",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+            disableElevation={isXs}
           >
             <Button
               variant={idCar === 0 ? "contained" : "outlined"}
@@ -153,17 +167,24 @@ const ParkingGrid = ({ columnsConfig = {} }) => {
           </ButtonGroup>
         </Box>
 
-        <Box>
-          <Typography
-            variant="subtitle2"
-            sx={{ width: "100%", textAlign: { sm: "center", md: "right" } }}
-          >
-            Piso
-          </Typography>
+        {/* Segundo bloque: piso */}
+        <Box
+          sx={{
+            width: { xs: "100%", md: "auto" },
+            textAlign: { xs: "center", md: "right" },
+          }}
+        >
+          <Typography variant="subtitle2">Piso</Typography>
+
           <ButtonGroup
             variant="contained"
             color="tertiary"
-            aria-label="Basic button group"
+            sx={{
+              flexWrap: "wrap",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+            disableElevation={isXs}
           >
             <Button
               variant={piso === 0 ? "contained" : "outlined"}
@@ -175,19 +196,19 @@ const ParkingGrid = ({ columnsConfig = {} }) => {
               variant={piso === 1 ? "contained" : "outlined"}
               onClick={() => setPiso(1)}
             >
-              Primer piso
+              Piso 1
             </Button>
             <Button
               variant={piso === 2 ? "contained" : "outlined"}
               onClick={() => setPiso(2)}
             >
-              Segundo piso
+              Piso 2
             </Button>
             <Button
               variant={piso === 3 ? "contained" : "outlined"}
               onClick={() => setPiso(3)}
             >
-              Tercer piso
+              Piso 3
             </Button>
           </ButtonGroup>
         </Box>
@@ -250,36 +271,16 @@ const ParkingGrid = ({ columnsConfig = {} }) => {
           const lgRow = Math.floor(index / config.lg.itemsPerRow) + 1;
 
           const setBackground = () => {
-            if (!cajon.disponible) {
-              return "transparent";
-            } else if (cajon.paraPensionados && cajon.estatus) {
-              return "var(--other)";
-            } else if (
-              cajon.disponible &&
-              !cajon.paraPensionados &&
-              !cajon.estatus
-            ) {
-              return "var(--card)";
-            } else if (!cajon.estatus) {
-              return "var(--gray)";
-            }
-            return "var(--card)";
+            if (!cajon.disponible) return "transparent";
+            if (!cajon.estatus) return "var(--gray)"; // cualquier cajón inactivo
+            if (cajon.paraPensionados) return "var(--other)"; // disponible y pensionado
+            return "var(--card)"; // disponible normal
           };
 
           const setBorder = () => {
-            if (!cajon.disponible) {
-              return "transparent";
-            } else if (cajon.paraPensionados && cajon.estatus) {
-              return "var(--other)";
-            } else if (
-              cajon.disponible &&
-              !cajon.paraPensionados &&
-              !cajon.estatus
-            ) {
-              return "var(--card-text)";
-            } else if (!cajon.estatus) {
-              return "var(--dark)";
-            }
+            if (!cajon.disponible) return "transparent";
+            if (!cajon.estatus) return "var(--dark)";
+            if (cajon.paraPensionados) return "var(--other)";
             return "var(--card-text)";
           };
 
@@ -568,23 +569,5 @@ const ParkingGrid = ({ columnsConfig = {} }) => {
     </Box>
   );
 };
-
-/* titulo,
-  isOpen,
-  children,
-  isForm = false,
-  onSubmit,
-  onCancel,
-  onConfirm,
-  textSubmit = "Submit",
-  textCancel = "Cancel",
-  textConfirm = "Confirm",
-  showActions = true,
-  fullWidth = true, // changed default to true
-  maxWidth = "sm",  // changed default to "sm"
-  containerStyle = {},
-  handleClose,
-  keyForClose = true,
-  allowOutsideClick = true */
 
 export default ParkingGrid;

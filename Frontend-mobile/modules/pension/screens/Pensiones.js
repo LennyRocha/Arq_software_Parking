@@ -13,7 +13,7 @@ export default function Pensiones({ navigation }) {
   const goTo = (pension) => {
     navigation.navigate("detallesPension", { pension: pension });
   }
-  const { data, isLoading, error, errorData, renderedList, restartCall } = usePensiones(navigation, goTo);
+  const { data, isLoading, errorData, renderedList, restartCall } = usePensiones(navigation, goTo);
   const paper = useTheme();
   if (isLoading) return <LoadingView />;
   if (errorData?.tipo === "Error de Axios") return <ErrorAxios error={errorData.detalles} callback={restartCall} />;

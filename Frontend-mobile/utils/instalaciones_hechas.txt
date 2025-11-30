@@ -41,14 +41,15 @@ npm i yup @hookform/resolvers
 npm install --save @expo-google-fonts/exo-2 expo-font
 
 #Socket.io
-npm install socket.io-client (Por instalar)
+npm install socket.io-client
 
 #linear gradient
 npm install react-native-linear-gradient
 npx expo install expo-linear-gradient --esta es la buena
 
-#Async storage
+#Async y secure storage
 npm install @react-native-async-storage/async-storage
+npx expo install expo-secure-store
 
 #Generador de QR
 npx expo install react-native-qrcode-svg@latest
@@ -64,9 +65,9 @@ npm install react-native-view-shot
 npm install @react-native-camera-roll/camera-roll
 npx expo install expo-media-library
 
-
 #webSocket client y stomp
 npm install @stomp/stompjs
 npm install sockjs-client
 
-npm install socket.io-client
+#Reproductor de sonido
+expo install expo-av

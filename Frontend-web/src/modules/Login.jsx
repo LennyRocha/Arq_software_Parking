@@ -1,16 +1,12 @@
 import React, { useState } from "react";
 import api from "../utils/api";
 import { saveAllStorage } from "../utils/AuthService";
-import Logo from "../img/logo_parking copy.png";
+import Logo from "../img/logo_parking_sin_fondo.png";
 import ciudad from "../img/fondo.png";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import sweetAlert from "../utils/sweetAlert";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ErrorIcon from "@mui/icons-material/Error";
-
-
-
-
 import {
   Box,
   TextField,

@@ -118,6 +118,13 @@ public class CajonService {
     }
 
     @Transactional(readOnly = true)
+    public ApiResponse<Integer> getAvailableCount(){
+        return ApiResponse.success(HttpStatus.OK,"Cajones disponibles para reservar son:",
+                cajonRepository.countAllByParaPensionadosIsFalse()
+        );
+    }
+
+    @Transactional(readOnly = true)
     public ApiResponse<Cajon> getCajonPorIdentificador(String id){
         return ApiResponse.success(HttpStatus.OK,"Cajón obtenido",
                 cajonRepository.findByName(id).orElseThrow(() -> new ResourceNotFoundException("Cajón no encontrado") )

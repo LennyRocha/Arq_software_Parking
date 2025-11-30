@@ -8,17 +8,14 @@
     "resizeMode": "contain",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
-
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#1E3A3E"
     },
-
     "ios": {
       "supportsTablet": true
     },
-
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
@@ -27,17 +24,14 @@
       },
       "edgeToEdgeEnabled": false,
       "package": "mx.edu.utez.parKing",
-
       "permissions": [
         "READ_MEDIA_IMAGES",
         "WRITE_EXTERNAL_STORAGE"
       ]
     },
-
     "web": {
       "favicon": "./assets/favicon.png"
     },
-
     "plugins": [
       "expo-font",
       [
@@ -45,7 +39,8 @@
         {
           "photosPermission": "Permitir a la app guardar capturas en la galería"
         }
-      ]
+      ],
+      "expo-secure-store"
     ]
   }
 }

@@ -84,6 +84,8 @@ export default function AdminRouter() {
         setSelectedIndex(4);
         break;
       case path.includes("cajones"):
+      case path.includes("cajon"):
+      case path.includes("estacionamiento"):
         setSelectedIndex(5);
         break;
       case path.includes("gestion_usuarios"):
@@ -91,6 +93,9 @@ export default function AdminRouter() {
         break;
       case path.includes("/usuarios"):
         setSelectedIndex(6);
+        break;
+      case path.includes("gestion_vehiculos"):
+        setSelectedIndex(8);
         break;
       default:
         setSelectedIndex(0);
@@ -139,64 +144,72 @@ export default function AdminRouter() {
 
   const Menu = (clase) => {
     return (
-      <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }} className={clase.clase}>
-        <Box sx={{ flex: 1, overflowY: "auto", p: 1 }}>
-          <Toolbar
-            disableGutters
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              width: "100%",
-              mb: 1,
-            }}
-          >
-            <ListItem sx={{ gap: 1, padding: 1, borderRadius: 2 }}>
-              <ListItemAvatar>
-                <Avatar
-                  alt="logo"
-                  src={logo}
-                  variant="square"
-                  sx={{ width: 50, height: 40, objectFit: "fill" }}
-                />
-              </ListItemAvatar>
-              <ListItemText
-                primary="parKing"
-                primaryTypographyProps={{
-                  fontFamily: "Exo 2, sans-serif",
-                  fontWeight: "bold",
-                  fontSize: 20,
-                  color: isDarkMode ? "var(--secondary)" : "var(--other)",
-                }}
-                secondary="Admin"
-              />
-            </ListItem>
-            <Tooltip title="Cambiar modo" cursor="pointer">
-              <IconButton
-                color={isDarkMode ? "primary" : "tertiary"}
-                onClick={toggleDarkMode}
-              >
-                {isDarkMode ? <DarkModeIcon /> : <LightModeIcon />}
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Ir a mi perfil" cursor="pointer">
+      <List
+        sx={{
+          width: "100%",
+          maxWidth: 256,
+          padding: "10px",
+          boxSizing: "border-box",
+          height: "100vh",
+          overflowY: "auto",
+        }}
+        className={`no_scroll ${clase.clase}`}
+      >
+        <Toolbar
+          disableGutters
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            width: "100%",
+            mb: 1,
+          }}
+        >
+          <ListItem sx={{ gap: 1, padding: 1, borderRadius: 2 }}>
+            <ListItemAvatar>
               <Avatar
-                sx={{
-                  bgcolor: "var(--other)",
-                  "&:hover": {
-                    cursor: "pointer",
-                    bgcolor: "var(--primary)",
-                  },
-                  color: "#fff",
-                }}
-                onClick={() => goTo(`/admin/perfil`)}
-              >
-                UA
-              </Avatar>
-            </Tooltip>
-          </Toolbar>
-          <Divider />
-        <List component="nav">
+                alt="logo"
+                src={logo}
+                variant="square"
+                sx={{ width: 50, height: 40, objectFit: "fill" }}
+              />
+            </ListItemAvatar>
+            <ListItemText
+              primary="parKing"
+              primaryTypographyProps={{
+                fontFamily: "Exo 2, sans-serif",
+                fontWeight: "bold",
+                fontSize: 20,
+                color: isDarkMode ? "var(--secondary)" : "var(--other)",
+              }}
+              secondary="Admin"
+            />
+          </ListItem>
+          <Tooltip title="Cambiar modo" cursor="pointer">
+            <IconButton
+              color={isDarkMode ? "primary" : "tertiary"}
+              onClick={toggleDarkMode}
+            >
+              {!isDarkMode ? <DarkModeIcon /> : <LightModeIcon />}
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Ir a mi perfil" cursor="pointer">
+            <Avatar
+              sx={{
+                bgcolor: "var(--other)",
+                "&:hover": {
+                  cursor: "pointer",
+                  bgcolor: "var(--primary)",
+                },
+                color: "#fff",
+              }}
+              onClick={() => goTo(`/admin/perfil`)}
+            >
+              UA
+            </Avatar>
+          </Tooltip>
+        </Toolbar>
+        <Divider />
         <ListItemButton onClick={() => handleClick("reports")}>
           <ListItemIcon>
             <ConfirmationNumberIcon className="gray" />
@@ -223,8 +236,9 @@ export default function AdminRouter() {
                 <Icon
                   path={mdiCarCog}
                   size={1}
-                  className={`side-icon ${selectedIndex === 0 ? "color-white " : "gray"
-                    }`}
+                  className={`side-icon ${
+                    selectedIndex === 0 ? "color-white " : "gray"
+                  }`}
                 />
               </ListItemIcon>
               <ListItemText primary="Gestionar" />
@@ -246,8 +260,9 @@ export default function AdminRouter() {
                 <Icon
                   path={mdiFileChart}
                   size={1}
-                  className={`side-icon ${selectedIndex === 1 ? "color-white " : "gray"
-                    }`}
+                  className={`side-icon ${
+                    selectedIndex === 1 ? "color-white " : "gray"
+                  }`}
                 />
               </ListItemIcon>
               <ListItemText primary="Reportes" />
@@ -281,8 +296,9 @@ export default function AdminRouter() {
                 <Icon
                   path={mdiAccountCreditCard}
                   size={1}
-                  className={`side-icon ${selectedIndex === 2 ? "color-white " : "gray"
-                    }`}
+                  className={`side-icon ${
+                    selectedIndex === 2 ? "color-white " : "gray"
+                  }`}
                 />
               </ListItemIcon>
               <ListItemText primary="Tipos de pensión" />
@@ -302,8 +318,9 @@ export default function AdminRouter() {
             >
               <ListItemIcon>
                 <FolderSharedIcon
-                  className={`side-icon ${selectedIndex === 3 ? "color-white " : "gray"
-                    }`}
+                  className={`side-icon ${
+                    selectedIndex === 3 ? "color-white " : "gray"
+                  }`}
                 />
               </ListItemIcon>
               <ListItemText primary="Pensiones de usuarios" />
@@ -327,8 +344,9 @@ export default function AdminRouter() {
             <Icon
               path={mdiCash}
               size={1}
-              className={`side-icon ${selectedIndex === 4 ? "color-white " : "gray"
-                }`}
+              className={`side-icon ${
+                selectedIndex === 4 ? "color-white " : "gray"
+              }`}
             />
           </ListItemIcon>
           <ListItemText primary="Tarifas" />
@@ -347,8 +365,9 @@ export default function AdminRouter() {
         >
           <ListItemIcon>
             <LocalParkingIcon
-              className={`side-icon ${selectedIndex === 5 ? "color-white " : "gray"
-                }`}
+              className={`side-icon ${
+                selectedIndex === 5 ? "color-white " : "gray"
+              }`}
             />
           </ListItemIcon>
           <ListItemText primary="Cajones" />
@@ -368,8 +387,9 @@ export default function AdminRouter() {
         >
           <ListItemIcon>
             <PeopleIcon
-              className={`side-icon ${selectedIndex === 6 ? "color-white " : "gray"
-                }`}
+              className={`side-icon ${
+                selectedIndex === 6 ? "color-white " : "gray"
+              }`}
             />
           </ListItemIcon>
           <ListItemText primary="Usuarios" />
@@ -389,16 +409,15 @@ export default function AdminRouter() {
         >
           <ListItemIcon>
             <DirectionsCar
-              className={`side-icon ${selectedIndex === 8 ? "color-white " : "gray"
-                }`}
+              className={`side-icon ${
+                selectedIndex === 8 ? "color-white " : "gray"
+              }`}
             />
           </ListItemIcon>
           <ListItemText primary="Vehículos" />
         </ListItemButton>
-      </List>
-        </Box>
 
-        <Box sx={{ p: 2 }}>
+        <Box sx={{ py: 1 }}>
           <Divider sx={{ mb: 1 }} />
           <ListItemButton
             onClick={handleLogout}
@@ -414,7 +433,7 @@ export default function AdminRouter() {
             <ListItemText primary="Cerrar sesión" />
           </ListItemButton>
         </Box>
-      </Box>
+      </List>
     );
   };
 

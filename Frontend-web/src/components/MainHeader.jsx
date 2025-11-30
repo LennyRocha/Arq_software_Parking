@@ -69,7 +69,6 @@ export default function MainHeader({ titulo, breads, icon }) {
   return (
     <Box
       sx={{
-        padding: "2rem .25rem",
         borderBottom: "1px solid var(--border)",
         bgcolor: "var(--background)",
         display: "flex",
@@ -77,6 +76,7 @@ export default function MainHeader({ titulo, breads, icon }) {
         alignItems: "center",
         justifyContent: "center",
         gap: 1,
+        padding: 2
       }}
     >
       {BreadCrumbs}

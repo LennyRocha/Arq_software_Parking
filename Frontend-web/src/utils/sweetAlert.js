@@ -15,6 +15,7 @@ export default function sweetAlert({
   showCloseButton = false,
   showLoaderOnConfirm = false,
   reverseButtons = false,
+  preConfirm = undefined,
   zIndex = undefined, // Nueva prop opcional para z-index personalizado
 }) {
   return Swal.fire({
@@ -38,6 +39,7 @@ export default function sweetAlert({
       denyButton: "deny-button-class",
       popup: "popup-class",
     },
+    preConfirm,
     heightAuto: false, // Evita que SweetAlert ajuste la altura del body
     backdrop: true, // Asegura que tenga backdrop
     ...(zIndex && { zIndex }), // Agrega zIndex solo si se proporciona

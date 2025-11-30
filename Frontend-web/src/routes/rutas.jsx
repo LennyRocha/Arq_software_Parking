@@ -19,12 +19,16 @@ import GestionUsuarios from "../modules/usuarios/pages/GestionUsuarios";
 import RegistroPensionadoAdmin from "../modules/usuarios/components/RegistroPensionadoAdmin";
 import RegistroPensionadoEmpleado from "../modules/usuarios/components/RegistroPensionadoEmpleado";
 import RegistroEmpleado from "../modules/usuarios/components/RegistroEmpleado";
-import CajonesPage from "../modules/cajon/pages/CajonesPage";
 import MiPension from "../modules/usuario_pension/pages/MiPension";
 import RecuperacionContraseña from "../modules/RecuperacionContraseña";
 import ActualizacionContra from "../modules/ActualizacionContra";
 import Perfil from "../modules/cajon/pages/PagesAdmin";
 import P from "../modules/cajon/pages/PagesPensionado";
+import CajonesPage from '../modules/cajon/pages/CajonesPage'
+import MisVehiculos from "../modules/vehiculo/screens/MisVehiculos";
+import NuevoVehiculo from "../modules/vehiculo/screens/NuevoVehiculo";
+import CajonesTabla from "../modules/cajon/pages/CajonesTabla";
+import NuevoCajon from "../modules/cajon/pages/NuevoCajon";
 
 const Err = () => <h1>404 - Not Found!</h1>;
 
@@ -56,19 +60,20 @@ export default function Rutas() {
           <Route path="tipos_de_pension" element={<GestionTiposPension />} />
           <Route path="pensiones_de_usuarios" element={<PensionesUsuario />} />
           <Route path="tarifas" element={<AdminGestionTarifas />} />
-          <Route path="cajones" element={<CajonesPage isPensionado={false} />} />
+          <Route path="cajones" element={<CajonesTabla />} />
+          <Route path="nuevo_cajon" element={<NuevoCajon />} />
+          <Route path="estacionamiento" element={<CajonesPage isPensionado={false} isAdmin />} />
           <Route path="gestion_usuarios" element={<GestionUsuarios/>} />
           <Route path="usuarios/registrar" element={<RegistroPensionadoAdmin/>} />
           <Route path="usuarios/registrar-empleado" element={<RegistroEmpleado/>} />
           <Route path="gestion_vehiculos" element={<Pages />} />
-          <Route path="perfil" element={<Perfil />} />
           <Route path="perfil" element={<Perfil />} />
         </Route>
         {/* Rutas del empleado */}
         <Route path="/empleado" element={<ProtectedRoute allowedRoles={['EMPLEADO']}><EmpleadoRouter /></ProtectedRoute>}>
           <Route index element={<AdminGestionarEntradasSalidas />} />
           <Route path="pensiones" element={<PensionesUsuario />} />
-          <Route path="cajones" element={<Pages />} />
+          <Route path="cajones" element={<CajonesPage isPensionado={false} />} />
           <Route path="nuevo_pensionado" element={<RegistroPensionadoEmpleado />} />
           <Route path="perfil" element={<Perfil />} />
         </Route>
@@ -78,8 +83,9 @@ export default function Rutas() {
           <Route path="entradas" element={<PensionadoEstacionamiento />} />
           <Route path="historial" element={<PensionadoVerEntradasSalidas />} />
           <Route path="mi_pension" element={<MiPension/>} />
-          <Route path="mis_vehiculos" element={<Pages />} />
-          <Route path="perfil" element={<P />} />
+          <Route path="nuevo_vehiculo" element={<NuevoVehiculo />} />
+          <Route path="mis_vehiculos" element={<MisVehiculos />} />
+          <Route path="perfil" element={<Perfil />} />
 
         </Route>
         {/* Perfil y otros */}

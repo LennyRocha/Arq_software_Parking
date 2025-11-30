@@ -4,19 +4,24 @@ import MainHeader from "../../../components/MainHeader";
 import "../styles/cajon.css";
 import ParkingGrid from "../components/ParkingGrid";
 
-export default function CajonesPage({ isPensionado = true }) {
+export default function CajonesPage({ isPensionado = true, isAdmin = false }) {
   return (
     <div className="overflow-y-auto">
       <MainHeader
         titulo="CAJONES DISPONIBLES"
         breads={[
           {
-            nombre: isPensionado ?  "Usuario pensionado" :  "Empleados",
-            ruta: isPensionado ? "/pensionados" : "/empleado",
+            nombre: "Inicio",
+            ruta: isPensionado
+              ? "/pensionados"
+              : isAdmin
+              ? "/admin"
+              : "/empleado",
             disabled: false,
           },
+          isAdmin && { nombre: "Gestión de cajones", ruta: "/admin/cajones", disabled: false },
           {
-            nombre: "Consultar cajones",
+            nombre:  isAdmin ? "Estacionamiento" : "Consultar cajones",
             ruta: "/",
             disabled: true,
           },
@@ -29,16 +34,20 @@ export default function CajonesPage({ isPensionado = true }) {
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
-          alignItems: "center"
+          alignItems: "center",
         }}
         component={"div"}
       >
-        <ParkingGrid/>
-        {isPensionado && (
-          <Button color="tertiary" variant="contained" sx={{ width: "100%" , maxWidth: 1200}}>
+        <ParkingGrid />
+        {/* {isPensionado && (
+          <Button
+            color="tertiary"
+            variant="contained"
+            sx={{ width: "100%", maxWidth: 1200 }}
+          >
             Marcar entrada
           </Button>
-        )}
+        )} */}
       </Box>
     </div>
   );

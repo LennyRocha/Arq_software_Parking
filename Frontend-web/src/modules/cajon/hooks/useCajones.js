@@ -1,5 +1,6 @@
 import React from 'react'
 import useWebSocket from './useWebSocket'
+import claxon from "../../../sounds/claxon.wav";
 
 export default function useCajones() {
     const { emit, on, isConnected } = useWebSocket();
@@ -10,6 +11,9 @@ export default function useCajones() {
 
     const [loading, setLoading] = React.useState(false);
     const [availableCount, setAvailableCount] = React.useState(0);
+
+    const sound = React.useMemo(() => new Audio(claxon), []);
+    sound.volume = 0.25;
 
     const sendParams = (piso, id) => {
         setLoading(true);
@@ -22,6 +26,9 @@ export default function useCajones() {
         on("sync", () => {
             setLoading(true);
             emit("get", { piso, id: idCar });
+            //Reproduce un sonido perron
+            sound.currentTime = 0;
+            sound.play().catch(() => { });
         });
 
         on("response", (data) => {

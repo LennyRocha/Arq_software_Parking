@@ -28,7 +28,8 @@ export const DarkProvider = ({ children }) => {
     const info = getCssVar("--info","#2196f3");
     const black = getCssVar("--dark","#1e1e1e");
     const gray = getCssVar("--gray","#808080");
-    const blueSurface = getCssVar("--surface", "#c5e4e7")
+    const blueSurface = getCssVar("--surface", "#c5e4e7");
+    const blueBack = getCssVar("--background", "#f0f9f9");
 
     return createTheme({
       palette: {
@@ -44,6 +45,7 @@ export const DarkProvider = ({ children }) => {
         black: { main: black, contrastText: '#fff' },
         gray: { main: gray, contrastText: '#fff' },
         blueSurface: { main: blueSurface, contrastText: '#397974' },
+        blueBack: { main: blueBack, contrastText: '#183432' }
       }
     });
   }, [isDarkMode]);
