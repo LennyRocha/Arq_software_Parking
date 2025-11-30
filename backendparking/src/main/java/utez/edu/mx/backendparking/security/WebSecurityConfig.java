@@ -47,6 +47,7 @@ public class WebSecurityConfig {
 
                         //--GESTION DE USUARIOS
                         .requestMatchers("/api/auth/private/registrarEmpleado").hasRole("ADMINISTRADOR")
+                        .requestMatchers("/api/users/private/**").hasRole("ADMINISTRADOR")
 
                         //--- GESTION DE TARIFAS
                         .requestMatchers("/api/tarifa/**").hasRole("ADMINISTRADOR")
