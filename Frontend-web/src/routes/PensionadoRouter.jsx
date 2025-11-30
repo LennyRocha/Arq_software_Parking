@@ -313,24 +313,7 @@ export default function AdminRouter() {
           <ListItemText primary="Mis vehículos" />
         </ListItemButton>
           {/* CERRAR SESIÓN */}
-        <Box sx={{ marginTop: "auto", paddingTop: 2 }}>
-          <Divider sx={{ marginBottom: 1 }} />
-
-          <ListItemButton
-            sx={{
-              borderRadius: "5px",
-            }}
-            onClick={() => {
-              removeToken();
-              goTo("/login");
-            }}
-          >
-            <ListItemIcon>
-              <LogoutIcon sx={{ color: "error.main" }} />
-            </ListItemIcon>
-            <ListItemText primary="Cerrar sesión" />
-          </ListItemButton>
-        </Box>
+        
       </List>
         </Box>
 

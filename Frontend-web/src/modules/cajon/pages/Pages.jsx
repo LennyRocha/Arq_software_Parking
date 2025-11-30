@@ -1,6 +1,6 @@
 //Para perfil de empleado 
 import * as React from "react";
-import { getInfoUser, getToken, removeToken } from "../../../utils/AuthService";
+import { getInfoUser, getToken, removeAllStorage, removeToken } from "../../../utils/AuthService";
 
 //Components MUI Lists
 import List from "@mui/material/List";
@@ -296,7 +296,7 @@ export default function Pages() {
               borderRadius: "5px",
             }}
             onClick={() => {
-              removeToken();
+              removeAllStorage();
               goTo("/login");
             }}
           >

@@ -209,17 +209,13 @@ export default function EmpleadoRouter() {
       {/* Logout fijo abajo */}
       <Box sx={{ p: 2 }}>
         <Divider sx={{ mb: 1 }} />
+
         <ListItemButton
-          onClick={handleLogout}
           sx={{
             borderRadius: "5px",
-            color: "error.main",
-            "&:hover": {
-              backgroundColor: "rgba(211, 47, 47, 0.1)",
-            },
           }}
           onClick={() => {
-            removeToken();
+            removeAllStorage();
             goTo("/login");
           }}
         >
