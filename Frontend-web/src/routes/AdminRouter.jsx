@@ -1,5 +1,6 @@
 import * as React from "react";
 import { getToken, removeAllStorage } from "../utils/AuthService";
+import sweetAlert from "../utils/sweetAlert";
 
 //Components MUI Lists
 import List from "@mui/material/List";
@@ -115,9 +116,22 @@ export default function AdminRouter() {
     }
   };
 
-  const handleLogout = () => {
-    removeAllStorage();
-    goTo("/");
+  const handleLogout = async () => {
+    const result = await sweetAlert({
+      title: "¿Cerrar sesión?",
+      text: "¿Está seguro de que desea cerrar sesión?",
+      icon: "question",
+      showDenyButton: true,
+      denyText: "Cancelar",
+      confirmText: "Aceptar",
+      showCloseButton: true,
+      reverseButtons: true,
+    });
+
+    if (result.isConfirmed) {
+      removeAllStorage();
+      goTo("/");
+    }
   };
 
   const [drawerOpen, setDrawerOpen] = React.useState(false);
