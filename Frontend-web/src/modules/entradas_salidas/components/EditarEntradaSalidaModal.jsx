@@ -96,15 +96,19 @@ const EditarEntradaSalidaModal = ({
                 if (result.isConfirmed) {
                     // Preparar datos para enviar (solo datos del vehículo)
                     const datosActualizar = {
-                        vehiculo: {
+                        tipoVehiculo: { id: tipoVehiculo ? parseInt(tipoVehiculo) : undefined },
+                    };
+
+                    // Solo incluir objeto vehiculo si al menos uno de sus campos tiene valor
+                    if (formData.id || formData.modelo || formData.placa || formData.descripcion) {
+                        datosActualizar.vehiculo = {
                             id: formData.id || null,
                             modelo: formData.modelo || null,
                             placa: formData.placa || null,
                             descripcion: formData.descripcion || null,
                             tipoVehiculo: { id: tipoVehiculo ? parseInt(tipoVehiculo) : undefined }
-                        },
-                        tipoVehiculo: { id: tipoVehiculo ? parseInt(tipoVehiculo) : undefined },
-                    };
+                        };
+                    }
 
                     await onActualizar(entrada.id, datosActualizar);
                 }
