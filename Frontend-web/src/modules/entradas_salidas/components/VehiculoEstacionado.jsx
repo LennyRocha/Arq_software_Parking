@@ -2,7 +2,7 @@ import React from "react";
 import { Box, Typography, Button } from "@mui/material";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import cochePng from "../../../img/coche.png";
-import motoPng from "../../../img/moto_view.png";
+import motoPng from "../../../img/motoViewUp.png";
 import camionetaPng from "../../../img/camioneta.png";
 
 /**
@@ -10,8 +10,8 @@ import camionetaPng from "../../../img/camioneta.png";
  */
 const vehiculoImagenes = {
   1: cochePng,
-  2: motoPng,
-  3: camionetaPng,
+  2: camionetaPng,
+  3: motoPng,
 };
 
 /**
