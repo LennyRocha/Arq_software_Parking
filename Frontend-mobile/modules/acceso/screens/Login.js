@@ -1,6 +1,6 @@
-import React, { use } from "react";
+import React from "react";
 import { LinearGradient } from "expo-linear-gradient";
-import { TextInput, Button, Text, Divider, useTheme } from "react-native-paper";
+import { TextInput, Button, Text, Divider, useTheme, ActivityIndicator, HelperText } from "react-native-paper";
 import {
   Image,
   KeyboardAvoidingView,
@@ -13,45 +13,72 @@ import {
 import fondoCorto from "../../../img/fondo_corto.png";
 import logo from "../../../img/logo_parking_hd_no_titulo.png";
 import { useCustomThemes } from "../../../context/useCustomColors";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import BoxStyles from "../../../utils/genericScreenStyles";
+import useLogin from "../hooks/useLogin";
+import { useForm, Controller } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { useCustomAlert } from "../../../utils/useCustomAlert";
+import { CustomAlert } from "../../../utils/customAlert";
 
 const gradient1 = ["#1E3A3E", "#1F4D4C", "#397974", "#4B7C7B"];
 const gradient2 = ["#0D2226", "#1E3A3E", "#21484E", "#255A60", "#2A6F77"];
 const gradient3 = ["#0C2727", "#1E4342", "#1F4D4C", "#236260", "#277A77"];
 
 export default function Login() {
+  const { visible: visAlert, config, showAlert, hideAlert } = useCustomAlert();
+  const { loading, errorData, defaultValues, setErrorData, submit, loginYup } = useLogin();
   const navigation = useNavigation();
   const { theme } = useCustomThemes();
   const paper = useTheme();
   const [visible, setVisible] = React.useState(false);
-  //Prueba de acceso
-  async function setUser() {
+  const {
+    control,
+    handleSubmit,
+    formState: { errors, isValid },
+  } = useForm({
+    defaultValues,
+    resolver: yupResolver(loginYup),
+    mode: "onChange",
+    reValidateMode: "onChange",
+  });
+  async function setUser(data) {
     try {
-      const user = {
-        name: "LO",
-      };
-      await AsyncStorage.setItem("user", JSON.stringify(user));
+      const ok = await submit(data);
 
-      // Get root navigation and reset
-      const rootNavigation = navigation.getParent();
-      if (rootNavigation) {
-        rootNavigation.reset({
-          index: 0,
-          routes: [{ name: "User" }],
-        });
-      } else {
-        // Fallback if no parent navigator
-        navigation.reset({
-          index: 0,
-          routes: [{ name: "User" }],
-        });
+      if (ok) {
+        // Get root navigation and reset
+        const rootNavigation = navigation.getParent();
+        if (rootNavigation) {
+          rootNavigation.reset({
+            index: 0,
+            routes: [{ name: "User" }],
+          });
+        } else {
+          // Fallback if no parent navigator
+          navigation.reset({
+            index: 0,
+            routes: [{ name: "User" }],
+          });
+        }
       }
     } catch (err) {
       console.error("Error setting user:", err);
     }
   }
+  React.useEffect(() => {
+    if (errorData && errorData.tipo === "Error de Axios") {
+      showAlert({
+        icon: "error",
+        title: "¡Error al iniciar sesión!",
+        message: errorData.text,
+        showCancelButton: false,
+        confirmText: "Aceptar",
+        onConfirm: () => { hideAlert(); setErrorData(null) },
+        externalDismiss: true,
+      })
+    }
+  }, [errorData])
   return (
     <>
       {/* <LinearGradient
@@ -63,7 +90,7 @@ export default function Login() {
       <TouchableWithoutFeedback
         onPress={Keyboard.dismiss}
         touchSoundDisabled={Keyboard.isVisible ? true : false}
-        style={{backgroundColor: "transparent"}}
+        style={{ backgroundColor: "transparent" }}
       >
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -107,22 +134,69 @@ export default function Login() {
               Iniciar sesión
             </Text>
 
-            <TextInput
-              label="Correo electrónico"
-              mode="flat"
-              keyboardType="email-address"
-              placeholder="Ingresa tu correo electrónico"
+            <Controller
+              control={control}
+              name="correo"
+              render={({ field: { onChange, onBlur, value, ref } }) => (
+                <>
+                  <TextInput
+                    label="Correo electrónico"
+                    mode="flat"
+                    keyboardType="email-address"
+                    placeholder="Ingresa tu correo electrónico"
+                    maxLength={50}
+                    value={value}
+                    onChangeText={(text) => {
+                      onChange(text);
+                    }}
+                    onBlur={onBlur}
+                    ref={ref}
+                    error={!!errors.correo}
+                  />
+
+                  {
+                    errors.correo &&
+                    <HelperText variant="labelSmall" type="error" visible={!!errors.correo}>
+                      {errors?.correo?.message}
+                    </HelperText>
+                  }
+                </>
+              )}
             />
-            <TextInput
-              label="Contraseña"
-              mode="flat"
-              secureTextEntry={visible}
-              right={
-                <TextInput.Icon
-                  icon={visible ? "eye" : "eye-off"}
-                  onPress={() => setVisible(!visible)}
-                />
-              }
+            <Controller
+              control={control}
+              name="contra"
+              render={({ field: { onChange, onBlur, value, ref } }) => (
+                <>
+                  <TextInput
+                    label="Contraseña"
+                    mode="flat"
+                    secureTextEntry={!visible}
+                    placeholder="Ingresa tu contraseña"
+                    maxLength={20}
+                    value={value}
+                    onChangeText={(text) => {
+                      onChange(text);
+                    }}
+                    onBlur={onBlur}
+                    ref={ref}
+                    right={
+                      <TextInput.Icon
+                        icon={!visible ? "eye" : "eye-off"}
+                        onPress={() => setVisible(!visible)}
+                      />
+                    }
+                    error={!!errors.contra}
+                  />
+
+                  {
+                    errors.contra &&
+                    <HelperText variant="labelSmall" type="error" visible={!!errors.contra}>
+                      {errors?.contra?.message}
+                    </HelperText>
+                  }
+                </>
+              )}
             />
             <Button
               mode="text"
@@ -131,17 +205,24 @@ export default function Login() {
             >
               ¿Olvidaste tu contraseña?
             </Button>
-            <Button
-              mode="contained"
-              style={{
-                width: "100%",
-                borderRadius: 5,
-              }}
-              labelStyle={BoxStyles.buttonText}
-              onPress={() => setUser()}
-            >
-              Acceder
-            </Button>
+            {
+              loading ? <View>
+                <ActivityIndicator size={"small"} />
+              </View>
+                :
+                <Button
+                  mode="contained"
+                  style={{
+                    width: "100%",
+                    borderRadius: 5,
+                  }}
+                  disabled={!isValid}
+                  labelStyle={BoxStyles.buttonText}
+                  onPress={handleSubmit(setUser)}
+                >
+                  Acceder
+                </Button>
+            }
             <Divider style={{ backgroundColor: theme.gray }} />
             <View
               style={{
@@ -176,6 +257,7 @@ export default function Login() {
               </Button>
             </View>
           </ScrollView>
+          <CustomAlert visible={visAlert} hideAlert={hideAlert} config={config} />
         </KeyboardAvoidingView>
       </TouchableWithoutFeedback>
       {/* </LinearGradient> */}

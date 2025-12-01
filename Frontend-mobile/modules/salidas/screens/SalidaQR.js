@@ -92,6 +92,7 @@ export default function SalidaQR({ route }) {
   */
 
   const { folio } = route.params;
+  console.log(folio)
   const paper = useTheme();
   const { mode } = useCustomThemes();
   return (

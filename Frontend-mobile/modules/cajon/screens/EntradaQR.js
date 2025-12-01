@@ -90,8 +90,51 @@ export default function EntradaQR({ route }) {
     })
   };
   */
+  const vehiculos = {
+    1: "Coche",
+    2: "Camioneta",
+    3: "Moto"
+  }
 
-  const { folio } = route.params;
+  const parseDate = (fecha) => {
+    const ano = fecha.substring(0, 4);
+    const mes = fecha.substring(5, 7);
+    const dia = fecha.substring(8, 10);
+
+    let mesString = "";
+    switch (mes) {
+      case "01": mesString = "Enero"; break;
+      case "02": mesString = "Febrero"; break;
+      case "03": mesString = "Marzo"; break;
+      case "04": mesString = "Abril"; break;
+      case "05": mesString = "Mayo"; break;
+      case "06": mesString = "Junio"; break;
+      case "07": mesString = "Julio"; break;
+      case "08": mesString = "Agosto"; break;
+      case "09": mesString = "Septiembre"; break;
+      case "10": mesString = "Octubre"; break;
+      case "11": mesString = "Noviembre"; break;
+      case "12": mesString = "Diciembre"; break;
+      default: mesString = "Mes inválido";
+    }
+
+    return `${mesString} ${dia}, ${ano}`;
+  }
+
+  const formatHour = (hora24) => {
+    // Separar horas y minutos
+    const [horaStr, minStr] = hora24.split(":");
+    let hora = parseInt(horaStr, 10);
+    const ampm = hora >= 12 ? "PM" : "AM";
+
+    // Convertir hora a formato 12h
+    hora = hora % 12;
+    if (hora === 0) hora = 12;
+
+    return `${hora}:${minStr} ${ampm}`;
+  }
+
+  const { folio, entrada } = route.params;
   const paper = useTheme();
   const { mode } = useCustomThemes();
   return (
@@ -121,46 +164,14 @@ export default function EntradaQR({ route }) {
             <View style={{ flexDirection: "row", width: "100%" }}>
               <List.Item
                 title="Nombre"
-                description="Usuario DAO"
+                description={`${entrada.usuario.nombre} ${entrada.usuario.apellidos}`}
                 titleStyle={{ fontWeight: "bold", color: paper.colors.primary }}
                 style={{ flex: 1 }}
                 contentStyle={{ paddingLeft: 0 }}
               />
               <List.Item
                 title="Fecha"
-                description="Noviembre 22, 2025"
-                titleStyle={{ fontWeight: "bold", color: paper.colors.primary }}
-                style={{ flex: 1 }}
-                contentStyle={{ paddingLeft: 0 }}
-              />
-            </View>
-            <View style={{ flexDirection: "row", width: "100%" }}>
-              <List.Item
-                title="Hora de entrada"
-                description="03:00 PM"
-                titleStyle={{ fontWeight: "bold", color: paper.colors.primary }}
-                style={{ flex: 1 }}
-                contentStyle={{ paddingLeft: 0 }}
-              />
-              <List.Item
-                title="Hora de salida"
-                description="04:00 PM"
-                titleStyle={{ fontWeight: "bold", color: paper.colors.primary }}
-                style={{ flex: 1 }}
-                contentStyle={{ paddingLeft: 0 }}
-              />
-            </View>
-            <View style={{ flexDirection: "row", width: "100%" }}>
-              <List.Item
-                title="Vehículo"
-                description="Camaro 1999"
-                titleStyle={{ fontWeight: "bold", color: paper.colors.primary }}
-                style={{ flex: 1 }}
-                contentStyle={{ paddingLeft: 0 }}
-              />
-              <List.Item
-                title="Tipo de vehículo"
-                description="Coche"
+                description={parseDate(entrada.fecha)}
                 titleStyle={{ fontWeight: "bold", color: paper.colors.primary }}
                 style={{ flex: 1 }}
                 contentStyle={{ paddingLeft: 0 }}
@@ -169,19 +180,44 @@ export default function EntradaQR({ route }) {
             <View style={{ flexDirection: "row", width: "100%" }}>
               <List.Item
                 title="Teléfono"
-                description="777 123 4567"
+                description={entrada.usuario.telefono}
                 titleStyle={{ fontWeight: "bold", color: paper.colors.primary }}
                 style={{ flex: 1 }}
                 contentStyle={{ paddingLeft: 0 }}
               />
               <List.Item
-                title="Folio"
-                description={folio}
+                title="Hora de entrada"
+                description={formatHour(entrada.horaEntrada)}
                 titleStyle={{ fontWeight: "bold", color: paper.colors.primary }}
                 style={{ flex: 1 }}
                 contentStyle={{ paddingLeft: 0 }}
               />
             </View>
+            <View style={{ flexDirection: "row", width: "100%" }}>
+              <List.Item
+                title="Vehículo"
+                description={entrada.vehiculo.modelo}
+                titleStyle={{ fontWeight: "bold", color: paper.colors.primary }}
+                style={{ flex: 1 }}
+                contentStyle={{ paddingLeft: 0 }}
+              />
+              <List.Item
+                title="Tipo vehículo"
+                description={vehiculos[entrada.vehiculo.tipoVehiculo.id]}
+                titleStyle={{ fontWeight: "bold", color: paper.colors.primary }}
+                style={{ flex: 1 }}
+                contentStyle={{ paddingLeft: 0 }}
+              />
+            </View>
+            {/* <View style={{ flexDirection: "row", width: "100%" }}>
+              <List.Item
+                title="Folio"
+                description={entrada.folioTicket}
+                titleStyle={{ fontWeight: "bold", color: paper.colors.primary }}
+                style={{ flex: 1 }}
+                contentStyle={{ paddingLeft: 0 }}
+              />
+            </View> */}
           </Card.Content>
           <Card.Actions style={{ backgroundColor: paper.colors.cardSurface, alignItems: "center", justifyContent: "center", paddingVertical: 18 }}>
             <Text variant="bodyMedium" style={{ color: paper.colors.tertiary }}>Total a pagar: <Text style={{ color: paper.colors.primary }} >Pago cubierto por pensión</Text></Text>

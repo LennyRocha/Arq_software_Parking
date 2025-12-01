@@ -1,26 +1,42 @@
 import React from "react";
 import { View } from "react-native";
 import BoxStyles from "../../../utils/genericScreenStyles";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Button, Divider, Icon, useTheme } from "react-native-paper";
 import { useCustomThemes } from "../../../context/useCustomColors";
 import { ScrollView } from "react-native-gesture-handler";
 import { Avatar, Text, List } from 'react-native-paper';
 import { LinearGradient } from "expo-linear-gradient";
-
-const LeftContent = props => <Avatar.Text {...props} size={64} label="XD" />
+import { useGlobalContext } from "../../../context/GlobalContext";
+import { Session } from "../../acceso/hooks/TokenManagement";
+import LoadingView from "../../../components/LoadingView";
 
 export default function Perfil({ dad, ruta, navigation }) {
+  const { avatar, pension } = useGlobalContext();
   const { theme, toggleTheme } = useCustomThemes();
   const paper = useTheme();
+  const [user, setUser] = React.useState(null);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    async function getUserData() {
+      const u = await Session.getUser();
+      setUser(u);
+      setLoading(false);
+    }
+    getUserData()
+  }, []);
+
+  const LeftContent = props => <Avatar.Text {...props} size={64} label={avatar} />
 
   async function unsetUser() {
-    await AsyncStorage.removeItem("user");
+    await Session.clearSession();
     dad.reset({
       index: 0,
       routes: [{ name: "Auth", params: { screen: "login" } }],
     });
   }
+
+  if (loading) return <LoadingView />;
 
   const PensionBanner = () => {
     return (
@@ -32,13 +48,13 @@ export default function Perfil({ dad, ruta, navigation }) {
             <Text variant="titleMedium" style={{ color: paper.colors.tertiary, marginLeft: 4, marginRight: 0 }}>
               Pensión{" "}
             </Text>
-            <Text style={{ borderColor: paper.colors.tertiary, borderWidth: 2, fontFamily: "Exo2_700Bold", borderRadius: 2, paddingHorizontal: 4, color: paper.colors.tertiary }} variant="titleSmall">Pro</Text>
+            <Text style={{ borderColor: paper.colors.tertiary, borderWidth: 2, fontFamily: "Exo2_700Bold", borderRadius: 2, paddingHorizontal: 4, color: paper.colors.tertiary }} variant="titleSmall">{pension.nombrePension}</Text>
           </View>
-          <Text variant="titleSmall" style={{ color: paper.colors.onTertiaryContainer, fontWeight: "400" }}>Caduca el 02/12/2025</Text>
+          <Text variant="titleSmall" style={{ color: paper.colors.onTertiaryContainer, fontWeight: "400" }}>Caduca el {pension.fechaFinalizacion}</Text>
         </View>
         <View style={{ height: "100%", flexDirection: "row", gap: 2, justifyContent: "flex-start", alignContent: "flex-start", paddingVertical: 12 }}>
-          <Icon source={"calendar-month"} size={18} color={paper.colors.primary} />
-          <Text variant="labelLarge" style={{ color: paper.colors.primary }}>Anual</Text>
+          <Icon source={"cash"} size={18} color={paper.colors.primary} />
+          <Text variant="labelLarge" style={{ color: paper.colors.primary }}>${pension.costoUltimoPago}</Text>
         </View>
       </LinearGradient>
     )
@@ -73,11 +89,11 @@ export default function Perfil({ dad, ruta, navigation }) {
             numberOfLines={2}   // máximo líneas
             ellipsizeMode="tail"
           >
-            Axel Yoshua Pedroza García
+            {user.nombre} {user.apellidos}
           </Text>
 
           <Text variant="bodyMedium" style={{ color: paper.colors.gray }}>
-            pagamecuyeyo@gmail.com
+            {user.correo}
           </Text>
 
           <Button
@@ -85,7 +101,7 @@ export default function Perfil({ dad, ruta, navigation }) {
             style={[BoxStyles.ButtonRadius, { width: 150 }]}
             labelStyle={BoxStyles.buttonTextAuto}
             mode="contained"
-            onPress={() => navigation.navigate("detallesPerfil")}
+            onPress={() => navigation.navigate("detallesPerfil", { data: user })}
           >
             Editar perfil
           </Button>
@@ -94,14 +110,14 @@ export default function Perfil({ dad, ruta, navigation }) {
 
       <View style={{ flex: 1, padding: 12, width: "100%" }}>
         <PensionBanner />
-        <List.Item
+        {/* <List.Item
           title="Métodos de pago"
           right={props => <List.Icon {...props} icon="chevron-right" color={theme.gray} />}
           style={{ justifyContent: "center", }}
           onPress={() => navigation.navigate("metodos")}
           rippleColor="rgba(0, 0, 0, 0.5)"
         />
-        <Divider />
+        <Divider /> */}
         <List.Item
           title="Historial"
           right={props => <List.Icon {...props} icon="chevron-right" color={theme.gray} />}

@@ -1,8 +1,8 @@
 import React from "react";
 import { View, FlatList, Dimensions, RefreshControl } from "react-native";
 import BoxStyles from "../../../utils/genericScreenStyles";
-import { Text, Button, SegmentedButtons, RadioButton, useTheme, Chip, HelperText, IconButton } from "react-native-paper";
-import { useWebSocket } from "../hooks/useWebSocket";
+import { Text, Button, SegmentedButtons, RadioButton, useTheme, Chip, HelperText, IconButton, ActivityIndicator } from "react-native-paper";
+import useVehiculosEstacionados from "../../vehiculo/hooks/useVehiculosEstacionados";
 import Cajoncito from "../components/Cajoncito";
 import LoadingView from '../../../components/LoadingView'
 import { useSnackBar } from "../../../context/SnackBarContext";
@@ -12,6 +12,8 @@ import useTiposVehiculos from "../../vehiculo/hooks/useTiposVehiculos";
 import VehiculoSheetCard from "../components/VehiculoSheetCard";
 import { ScrollView } from "react-native-gesture-handler";
 import useCajones from "../hooks/useCajones";
+import { CustomAlert } from "../../../utils/customAlert";
+import useMarcarEntrada from "../hooks/useMarcarEntrada";
 
 const { width, height } = Dimensions.get("screen")
 
@@ -20,11 +22,12 @@ export default function Inicio({ navigation }) {
   const { data: cars, isLoading: load } = useVehiculos(3);
   const { setSnapPoints, openSheet, closeSheet, setSheetChild } = useSnackBar();
   const paper = useTheme();
+  const { setVehiculo, vehiculo, errorData, visible, config, hideAlert, data: entrada, onSubmit, isLoading: loadingPost } = useMarcarEntrada(navigation);
+  const { getVehiculosActive, activeData, isLoading: loadingActive, errorData: errData, restartCall: recall } = useVehiculosEstacionados();
 
   const {
     data,
     loading,
-    sendParams,
     restartValues,
     setPiso,
     setIdCar,
@@ -39,37 +42,57 @@ export default function Inicio({ navigation }) {
     return () => closeSheet();
   }, []);
 
-  const [idEnter, setIdEnter] = React.useState(0);
+  const [idEnter, setIdEnter] = React.useState(null);
 
   React.useEffect(() => {
     if (cars) {
+      const filtered = cars.data.filter((c) => c.id !== activeData.data.vehiculo.id);
       setSheetChild(
         <ScrollView style={{ flex: 1 }} contentContainerStyle={{ gap: 12 }}>
           <Text variant="titleMedium">Selecciona un vehículo</Text>
           <RadioButton.Group onValueChange={setIdEnter} value={idEnter}>
             <View style={{ gap: 8, padding: 2 }}>
-              {cars.data.map((v) => (
+              {filtered.map((v) => (
                 <VehiculoSheetCard
                   key={v.id}
                   vehic={v}
                   useRadios
                   currentValue={idEnter}
                   list={list}
-                  setValue={setIdEnter}
+                  value={v.id}
                 />
               ))}
             </View>
           </RadioButton.Group>
-          <Button
-            mode="text" style={[BoxStyles.ButtonRadius]} labelStyle={BoxStyles.buttonText} disabled={idEnter === 0}
-            onPress={() => {
-              navigation.navigate("entradaQR", { folio: 2000 })
-              closeSheet();
-            }}>Continuar</Button>
+          {
+            loadingPost ?
+              <View style={{ width: "100%", alignItems: "center", justifyContent: "center" }} >
+                <ActivityIndicator size={"small"} />
+              </View>
+              :
+              <Button
+                disabled={!vehiculo}
+                mode="text" style={[BoxStyles.ButtonRadius]} labelStyle={BoxStyles.buttonText}
+                onPress={async () => {
+                  await onSubmit(closeSheet);
+                }}
+              >
+                Continuar
+              </Button>
+          }
         </ScrollView >
       );
     }
-  }, [cars, idEnter]);
+  }, [cars, activeData, idEnter, loadingPost]);
+
+  React.useEffect(() => {
+    if (cars && idEnter !== null) {
+      const selectedVehiculo = cars.data.find(v => v.id === idEnter);
+      setVehiculo(selectedVehiculo);
+    }
+
+    return () => setVehiculo(null);
+  }, [idEnter, cars]);
 
   const [normalizedData, setNormalizedData] = React.useState([]);
 
@@ -140,7 +163,7 @@ export default function Inicio({ navigation }) {
   const available = SCREEN - totalPadding - ROAD_WIDTH - totalItemMargins;
   const slotWidth = Math.floor(available / SLOTS);
 
-  if (loading || !data || load || loadTypes) return <LoadingView />;
+  if (loading || !data || load || loadTypes || loadingActive) return <LoadingView />;
 
   return (
     <View style={[BoxStyles.container, BoxStyles.flexCentered]}>
@@ -276,6 +299,7 @@ export default function Inicio({ navigation }) {
             ListEmptyComponent={<EmptyListView message={message} icon={"parking"} />}
           />
           <ListFooterComponent />
+          <CustomAlert visible={visible} hideAlert={hideAlert} config={config} />
         </View>
       )}
 

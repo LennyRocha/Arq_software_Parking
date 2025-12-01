@@ -86,7 +86,7 @@ export default function usePutVehiculos(navigation, vehiculo, campo, onReturn) {
     }
 
     const defaultValues = React.useMemo(() => ({
-        id_user: 3,
+        id_user: 0,
         modelo: car.modelo,
         id_type: car.idTipoVehiculo,
         placa: car.placa,

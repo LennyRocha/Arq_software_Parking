@@ -25,7 +25,11 @@ const vehiculoInterface = {
 
     postIt: function () {
         return prefix;
-    }
+    },
+
+    check: function () {
+        return `${prefix}/estacionado/verificar`;
+    },
 };
 
 export default vehiculoInterface;

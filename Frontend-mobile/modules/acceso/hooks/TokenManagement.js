@@ -9,15 +9,23 @@ export const Session = {
 
         await AsyncStorage.setItem("user", JSON.stringify(user));
     },
-
     // Obtener token
     async getToken() {
         return await SecureStore.getItemAsync("token");
     },
 
+    async getTokenExpiration() {
+        return await SecureStore.getItemAsync("expiration");
+    },
+
     // Obtener usuario
     async getUser() {
         const value = await AsyncStorage.getItem("user");
+        return value ? JSON.parse(value) : null;
+    },
+
+    async getPension() {
+        const value = await AsyncStorage.getItem("pension");
         return value ? JSON.parse(value) : null;
     },
 
@@ -34,5 +42,6 @@ export const Session = {
         await SecureStore.deleteItemAsync("token");
         await SecureStore.deleteItemAsync("expiration");
         await AsyncStorage.removeItem("user");
+        await AsyncStorage.removeItem("pension");
     }
 };
