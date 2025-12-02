@@ -16,6 +16,8 @@ import {
   Chip,
   useTheme,
   alpha,
+  Divider,
+  Fab,
 } from "@mui/material";
 import {
   Search as SearchIcon,
@@ -25,17 +27,86 @@ import {
   CheckCircle as CheckCircleIcon,
   Brightness4 as DarkModeIcon,
   Brightness7 as LightModeIcon,
+  Help as HelpIcon,
 } from "@mui/icons-material";
 import { useDarkContext } from "../context/DarkContext";
 import { useNavigate } from "react-router-dom";
 import { searchTiposPensionActivasPaginados } from "./tipo_pension/api/TiposPensionApi";
 import LoadingBackdrop from "../components/LoadingBackdrop";
 import ParkingGrid from "./cajon/components/ParkingGrid";
+import ChatWidget from "../components/ChatWidget";
+import fondo from "../img/parking_back.jpg";
+import logo_chiquito from "../img/logo_parking_hd_no_titulo.png";
+import ganamos from "../img/ganamos_pose_coches.png";
 
 export default function LandingPage() {
   const { isDarkMode, toggleDarkMode } = useDarkContext();
   const theme = useTheme();
   const navigate = useNavigate();
+  const [chatOpen, setChatOpen] = useState(false);
+
+  const scrollTo = (id) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  //Controles del drawer
+  const [isOpen, setIsOpen] = React.useState(false);
+  const toggleDrawer = (event) => {
+    if (
+      event?.type === "keydown" &&
+      (event.key === "Tab" || event.key === "Shift")
+    ) {
+      return;
+    }
+    setIsOpen((prev) => !prev);
+  };
+
+  const handleChatOpen = () => {
+    setChatOpen(true);
+  };
+
+  const handleChatClose = () => {
+    setChatOpen(false);
+  };
+
+  const list = () => (
+    <Box
+      sx={{ width: "auto" }}
+      role="presentation"
+      onClick={toggleDrawer}
+      onKeyDown={toggleDrawer}
+    >
+      <List>
+        {["Inicio", "Tarifas", "Pensiones", "FAQs", "Cambiar tema"].map((text, index) => (
+          <ListItem key={text} disablePadding>
+            <ListItemButton>
+              <ListItemText primary={text} />
+            </ListItemButton>
+          </ListItem>
+        ))}
+      </List>
+      <Divider />
+      <List>
+        {["Ingresar"].map((text, index) => (
+          <ListItem key={text}>
+            <Button color="tertiary" variant="contained" sx={{ flex: 1 }} >{text}</Button>
+          </ListItem>
+        ))}
+      </List>
+    </Box>
+  );
+
+  const CustomDrawer = () => (
+    <Drawer
+      anchor="top"
+      open={isOpen}
+      onClose={toggleDrawer}
+      sx={{ zIndex: 1300}}
+      variant="persistent"
+    >
+      {list()}
+    </Drawer>
+  );
 
   // Estado para tipos de pensión
   const [tiposPension, setTiposPension] = useState([]);
@@ -567,6 +638,29 @@ export default function LandingPage() {
           Powered by UTEZ
         </Typography>
       </Box>
+
+      {/* Chat Widget Nativo */}
+      <ChatWidget open={chatOpen} onClose={handleChatClose} />
+
+      {/* Floating Help Chatbot Button */}
+      <Fab
+        color="primary"
+        aria-label="help"
+        sx={{
+          position: "fixed",
+          bottom: 24,
+          right: 24,
+          zIndex: 1000,
+          boxShadow: theme.shadows[6],
+          "&:hover": {
+            transform: "scale(1.1)",
+            transition: "transform 0.2s ease-in-out",
+          },
+        }}
+        onClick={handleChatOpen}
+      >
+        <HelpIcon />
+      </Fab>
     </Box>
   );
 }
