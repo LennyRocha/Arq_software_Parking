@@ -1,5 +1,4 @@
 import * as yup from "yup";
-import roleYup from "./roleYup";
 
 const userYup = yup.object({
   id: yup.number().required("El id del usuario es obligatorio"),

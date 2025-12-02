@@ -1,7 +1,6 @@
 import React from "react";
 import { API_URL } from "@env";
 import axios from "axios";
-import { Session } from "./TokenManagement";
 import { getAxiosErrorMessage } from "../../../utils/getAxiosMessage";
 import { useGlobalContext } from "../../../context/GlobalContext";
 

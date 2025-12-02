@@ -29,6 +29,13 @@ export const Session = {
         return value ? JSON.parse(value) : null;
     },
 
+    //Actualizar usuario
+    async setUser(user) {
+        console.log(user)
+        await AsyncStorage.removeItem("user");
+        await AsyncStorage.setItem("user", JSON.stringify(user));
+    },
+
     // Saber si el token ya expiró
     async isExpired() {
         const exp = await SecureStore.getItemAsync("expiration");

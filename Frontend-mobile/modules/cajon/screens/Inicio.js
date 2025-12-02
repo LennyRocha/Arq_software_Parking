@@ -187,7 +187,7 @@ export default function Inicio({ navigation }) {
   );
 
   const ListFooterComponent = () => (
-    <View style={{ flexDirection: "row", justifyContent: "space-between", gap: 8, alignItems: "center", height: 40 }}>
+    <View style={{ flexDirection: "row", justifyContent: "space-between", gap: 8, alignItems: "center", height: 20 }}>
       <View style={{ height: 2, flex: 1, borderBottomWidth: 2, borderBottomColor: paper.colors.outline, borderStyle: "dashed" }} />
     </View>
   );
@@ -338,7 +338,7 @@ export default function Inicio({ navigation }) {
       )}
 
       {data && (
-        <View style={{ flex: 1 }}>
+        <View style={{ flex: 1, gap: 0 }}>
           <ListHeaderComponent />
           <FlatList
             data={normalizedData}
