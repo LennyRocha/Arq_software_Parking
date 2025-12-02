@@ -431,12 +431,10 @@ public class EntradaSalidaServiceImpl implements EntradaSalidaService {
      */
     private double calcularMontoPago(long minutosTranscurridos, List<Tarifa> tarifas) {
         double montoTotal = 0.0;
-        long minutosRestantes = minutosTranscurridos;
 
-        // Si no hay minutos transcurridos, no se cobra
-        if (minutosTranscurridos <= 0) {
-            return 0.0;
-        }
+        // Si hay 0 minutos transcurridos, se considera 1 minuto para cobrar la tarifa mínima
+        // ya que se considera que el usuario ocupó el estacionamiento
+        long minutosRestantes = minutosTranscurridos <= 0 ? 1 : minutosTranscurridos;
 
         // Iterar sobre las tarifas de menor a mayor tiempo
         for (Tarifa tarifa : tarifas) {
