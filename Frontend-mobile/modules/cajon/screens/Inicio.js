@@ -54,6 +54,74 @@ export default function Inicio({ navigation }) {
   const [idEnter, setIdEnter] = React.useState(null);
 
   React.useEffect(() => {
+    // 1. Lógica de selección de vehículo
+    let currentVehiculo = vehiculo; // Usamos el estado actual como fallback
+    if (cars && idEnter !== null) {
+      const selectedVehiculo = cars.data.find(v => v.id === idEnter);
+      if (selectedVehiculo && selectedVehiculo !== vehiculo) {
+        setVehiculo(selectedVehiculo);
+        currentVehiculo = selectedVehiculo; // Actualizamos la variable local para usarla abajo
+      } else if (!selectedVehiculo && vehiculo !== null) {
+        setVehiculo(null);
+        currentVehiculo = null;
+      }
+    } else if (vehiculo !== null) {
+      // Limpiar vehiculo si idEnter es null, por si acaso.
+      setVehiculo(null);
+      currentVehiculo = null;
+    }
+
+    // 2. Construcción de la hoja (SheetChild)
+    if (cars) {
+      let filtered = [];
+      // ... (Tu lógica para filtrar vehículos sigue igual) ...
+      if (activeData?.data?.vehiculo) { // Usar encadenamiento opcional para prevenir el error anterior
+        filtered = cars.data.filter((c) => c.id !== activeData.data.vehiculo.id && c.status !== false);
+      } else {
+        filtered = cars.data.filter((c) => c.status !== false)
+      }
+
+      setSheetChild(
+        <ScrollView style={{ flex: 1 }} contentContainerStyle={{ gap: 12 }}>
+          <Text variant="titleMedium">Selecciona un vehículo</Text>
+          <RadioButton.Group onValueChange={setIdEnter} value={idEnter}>
+            <View style={{ gap: 8, padding: 2 }}>
+              {filtered.map((v) => (
+                <VehiculoSheetCard
+                  key={v.id}
+                  vehic={v}
+                  useRadios
+                  currentValue={idEnter}
+                  list={list}
+                  value={v.id}
+                />
+              ))}
+            </View>
+          </RadioButton.Group>
+
+          {
+            loadingPost ?
+              <View style={{ width: "100%", alignItems: "center", justifyContent: "center" }} >
+                <ActivityIndicator size={"small"} />
+              </View>
+              :
+              <Button
+                // 🛑 USAMOS currentVehiculo AQUÍ PARA UN SOLO CICLO
+                disabled={!currentVehiculo}
+                mode="text" style={[BoxStyles.ButtonRadius]} labelStyle={BoxStyles.buttonText}
+                onPress={async () => {
+                  await onSubmit(closeSheet);
+                }}
+              >
+                Continuar
+              </Button>
+          }
+        </ScrollView >
+      );
+    }
+  }, [cars, activeData, idEnter, loadingPost, setVehiculo, vehiculo]);
+
+  /*React.useEffect(() => {
     if (cars) {
       let filtered = [];
       if (activeData.data.vehiculo) {
@@ -97,16 +165,16 @@ export default function Inicio({ navigation }) {
         </ScrollView >
       );
     }
-  }, [cars, activeData, idEnter, loadingPost]);
+  }, [cars, activeData, idEnter, loadingPost]);*/
 
-  React.useEffect(() => {
+  /*React.useEffect(() => {
     if (cars && idEnter !== null) {
       const selectedVehiculo = cars.data.find(v => v.id === idEnter);
       setVehiculo(selectedVehiculo);
     }
 
     return () => setVehiculo(null);
-  }, [idEnter, cars]);
+  }, [idEnter, cars]);*/
 
   const [normalizedData, setNormalizedData] = React.useState([]);
 
@@ -352,7 +420,7 @@ const DialogSimbologia = ({ visible, hideDialog }) => {
   }
   const cajon4 = {
     disponible: true,
-    paraPensionados: false,
+    paraPensionados: true,
     estatus: false,
     tipoVehiculo: { nombre: "coche" }
   }
@@ -364,25 +432,25 @@ const DialogSimbologia = ({ visible, hideDialog }) => {
       >
         <Dialog.Title>Simbologia</Dialog.Title>
         <Dialog.Content style={{ gap: 12 }}>
-          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "flex-start", gap: 4 }}>
-            <View style={{ width: 100 }}>
+          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "flex-start", gap: 6 }}>
+            <View style={{ width: 100, height: 42 }}>
               <Cajoncito cajon={cajon1} />
             </View>
             <Text variant="bodyLarge" >Ocupado</Text>
           </View>
-          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "flex-start", gap: 4 }}>
-            <View style={{ width: 100 }}>
+          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "flex-start", gap: 6 }}>
+            <View style={{ width: 100, height: 42 }}>
               <Cajoncito cajon={cajon2} />
             </View>
             <Text variant="bodyLarge" >Disponible</Text>
           </View>
-          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "flex-start", gap: 4 }}>
-            <View style={{ width: 100 }}>
+          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "flex-start", gap: 6 }}>
+            <View style={{ width: 100, height: 42 }}>
               <Cajoncito cajon={cajon3} />
             </View>
             <Text variant="bodyLarge" >para pensionados</Text>
           </View>
-          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "flex-start", gap: 4 }}>
+          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "flex-start", gap: 6 }}>
             <View style={{ width: 100 }}>
               <Cajoncito cajon={cajon4} />
             </View>

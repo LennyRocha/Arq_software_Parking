@@ -1,12 +1,13 @@
 import { Image, View } from "react-native";
 import SwiperView from "../../../components/Swiper";
-import React, { act } from "react";
-import { Button, Text, useTheme, Icon } from "react-native-paper";
+import React from "react";
+import { Button, Text, useTheme, Icon, ActivityIndicator } from "react-native-paper";
 import BoxStyles from "../../../utils/genericScreenStyles";
 import useVehiculosEstacionados from "../../vehiculo/hooks/useVehiculosEstacionados";
 import LoadingView from "../../../components/LoadingView";
 import useMarcarSalida from "../hooks/useMarcarSalida";
 import EmptyListView from "../../errores/screens/EmptyListView";
+import { CustomAlert } from "../../../utils/customAlert";
 
 export default function Estacionados({ navigation }) {
   const paper = useTheme();
@@ -90,7 +91,21 @@ export default function Estacionados({ navigation }) {
     return `${hora}:${minStr} ${ampm}`;
   }
 
-  const { setVehiculo, isLoading, vehiculo, errorData, visible, config, hideAlert, data, onSubmit } = useMarcarSalida(navigation, "020");
+  const [folio, setFolio] = React.useState("");
+
+  React.useEffect(() => {
+    if (activeData) {
+      setFolio(activeData.data.folio)
+    }
+  }, [activeData])
+
+  const { setVehiculo, isLoading, vehiculo, errorData, visible, config, hideAlert, data, onSubmit } = useMarcarSalida(navigation, folio, recall);
+
+  const LoaderAct = () => {
+    return <View style={{ width: "100%", justifyContent: "center", alignItems: "center" }}>
+      <ActivityIndicator size={"small"} />
+    </View>
+  }
 
   const CarView = () => (
     <View
@@ -126,13 +141,18 @@ export default function Estacionados({ navigation }) {
         <Icon source={"clock-time-three-outline"} color={paper.colors.gray} size={24} />
         <Text variant="labelLarge" style={{ fontWeight: "bold", color: paper.colors.gray }}>{tiempoTranscurrido(activeData.data.horaEntrada)}</Text>
       </View>
-      <Button
-        theme={{
-          colors: {
-            primary: paper.colors.tertiary,
-          }
-        }}
-        mode="contained" style={[BoxStyles.ButtonRadius, { width: "100%" }]} labelStyle={BoxStyles.buttonTextAuto} onPress={() => navigation.navigate("salidaQR", { folio: activeData.data.folio })} >Marcar Salida</Button>
+      {
+        isLoading ?
+          <LoaderAct />
+          :
+          <Button
+            theme={{
+              colors: {
+                primary: paper.colors.tertiary,
+              }
+            }}
+            mode="contained" style={[BoxStyles.ButtonRadius, { width: "100%" }]} labelStyle={BoxStyles.buttonTextAuto} onPress={onSubmit} >Marcar Salida</Button>
+      }
     </View>
   );
   const CamionView = () => (
@@ -169,14 +189,18 @@ export default function Estacionados({ navigation }) {
         <Icon source={"clock-time-three-outline"} color={paper.colors.gray} size={24} />
         <Text variant="labelLarge" style={{ fontWeight: "bold", color: paper.colors.gray }}>{tiempoTranscurrido(activeData.data.horaEntrada)}</Text>
       </View>
-      <Button
-        theme={{
-          colors: {
-            primary: paper.colors.tertiary,
-          }
-        }}
-        mode="contained" style={[BoxStyles.ButtonRadius, { width: "100%" }]} labelStyle={BoxStyles.buttonTextAuto} onPress={() => navigation.navigate("salidaQR", { folio: activeData.data.folio })} >Marcar Salida</Button>
-    </View>
+      {
+        isLoading ?
+          <LoaderAct />
+          :
+          <Button
+            theme={{
+              colors: {
+                primary: paper.colors.tertiary,
+              }
+            }}
+            mode="contained" style={[BoxStyles.ButtonRadius, { width: "100%" }]} labelStyle={BoxStyles.buttonTextAuto} onPress={onSubmit} >Marcar Salida</Button>
+      }    </View>
   );
   const MotoView = () => (
     <View
@@ -212,13 +236,18 @@ export default function Estacionados({ navigation }) {
         <Icon source={"clock-time-three-outline"} color={paper.colors.gray} size={24} />
         <Text variant="labelLarge" style={{ fontWeight: "bold", color: paper.colors.gray }}>{tiempoTranscurrido(activeData.data.horaEntrada)}</Text>
       </View>
-      <Button
-        theme={{
-          colors: {
-            primary: paper.colors.tertiary,
-          }
-        }}
-        mode="contained" style={[BoxStyles.ButtonRadius, { width: "100%" }]} labelStyle={BoxStyles.buttonTextAuto} onPress={() => navigation.navigate("salidaQR", { folio: activeData.data.folio })} >Marcar Salida</Button>
+      {
+        isLoading ?
+          <LoaderAct />
+          :
+          <Button
+            theme={{
+              colors: {
+                primary: paper.colors.tertiary,
+              }
+            }}
+            mode="contained" style={[BoxStyles.ButtonRadius, { width: "100%" }]} labelStyle={BoxStyles.buttonTextAuto} onPress={onSubmit} >Marcar Salida</Button>
+      }
     </View>
   );
 
@@ -236,8 +265,9 @@ export default function Estacionados({ navigation }) {
 
   if (loadingActive) return <LoadingView />;
 
-  if (!activeData.data.vehiculo) return <EmptyListView message={"No hay marcajes disponibles"} />
-
+  if (!activeData || !activeData.data || !activeData.data.vehiculo) {
+    return <EmptyListView message={"No tienes ningún vehículo estacionado actualmente"} icon={"car-info"} />
+  }
   return (
     <View style={{ flex: 1 }}>
       <SwiperView
@@ -247,6 +277,7 @@ export default function Estacionados({ navigation }) {
         paginationStyle={{ bottom: 0 }} // Ajusta la posición
         loop
       />
+      <CustomAlert visible={visible} hideAlert={hideAlert} config={config} />
     </View>
   );
 }

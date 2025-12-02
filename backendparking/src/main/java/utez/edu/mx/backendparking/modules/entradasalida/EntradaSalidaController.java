@@ -126,7 +126,7 @@ public class EntradaSalidaController {
                 .body(ApiResponse.success(HttpStatus.OK, EntradaSalidaMessages.ENDPOINT_ENTRADA_SALIDA_SALIDA_DATOS, entradaSalida));
     }
 
-    @PutMapping("/pensionado/salida/{folioTicket}")
+    @PutMapping("/pensionado/salida/{uuidCodigoQR}")
     @Operation(summary = "Marcar salida de pensionado",
             description = "Marca la salida de un vehículo pensionado del estacionamiento. " +
                     "Calcula y guarda la hora de salida.")

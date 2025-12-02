@@ -6,8 +6,7 @@ import { useCustomAlert } from "../../../utils/useCustomAlert";
 import { useSnackBar } from '../../../context/SnackBarContext';
 import { useGlobalContext } from '../../../context/GlobalContext';
 
-export default function useMarcarSalida(navigation, folio) {
-    const [vehiculo, setVehiculo] = React.useState(null);
+export default function useMarcarSalida(navigation, folio, recall) {
     const { showSnack } = useSnackBar();
     const { setPension, pension } = useGlobalContext();
 
@@ -19,24 +18,28 @@ export default function useMarcarSalida(navigation, folio) {
     const onSubmit = async (close) => {
         if (isLoading) return;
 
-        if (!vehiculo || !pension) return;
+        if (!pension) return;
 
         let errorObject = {}
 
         setLoading(true);
         setErrorData(null);
 
+        const uuidCodigo = pension.uuidCodigoQR;
+
         try {
-            const res = await api.put(`/entrada-salida/pensionado/salida/${folio}`, payload);
+            console.log("Se marca salida con", pension.uuidCodigoQR);
+            const res = await api.put(`/entrada-salida/pensionado/salida/${pension.uuidCodigoQR}`);
             const data = res.data;
             const salida = data.data;
 
             const res_dos = await api.get(`/pensionado/cliente/mi-pension`);
             const pensionResponse = res_dos.data;
+            console.log("Nuevo uuid", pensionResponse.data.uuidCodigoQR);
 
             const { id: pensionId, nombrePension, fechaFinalizacion, costoUltimoPago, estatus, uuidCodigoQR, fechaInicioProximaRenovacion, fechaFinProximaRenovacion } = pensionResponse.data;
             const pensionJson = {
-                id: pensionId, 
+                id: pensionId,
                 nombrePension: nombrePension,
                 fechaFinalizacion: fechaFinalizacion,
                 costoUltimoPago: costoUltimoPago,
@@ -48,16 +51,18 @@ export default function useMarcarSalida(navigation, folio) {
 
             setPension(pensionJson);
 
-            navigation.navigate("salidaQR", { folio: pension.uuidCodigoQR, salida: salida })
+            navigation.navigate("salidaQR", { folio: uuidCodigo, salida: salida })
             setData(salida);
-            showSnack("Entrada marcada", "Cerrar");
+            showSnack("Salida marcada", "Cerrar");
+            recall();
         } catch (err) {
             errorObject = {
                 tipo: err.response ? "Error de la API" : "Error de Axios",
                 texto: getAxiosErrorMessage(err),
                 detalles: err
             }
-            setErrorData(errorObject)
+            setErrorData(errorObject);
+            setLoading(false);
             showAlert({
                 icon: "error",
                 title: "¡Error al marcar entrada!",
@@ -73,5 +78,5 @@ export default function useMarcarSalida(navigation, folio) {
         }
     }
 
-    return { setVehiculo, isLoading, vehiculo, errorData, visible, config, hideAlert, data, onSubmit };
+    return { isLoading, errorData, visible, config, hideAlert, data, onSubmit };
 }

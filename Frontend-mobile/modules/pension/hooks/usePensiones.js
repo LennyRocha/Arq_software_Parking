@@ -3,11 +3,10 @@ import pensionInterface from "./pensionInterface";
 import { getAxiosErrorMessage } from "../../../utils/getAxiosMessage";
 import PensionCard from "../components/PensionCard";
 import api from "../../../utils/api";
-import { Session } from "../../acceso/hooks/TokenManagement";
 import { useGlobalContext } from "../../../context/GlobalContext";
 
 export default function usePensiones(navigation, pressHanlder) {
-  const [isLoading, setLoading] = React.useState(false);
+  const [isLoading, setLoading] = React.useState(true);
   const [data, setData] = React.useState(null);
   const [error, setError] = React.useState(null);
   const [errorData, setErrorData] = React.useState(null);

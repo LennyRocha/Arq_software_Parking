@@ -22,7 +22,6 @@ export default function useVehiculosEstacionados() {
                 vehiculoInterface.check()
             );
             setData(res.data);
-            console.log(res.data);
         } catch (err) {
             errorObject = {
                 tipo: err.response ? "Error de la API" : "Error de Axios",
