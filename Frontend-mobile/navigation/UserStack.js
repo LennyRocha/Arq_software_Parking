@@ -30,6 +30,7 @@ import { useSnackBar } from "../context/SnackBarContext";
 import DetallesPension from "../modules/pension/screens/DetallesPension";
 import { Session } from "../modules/acceso/hooks/TokenManagement";
 import { useGlobalContext } from "../context/GlobalContext";
+import HistorialMarcajes from "../modules/perfil/screens/HistorialMarcajes";
 
 const Stack = createNativeStackNavigator();
 
@@ -127,7 +128,8 @@ export default function UserStack({ navigation, route }) {
           inputCarScreen: "Modificar campo",
           newCar: "Nuevo vehículo",
           detallesPension: "Detalles de la pensión",
-          historial: "Historial de marcajes",
+          historial: "Historial de pagos",
+          historial_marcajes: "Historial de marcajes",
           detallesPerfil: "Modificar perfil",
           inputPerfilScreen: "Modificar campo",
           metodos: "Métodos de págo",
@@ -210,6 +212,7 @@ export default function UserStack({ navigation, route }) {
       <Stack.Screen name="newCar" component={NuevoVehiculo} />
       <Stack.Screen name="detallesPension" component={DetallesPension} />
       <Stack.Screen name="historial" component={Historial} />
+      <Stack.Screen name="historial_marcajes" component={HistorialMarcajes} />
       <Stack.Screen name="detallesPerfil" component={DetallesPerfil} />
       <Stack.Screen name="inputPerfilScreen" component={InputPerfil} />
       <Stack.Screen name="metodos" component={MetodosPago} />

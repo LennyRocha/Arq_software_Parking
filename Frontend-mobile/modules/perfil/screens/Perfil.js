@@ -119,7 +119,15 @@ export default function Perfil({ dad, ruta, navigation }) {
         />
         <Divider /> */}
         <List.Item
-          title="Historial"
+          title="Historial de marcajes"
+          right={props => <List.Icon {...props} icon="chevron-right" color={theme.gray} />}
+          style={{ justifyContent: "center", }}
+          onPress={() => navigation.navigate("historial_marcajes")}
+          rippleColor="rgba(0, 0, 0, 0.5)"
+        />
+        <Divider />
+        <List.Item
+          title="Historial de pagos"
           right={props => <List.Icon {...props} icon="chevron-right" color={theme.gray} />}
           style={{ justifyContent: "center" }}
           onPress={() => navigation.navigate("historial")}
