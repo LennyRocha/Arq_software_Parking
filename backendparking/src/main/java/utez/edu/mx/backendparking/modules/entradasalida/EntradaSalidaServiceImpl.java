@@ -148,7 +148,8 @@ public class EntradaSalidaServiceImpl implements EntradaSalidaService {
         usuarioPensionRepository.save(usuarioPension);
 
         //Ocupar un cajón
-        cajonService.cambiarDisponibilidadForPensionados(true);
+        int tipo = entradaSalida.getVehiculo().getTipoVehiculo().getId();
+        cajonService.cambiarDisponibilidadForPensionados(true,tipo);
 
         // Convertir a DTO de respuesta usando el mapper
         return EntradaSalidaMapper.toResponseDto(savedEntradaSalida);
@@ -190,7 +191,7 @@ public class EntradaSalidaServiceImpl implements EntradaSalidaService {
         EntradaSalida savedEntradaSalida = entradaSalidaRepository.save(entradaSalida);
 
         //Ocupar un cajón
-        cajonService.cambiarDisponibilidad(true);
+        cajonService.cambiarDisponibilidad(true, dto.getTipoVehiculo().getId());
 
         return EntradaSalidaMapper.toResponseDto(savedEntradaSalida);
     }
@@ -350,7 +351,8 @@ public class EntradaSalidaServiceImpl implements EntradaSalidaService {
         responseDto.setCantidadPago(montoPagar);
 
         //Desocupar un cajón
-        cajonService.cambiarDisponibilidad(false);
+        int tipo = entradaSalida.getTipoVehiculo().getId();
+        cajonService.cambiarDisponibilidad(false, tipo);
 
         return responseDto;
     }
@@ -415,7 +417,8 @@ public class EntradaSalidaServiceImpl implements EntradaSalidaService {
         responseDto.setCantidadPago(montoPagar);
 
         //Desocupar un cajón
-        cajonService.cambiarDisponibilidadForPensionados(false);
+        int tipo = entradaSalida.getVehiculo().getTipoVehiculo().getId();
+        cajonService.cambiarDisponibilidadForPensionados(false,tipo);
 
         return responseDto;
     }

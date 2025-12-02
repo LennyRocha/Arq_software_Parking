@@ -1,10 +1,12 @@
 import { Image, View } from "react-native";
 import SwiperView from "../../../components/Swiper";
-import React from "react";
+import React, { act } from "react";
 import { Button, Text, useTheme, Icon } from "react-native-paper";
 import BoxStyles from "../../../utils/genericScreenStyles";
 import useVehiculosEstacionados from "../../vehiculo/hooks/useVehiculosEstacionados";
 import LoadingView from "../../../components/LoadingView";
+import useMarcarSalida from "../hooks/useMarcarSalida";
+import EmptyListView from "../../errores/screens/EmptyListView";
 
 export default function Estacionados({ navigation }) {
   const paper = useTheme();
@@ -13,7 +15,8 @@ export default function Estacionados({ navigation }) {
     coche: require('../../../img/coche.png'),
     camioneta: require('../../../img/camioneta.png'),
   }
-  const { getVehiculosActive, activeData, isLoading: loadingActive, errorData: errData, restartCall: recall } = useVehiculosEstacionados();
+  const { activeData, isLoading: loadingActive, errorData: errData, restartCall: recall } = useVehiculosEstacionados();
+
   const parseDate = (fecha) => {
     const ano = fecha.substring(0, 4);
     const mes = fecha.substring(5, 7);
@@ -38,6 +41,7 @@ export default function Estacionados({ navigation }) {
 
     return `${mesString} ${dia}, ${ano}`;
   }
+
   const tiempoTranscurrido = (horaEntrada) => {
     // Obtener la fecha actual
     const now = new Date();
@@ -86,6 +90,8 @@ export default function Estacionados({ navigation }) {
     return `${hora}:${minStr} ${ampm}`;
   }
 
+  const { setVehiculo, isLoading, vehiculo, errorData, visible, config, hideAlert, data, onSubmit } = useMarcarSalida(navigation, "020");
+
   const CarView = () => (
     <View
       style={[
@@ -126,7 +132,7 @@ export default function Estacionados({ navigation }) {
             primary: paper.colors.tertiary,
           }
         }}
-        mode="contained" style={[BoxStyles.ButtonRadius, { width: "100%" }]} labelStyle={BoxStyles.buttonTextAuto} onPress={() => navigation.navigate("salidaQR", { folio:  activeData.data.folio })} >Marcar Salida</Button>
+        mode="contained" style={[BoxStyles.ButtonRadius, { width: "100%" }]} labelStyle={BoxStyles.buttonTextAuto} onPress={() => navigation.navigate("salidaQR", { folio: activeData.data.folio })} >Marcar Salida</Button>
     </View>
   );
   const CamionView = () => (
@@ -212,7 +218,7 @@ export default function Estacionados({ navigation }) {
             primary: paper.colors.tertiary,
           }
         }}
-        mode="contained" style={[BoxStyles.ButtonRadius, { width: "100%" }]} labelStyle={BoxStyles.buttonTextAuto} onPress={() => navigation.navigate("salidaQR", { folio:  activeData.data.folio })} >Marcar Salida</Button>
+        mode="contained" style={[BoxStyles.ButtonRadius, { width: "100%" }]} labelStyle={BoxStyles.buttonTextAuto} onPress={() => navigation.navigate("salidaQR", { folio: activeData.data.folio })} >Marcar Salida</Button>
     </View>
   );
 
@@ -228,7 +234,9 @@ export default function Estacionados({ navigation }) {
     }
   }
 
-  if (!activeData) return <LoadingView />;
+  if (loadingActive) return <LoadingView />;
+
+  if (!activeData.data.vehiculo) return <EmptyListView message={"No hay marcajes disponibles"} />
 
   return (
     <View style={{ flex: 1 }}>

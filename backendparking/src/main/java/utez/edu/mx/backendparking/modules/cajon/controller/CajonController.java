@@ -101,18 +101,18 @@ public class CajonController {
         return cajonService.setCajonesExclusivos(conteo);
     }
 
-    @PatchMapping("/ocupar")
+    @PatchMapping("/ocupar/{id_tipo}")
     @Operation(summary = "Ocupar un cajón normal",
             description = "Este endpoint es utilizado para ocupar un cajón al marcar una entrada o una salida")
-    public ApiResponse<Cajon> ocuparUnCajon(@RequestParam(defaultValue = "true") boolean entrada) {
-        return cajonService.cambiarDisponibilidad(entrada);
+    public ApiResponse<Cajon> ocuparUnCajon(@RequestParam(defaultValue = "true") boolean entrada, @PathVariable int id_tipo) {
+        return cajonService.cambiarDisponibilidad(entrada, id_tipo);
     }
 
-    @PatchMapping("/ocupar/pensionados")
+    @PatchMapping("/ocupar/pensionados/{id_tipo}")
     @Operation(summary = "Ocupar un cajón exclusivo para pensionados",
             description = "Este endpoint es utilizado para ocupar un cajón al marcar una entrada o una salida para un usuario pensionado")
-    public ApiResponse<Cajon> ocuparUnCajonPensionados(@RequestParam(defaultValue = "true") boolean entrada) {
-        return cajonService.cambiarDisponibilidadForPensionados(entrada);
+    public ApiResponse<Cajon> ocuparUnCajonPensionados(@RequestParam(defaultValue = "true") boolean entrada, @PathVariable int id_tipo) {
+        return cajonService.cambiarDisponibilidadForPensionados(entrada, id_tipo);
     }
 
     @DeleteMapping("/{id}")

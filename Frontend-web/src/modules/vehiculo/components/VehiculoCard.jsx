@@ -242,10 +242,8 @@ function ModalDetalles({ open, closeDialog, vehiculo, types, current }) {
       >
         <ListItem sx={{ flex: 1 }}>
           <ListItemText
-            primary="En uso"
-            secondary={
-              current.vehiculo && current.vehiculo.id === vehic.id ? "Si" : "No"
-            }
+            primary="Tipo de vehículo"
+            secondary={types[vehiculo.idTipoVehiculo - 1].nombre}
           />
         </ListItem>
         <ListItem sx={{ flex: 1 }}>
@@ -266,8 +264,10 @@ function ModalDetalles({ open, closeDialog, vehiculo, types, current }) {
       >
         <ListItem sx={{ flex: 1 }}>
           <ListItemText
-            primary="Tipo de vehículo"
-            secondary={types[vehiculo.idTipoVehiculo - 1].nombre}
+            primary="En uso"
+            secondary={
+              current.vehiculo && current.vehiculo.id === vehiculo.id ? "Si" : "No"
+            }
           />
         </ListItem>
         <ListItem sx={{ flex: 1, display: { xs: "none", md: "flex" } }}>

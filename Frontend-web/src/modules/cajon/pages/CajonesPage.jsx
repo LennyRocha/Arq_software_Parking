@@ -9,23 +9,46 @@ export default function CajonesPage({ isPensionado = true, isAdmin = false }) {
     <div className="overflow-y-auto">
       <MainHeader
         titulo="CAJONES DISPONIBLES"
-        breads={[
-          {
-            nombre: "Inicio",
-            ruta: isPensionado
-              ? "/pensionados"
-              : isAdmin
-              ? "/admin"
-              : "/empleado",
-            disabled: false,
-          },
-          isAdmin && { nombre: "Gestión de cajones", ruta: "/admin/cajones", disabled: false },
-          {
-            nombre:  isAdmin ? "Estacionamiento" : "Consultar cajones",
-            ruta: "/",
-            disabled: true,
-          },
-        ]}
+        breads={
+          isAdmin
+            ? [
+                {
+                  nombre: "Inicio",
+                  ruta: isPensionado
+                    ? "/pensionados"
+                    : isAdmin
+                    ? "/admin"
+                    : "/empleado",
+                  disabled: false,
+                },
+                {
+                  nombre: "Gestión de cajones",
+                  ruta: "/admin/cajones",
+                  disabled: false,
+                },
+                {
+                  nombre: isAdmin ? "Estacionamiento" : "Consultar cajones",
+                  ruta: "/",
+                  disabled: true,
+                },
+              ]
+            : [
+                {
+                  nombre: "Inicio",
+                  ruta: isPensionado
+                    ? "/pensionados"
+                    : isAdmin
+                    ? "/admin"
+                    : "/empleado",
+                  disabled: false,
+                },
+                {
+                  nombre: isAdmin ? "Estacionamiento" : "Consultar cajones",
+                  ruta: "/",
+                  disabled: true,
+                },
+              ]
+        }
       />
       <Box
         sx={{

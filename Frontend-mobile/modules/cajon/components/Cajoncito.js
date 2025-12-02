@@ -2,7 +2,7 @@ import { View, Text, Image } from 'react-native';
 import React from 'react';
 import { useTheme } from 'react-native-paper';
 
-export default function Cajoncito({ cajon }) {
+export default function Cajoncito({ cajon, index }) {
   const paper = useTheme();
 
   const vehiculos = {
@@ -34,10 +34,21 @@ export default function Cajoncito({ cajon }) {
     } else if (!cajon.estatus) {
       return paper.colors.dark;
     }
-    return  paper.colors.tertiary;
+    return paper.colors.tertiary;
   };
 
   const tipo = cajon.tipoVehiculo?.nombre?.toLowerCase();
+
+  const getOrientation = () => {
+    switch (index) {
+      case 1:
+      case 3:
+        return "90deg";
+      case 2:
+      case 4:
+        return "-90deg";
+    }
+  }
 
   return (
     <View
@@ -56,10 +67,10 @@ export default function Cajoncito({ cajon }) {
         <Image
           source={vehiculos[tipo]}
           style={{
-            width: "100%", 
+            width: "100%",
             height: undefined,
             aspectRatio: 1,
-            transform: [{ rotate: "90deg" }],
+            transform: [{ rotate: index ? getOrientation() : "90deg" }],
             resizeMode: "contain",
           }}
         />

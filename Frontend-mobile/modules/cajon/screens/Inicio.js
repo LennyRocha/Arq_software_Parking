@@ -13,6 +13,7 @@ import VehiculoSheetCard from "../components/VehiculoSheetCard";
 import { ScrollView } from "react-native-gesture-handler";
 import useCajones from "../hooks/useCajones";
 import { CustomAlert } from "../../../utils/customAlert";
+import { Portal, Dialog } from "react-native-paper";
 import useMarcarEntrada from "../hooks/useMarcarEntrada";
 
 const { width, height } = Dimensions.get("screen")
@@ -24,6 +25,14 @@ export default function Inicio({ navigation }) {
   const paper = useTheme();
   const { setVehiculo, vehiculo, errorData, visible, config, hideAlert, data: entrada, onSubmit, isLoading: loadingPost } = useMarcarEntrada(navigation);
   const { getVehiculosActive, activeData, isLoading: loadingActive, errorData: errData, restartCall: recall } = useVehiculosEstacionados();
+
+  const [simbolVis, setVisible] = React.useState(false);
+  const showDialog = () => {
+    setVisible(true);
+  };
+  const hideDialog = () => {
+    setVisible(false);
+  };
 
   const {
     data,
@@ -46,7 +55,12 @@ export default function Inicio({ navigation }) {
 
   React.useEffect(() => {
     if (cars) {
-      const filtered = cars.data.filter((c) => c.id !== activeData.data.vehiculo.id);
+      let filtered = [];
+      if (activeData.data.vehiculo) {
+        filtered = cars.data.filter((c) => c.id !== activeData.data.vehiculo.id && c.status !== false);
+      } else {
+        filtered = cars.data.filter((c) => c.status !== false)
+      }
       setSheetChild(
         <ScrollView style={{ flex: 1 }} contentContainerStyle={{ gap: 12 }}>
           <Text variant="titleMedium">Selecciona un vehículo</Text>
@@ -248,7 +262,7 @@ export default function Inicio({ navigation }) {
               icon={"information-outline"}
               size={24}
               style={{ padding: 0, margin: 0 }}
-              onPress={() => { }}
+              onPress={showDialog}
               iconColor={paper.colors.primary}
             />
           </View>
@@ -291,7 +305,7 @@ export default function Inicio({ navigation }) {
 
               return (
                 <View style={{ width: slotWidth, height: 40, margin: 2 }}>
-                  <Cajoncito cajon={item} />
+                  <Cajoncito cajon={item} index={columnIndex} />
                 </View>
               );
             }}
@@ -300,6 +314,7 @@ export default function Inicio({ navigation }) {
           />
           <ListFooterComponent />
           <CustomAlert visible={visible} hideAlert={hideAlert} config={config} />
+          <DialogSimbologia visible={simbolVis} hideDialog={hideDialog} />
         </View>
       )}
 
@@ -314,4 +329,70 @@ export default function Inicio({ navigation }) {
       </Button>
     </View>
   );
+}
+
+const DialogSimbologia = ({ visible, hideDialog }) => {
+  const cajon1 = {
+    disponible: false,
+    paraPensionados: false,
+    estatus: true,
+    tipoVehiculo: { nombre: "coche" }
+  }
+  const cajon2 = {
+    disponible: true,
+    paraPensionados: false,
+    estatus: true,
+    tipoVehiculo: { nombre: "coche" }
+  }
+  const cajon3 = {
+    disponible: true,
+    paraPensionados: true,
+    estatus: true,
+    tipoVehiculo: { nombre: "coche" }
+  }
+  const cajon4 = {
+    disponible: true,
+    paraPensionados: false,
+    estatus: false,
+    tipoVehiculo: { nombre: "coche" }
+  }
+  const theme = useTheme();
+  return (
+    <Portal>
+      <Dialog visible={visible} onDismiss={hideDialog}
+        style={{ backgroundColor: theme.colors.surface }}
+      >
+        <Dialog.Title>Simbologia</Dialog.Title>
+        <Dialog.Content style={{ gap: 12 }}>
+          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "flex-start", gap: 4 }}>
+            <View style={{ width: 100 }}>
+              <Cajoncito cajon={cajon1} />
+            </View>
+            <Text variant="bodyLarge" >Ocupado</Text>
+          </View>
+          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "flex-start", gap: 4 }}>
+            <View style={{ width: 100 }}>
+              <Cajoncito cajon={cajon2} />
+            </View>
+            <Text variant="bodyLarge" >Disponible</Text>
+          </View>
+          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "flex-start", gap: 4 }}>
+            <View style={{ width: 100 }}>
+              <Cajoncito cajon={cajon3} />
+            </View>
+            <Text variant="bodyLarge" >para pensionados</Text>
+          </View>
+          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "flex-start", gap: 4 }}>
+            <View style={{ width: 100 }}>
+              <Cajoncito cajon={cajon4} />
+            </View>
+            <Text variant="bodyLarge" >No disponible</Text>
+          </View>
+        </Dialog.Content>
+        <Dialog.Actions>
+          <Button onPress={hideDialog} style={{ borderRadius: 5 }}>Cerrar</Button>
+        </Dialog.Actions>
+      </Dialog>
+    </Portal>
+  )
 }
