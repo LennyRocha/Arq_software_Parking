@@ -48,8 +48,10 @@ export default function useVehiculos(idUser) {
   }, [idUser, query, idCar, active, conPlacas, dependence]);
 
   React.useEffect(() => {
-    getVehiculos();
-  }, [idCar, active, conPlacas]);
+    if (idUser) {
+      getVehiculos();
+    }
+  }, [idCar, active, conPlacas, idUser]);
 
   return { getVehiculos, data, isLoading, errorData, restoreValues, restartCall, query, setQuery, idCar, setIdCar, active, setActive, conPlacas, setConPlacas };
 }

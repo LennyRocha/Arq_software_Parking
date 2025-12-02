@@ -2,22 +2,27 @@ import React, { useEffect, useState } from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import AuthStack from "./AuthStack";
 import UserStack from "./UserStack";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { ActivityIndicator } from "react-native";
 import { useTheme } from "react-native-paper";
 import { StatusBar } from "react-native";
+import LoadingView from "../components/LoadingView";
+import { Session } from "../modules/acceso/hooks/TokenManagement";
+
 const Stack = createNativeStackNavigator();
 
 export default function MainNavigator() {
   const [user, setUser] = useState(null);
+  const [ isExpired, setIsExpired ] = React.useState(false);
   const [loading, setLoading] = useState(true);
   const paper = useTheme();
 
   useEffect(() => {
     const loadUser = async () => {
       try {
-        const storedUser = await AsyncStorage.getItem("user");
+        const storedUser = await Session.getUser();
+        const isTokenExpired = await Session.isExpired();
+        console.log("¿Expiró el token?: ", isTokenExpired);
         setUser(storedUser);
+        setIsExpired(isTokenExpired);
       } catch (err) {
         console.error("Error al obtener usuario:", err);
       } finally {
@@ -27,7 +32,7 @@ export default function MainNavigator() {
     loadUser();
   }, []);
 
-  if (loading) return <ActivityIndicator />;
+  if (loading) return <LoadingView />;
 
   return (
     <>
@@ -41,7 +46,7 @@ export default function MainNavigator() {
           headerShown: false,
           contentStyle: { backgroundColor: "transparent" },
         }}
-        initialRouteName={user === null ? "Auth" : "User"}
+        initialRouteName={user === null || isExpired ? "Auth" : "User"}
       >
         <Stack.Screen name="Auth" component={AuthStack} />
         <Stack.Screen

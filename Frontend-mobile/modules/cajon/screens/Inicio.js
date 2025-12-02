@@ -1,8 +1,8 @@
 import React from "react";
 import { View, FlatList, Dimensions, RefreshControl } from "react-native";
 import BoxStyles from "../../../utils/genericScreenStyles";
-import { Text, Button, SegmentedButtons, RadioButton, useTheme, Chip, HelperText, IconButton } from "react-native-paper";
-import { useWebSocket } from "../hooks/useWebSocket";
+import { Text, Button, SegmentedButtons, RadioButton, useTheme, Chip, HelperText, IconButton, ActivityIndicator } from "react-native-paper";
+import useVehiculosEstacionados from "../../vehiculo/hooks/useVehiculosEstacionados";
 import Cajoncito from "../components/Cajoncito";
 import LoadingView from '../../../components/LoadingView'
 import { useSnackBar } from "../../../context/SnackBarContext";
@@ -12,6 +12,9 @@ import useTiposVehiculos from "../../vehiculo/hooks/useTiposVehiculos";
 import VehiculoSheetCard from "../components/VehiculoSheetCard";
 import { ScrollView } from "react-native-gesture-handler";
 import useCajones from "../hooks/useCajones";
+import { CustomAlert } from "../../../utils/customAlert";
+import { Portal, Dialog } from "react-native-paper";
+import useMarcarEntrada from "../hooks/useMarcarEntrada";
 
 const { width, height } = Dimensions.get("screen")
 
@@ -20,11 +23,20 @@ export default function Inicio({ navigation }) {
   const { data: cars, isLoading: load } = useVehiculos(3);
   const { setSnapPoints, openSheet, closeSheet, setSheetChild } = useSnackBar();
   const paper = useTheme();
+  const { setVehiculo, vehiculo, errorData, visible, config, hideAlert, data: entrada, onSubmit, isLoading: loadingPost } = useMarcarEntrada(navigation);
+  const { getVehiculosActive, activeData, isLoading: loadingActive, errorData: errData, restartCall: recall } = useVehiculosEstacionados();
+
+  const [simbolVis, setVisible] = React.useState(false);
+  const showDialog = () => {
+    setVisible(true);
+  };
+  const hideDialog = () => {
+    setVisible(false);
+  };
 
   const {
     data,
     loading,
-    sendParams,
     restartValues,
     setPiso,
     setIdCar,
@@ -39,37 +51,130 @@ export default function Inicio({ navigation }) {
     return () => closeSheet();
   }, []);
 
-  const [idEnter, setIdEnter] = React.useState(0);
+  const [idEnter, setIdEnter] = React.useState(null);
 
   React.useEffect(() => {
+    // 1. Lógica de selección de vehículo
+    let currentVehiculo = vehiculo; // Usamos el estado actual como fallback
+    if (cars && idEnter !== null) {
+      const selectedVehiculo = cars.data.find(v => v.id === idEnter);
+      if (selectedVehiculo && selectedVehiculo !== vehiculo) {
+        setVehiculo(selectedVehiculo);
+        currentVehiculo = selectedVehiculo; // Actualizamos la variable local para usarla abajo
+      } else if (!selectedVehiculo && vehiculo !== null) {
+        setVehiculo(null);
+        currentVehiculo = null;
+      }
+    } else if (vehiculo !== null) {
+      // Limpiar vehiculo si idEnter es null, por si acaso.
+      setVehiculo(null);
+      currentVehiculo = null;
+    }
+
+    // 2. Construcción de la hoja (SheetChild)
     if (cars) {
+      let filtered = [];
+      // ... (Tu lógica para filtrar vehículos sigue igual) ...
+      if (activeData?.data?.vehiculo) { // Usar encadenamiento opcional para prevenir el error anterior
+        filtered = cars.data.filter((c) => c.id !== activeData.data.vehiculo.id && c.status !== false);
+      } else {
+        filtered = cars.data.filter((c) => c.status !== false)
+      }
+
       setSheetChild(
         <ScrollView style={{ flex: 1 }} contentContainerStyle={{ gap: 12 }}>
           <Text variant="titleMedium">Selecciona un vehículo</Text>
           <RadioButton.Group onValueChange={setIdEnter} value={idEnter}>
             <View style={{ gap: 8, padding: 2 }}>
-              {cars.data.map((v) => (
+              {filtered.map((v) => (
                 <VehiculoSheetCard
                   key={v.id}
                   vehic={v}
                   useRadios
                   currentValue={idEnter}
                   list={list}
-                  setValue={setIdEnter}
+                  value={v.id}
                 />
               ))}
             </View>
           </RadioButton.Group>
-          <Button
-            mode="text" style={[BoxStyles.ButtonRadius]} labelStyle={BoxStyles.buttonText} disabled={idEnter === 0}
-            onPress={() => {
-              navigation.navigate("entradaQR", { folio: 2000 })
-              closeSheet();
-            }}>Continuar</Button>
+
+          {
+            loadingPost ?
+              <View style={{ width: "100%", alignItems: "center", justifyContent: "center" }} >
+                <ActivityIndicator size={"small"} />
+              </View>
+              :
+              <Button
+                // 🛑 USAMOS currentVehiculo AQUÍ PARA UN SOLO CICLO
+                disabled={!currentVehiculo}
+                mode="text" style={[BoxStyles.ButtonRadius]} labelStyle={BoxStyles.buttonText}
+                onPress={async () => {
+                  await onSubmit(closeSheet);
+                }}
+              >
+                Continuar
+              </Button>
+          }
         </ScrollView >
       );
     }
-  }, [cars, idEnter]);
+  }, [cars, activeData, idEnter, loadingPost, setVehiculo, vehiculo]);
+
+  /*React.useEffect(() => {
+    if (cars) {
+      let filtered = [];
+      if (activeData.data.vehiculo) {
+        filtered = cars.data.filter((c) => c.id !== activeData.data.vehiculo.id && c.status !== false);
+      } else {
+        filtered = cars.data.filter((c) => c.status !== false)
+      }
+      setSheetChild(
+        <ScrollView style={{ flex: 1 }} contentContainerStyle={{ gap: 12 }}>
+          <Text variant="titleMedium">Selecciona un vehículo</Text>
+          <RadioButton.Group onValueChange={setIdEnter} value={idEnter}>
+            <View style={{ gap: 8, padding: 2 }}>
+              {filtered.map((v) => (
+                <VehiculoSheetCard
+                  key={v.id}
+                  vehic={v}
+                  useRadios
+                  currentValue={idEnter}
+                  list={list}
+                  value={v.id}
+                />
+              ))}
+            </View>
+          </RadioButton.Group>
+          {
+            loadingPost ?
+              <View style={{ width: "100%", alignItems: "center", justifyContent: "center" }} >
+                <ActivityIndicator size={"small"} />
+              </View>
+              :
+              <Button
+                disabled={!vehiculo}
+                mode="text" style={[BoxStyles.ButtonRadius]} labelStyle={BoxStyles.buttonText}
+                onPress={async () => {
+                  await onSubmit(closeSheet);
+                }}
+              >
+                Continuar
+              </Button>
+          }
+        </ScrollView >
+      );
+    }
+  }, [cars, activeData, idEnter, loadingPost]);*/
+
+  /*React.useEffect(() => {
+    if (cars && idEnter !== null) {
+      const selectedVehiculo = cars.data.find(v => v.id === idEnter);
+      setVehiculo(selectedVehiculo);
+    }
+
+    return () => setVehiculo(null);
+  }, [idEnter, cars]);*/
 
   const [normalizedData, setNormalizedData] = React.useState([]);
 
@@ -140,7 +245,7 @@ export default function Inicio({ navigation }) {
   const available = SCREEN - totalPadding - ROAD_WIDTH - totalItemMargins;
   const slotWidth = Math.floor(available / SLOTS);
 
-  if (loading || !data || load || loadTypes) return <LoadingView />;
+  if (loading || !data || load || loadTypes || loadingActive) return <LoadingView />;
 
   return (
     <View style={[BoxStyles.container, BoxStyles.flexCentered]}>
@@ -225,7 +330,7 @@ export default function Inicio({ navigation }) {
               icon={"information-outline"}
               size={24}
               style={{ padding: 0, margin: 0 }}
-              onPress={() => { }}
+              onPress={showDialog}
               iconColor={paper.colors.primary}
             />
           </View>
@@ -268,7 +373,7 @@ export default function Inicio({ navigation }) {
 
               return (
                 <View style={{ width: slotWidth, height: 40, margin: 2 }}>
-                  <Cajoncito cajon={item} />
+                  <Cajoncito cajon={item} index={columnIndex} />
                 </View>
               );
             }}
@@ -276,6 +381,8 @@ export default function Inicio({ navigation }) {
             ListEmptyComponent={<EmptyListView message={message} icon={"parking"} />}
           />
           <ListFooterComponent />
+          <CustomAlert visible={visible} hideAlert={hideAlert} config={config} />
+          <DialogSimbologia visible={simbolVis} hideDialog={hideDialog} />
         </View>
       )}
 
@@ -290,4 +397,70 @@ export default function Inicio({ navigation }) {
       </Button>
     </View>
   );
+}
+
+const DialogSimbologia = ({ visible, hideDialog }) => {
+  const cajon1 = {
+    disponible: false,
+    paraPensionados: false,
+    estatus: true,
+    tipoVehiculo: { nombre: "coche" }
+  }
+  const cajon2 = {
+    disponible: true,
+    paraPensionados: false,
+    estatus: true,
+    tipoVehiculo: { nombre: "coche" }
+  }
+  const cajon3 = {
+    disponible: true,
+    paraPensionados: true,
+    estatus: true,
+    tipoVehiculo: { nombre: "coche" }
+  }
+  const cajon4 = {
+    disponible: true,
+    paraPensionados: true,
+    estatus: false,
+    tipoVehiculo: { nombre: "coche" }
+  }
+  const theme = useTheme();
+  return (
+    <Portal>
+      <Dialog visible={visible} onDismiss={hideDialog}
+        style={{ backgroundColor: theme.colors.surface }}
+      >
+        <Dialog.Title>Simbologia</Dialog.Title>
+        <Dialog.Content style={{ gap: 12 }}>
+          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "flex-start", gap: 6 }}>
+            <View style={{ width: 100, height: 42 }}>
+              <Cajoncito cajon={cajon1} />
+            </View>
+            <Text variant="bodyLarge" >Ocupado</Text>
+          </View>
+          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "flex-start", gap: 6 }}>
+            <View style={{ width: 100, height: 42 }}>
+              <Cajoncito cajon={cajon2} />
+            </View>
+            <Text variant="bodyLarge" >Disponible</Text>
+          </View>
+          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "flex-start", gap: 6 }}>
+            <View style={{ width: 100, height: 42 }}>
+              <Cajoncito cajon={cajon3} />
+            </View>
+            <Text variant="bodyLarge" >para pensionados</Text>
+          </View>
+          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "flex-start", gap: 6 }}>
+            <View style={{ width: 100 }}>
+              <Cajoncito cajon={cajon4} />
+            </View>
+            <Text variant="bodyLarge" >No disponible</Text>
+          </View>
+        </Dialog.Content>
+        <Dialog.Actions>
+          <Button onPress={hideDialog} style={{ borderRadius: 5 }}>Cerrar</Button>
+        </Dialog.Actions>
+      </Dialog>
+    </Portal>
+  )
 }

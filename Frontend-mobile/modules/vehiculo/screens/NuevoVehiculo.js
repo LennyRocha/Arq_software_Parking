@@ -11,8 +11,10 @@ import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import useTiposVehiculos from "../hooks/useTiposVehiculos";
 import { CustomAlert } from "../../../utils/customAlert";
+import useUserIdByEmail from "../../acceso/hooks/getIdByEmail";
 
 export default function NuevoVehiculo({ navigation }) {
+  const { id, loading, error } = useUserIdByEmail();
   const { data: tipos } = useTiposVehiculos();
   const paper = useTheme();
   const [valueId, setValueId] = React.useState(1);
@@ -48,6 +50,7 @@ export default function NuevoVehiculo({ navigation }) {
     control,
     handleSubmit,
     reset,
+    trigger,
     formState: { errors, isValid },
     setValue
   } = useForm({
@@ -56,6 +59,13 @@ export default function NuevoVehiculo({ navigation }) {
     mode: "onChange",
     reValidateMode: "onChange",
   });
+
+  React.useEffect(() => {
+    if (id !== null) {
+      reset({ ...defaultValues, id_user: id });
+      trigger("id_user");
+    }
+  }, [id]);
 
   const vehiculo = React.useMemo(() => {
     // si aun no hay datos, salimos sin crashear
@@ -137,9 +147,12 @@ export default function NuevoVehiculo({ navigation }) {
                     {lenModelo}/50
                   </HelperText>
 
-                  <HelperText variant="labelSmall" type="error" visible={!!errors.modelo}>
-                    {errors?.modelo?.message}
-                  </HelperText>
+                  {
+                    errors.modelo &&
+                    <HelperText variant="labelSmall" type="error" visible={!!errors.modelo}>
+                      {errors?.modelo?.message}
+                    </HelperText>
+                  }
                 </>
               )}
             />
@@ -171,9 +184,12 @@ export default function NuevoVehiculo({ navigation }) {
                     {lenPlaca}/7
                   </HelperText>
 
-                  <HelperText variant="labelSmall" type="error" visible={!!errors.placa}>
-                    {errors?.placa?.message}
-                  </HelperText>
+                  {
+                    errors.placa &&
+                    <HelperText variant="labelSmall" type="error" visible={!!errors.placa}>
+                      {errors?.placa?.message}
+                    </HelperText>
+                  }
 
                   <View
                     style={{
@@ -226,9 +242,12 @@ export default function NuevoVehiculo({ navigation }) {
                     {lenDesc}/250
                   </HelperText>
 
-                  <HelperText variant="labelSmall" type="error" visible={!!errors.desc}>
-                    {errors?.desc?.message}
-                  </HelperText>
+                  {
+                    errors.desc &&
+                    <HelperText variant="labelSmall" type="error" visible={!!errors.desc}>
+                      {errors?.desc?.message}
+                    </HelperText>
+                  }
                 </>
               )}
             />

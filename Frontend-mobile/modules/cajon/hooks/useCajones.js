@@ -57,7 +57,7 @@ export default function useCajones() {
             setLoading(true);
             emit("get", { piso, id: idCar });
             playSound();
-            showSnack("Cajones modificados desde el backend", "Aceptar");
+            //showSnack("Cajones modificados desde el backend", "Aceptar");
         });
 
         on("response", (data) => {

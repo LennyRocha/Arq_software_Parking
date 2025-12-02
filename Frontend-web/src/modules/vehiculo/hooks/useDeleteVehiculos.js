@@ -19,6 +19,7 @@ export default function useDeleteVehiculos(getVehiculos, vehiculo) {
             allowEscapeKey: true,
             allowOutsideClick: true,
             showLoaderOnConfirm: true,
+            reverseButtons: true,
             preConfirm: () => onSubmit(),
         }).then((result) => {
             if (result.isConfirmed) {

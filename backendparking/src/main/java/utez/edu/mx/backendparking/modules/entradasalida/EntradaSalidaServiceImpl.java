@@ -9,6 +9,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import utez.edu.mx.backendparking.modules.cajon.repository.CajonRepository;
+import utez.edu.mx.backendparking.modules.cajon.service.CajonService;
 import utez.edu.mx.backendparking.modules.entradasalida.dto.EntradaSalidaCreatePensionadoRequestDto;
 import utez.edu.mx.backendparking.modules.entradasalida.dto.EntradaSalidaCreateVisitanteRequestDto;
 import utez.edu.mx.backendparking.modules.entradasalida.dto.EntradaSalidaResponseDto;
@@ -54,8 +56,9 @@ public class EntradaSalidaServiceImpl implements EntradaSalidaService {
     private final TipoVehiculoRepository tipoVehiculoRepository;
     private final PagoRepository pagoRepository;
     private final UsuarioRepository usuarioRepository;
+    private final CajonService cajonService;
 
-    public EntradaSalidaServiceImpl(EntradaSalidaRepository entradaSalidaRepository, TarifaRepository tarifaRepository, UsuarioPensionRepository usuarioPensionRepository, VehiculoRepository vehiculoRepository, TipoVehiculoRepository tipoVehiculoRepository, PagoRepository pagoRepository, UsuarioRepository usuarioRepository) {
+    public EntradaSalidaServiceImpl(EntradaSalidaRepository entradaSalidaRepository, TarifaRepository tarifaRepository, UsuarioPensionRepository usuarioPensionRepository, VehiculoRepository vehiculoRepository, TipoVehiculoRepository tipoVehiculoRepository, PagoRepository pagoRepository, UsuarioRepository usuarioRepository, CajonService cajonService) {
         this.entradaSalidaRepository = entradaSalidaRepository;
         this.tarifaRepository = tarifaRepository;
         this.usuarioPensionRepository = usuarioPensionRepository;
@@ -63,6 +66,7 @@ public class EntradaSalidaServiceImpl implements EntradaSalidaService {
         this.tipoVehiculoRepository = tipoVehiculoRepository;
         this.pagoRepository = pagoRepository;
         this.usuarioRepository = usuarioRepository;
+        this.cajonService = cajonService;
     }
 
 
@@ -145,6 +149,10 @@ public class EntradaSalidaServiceImpl implements EntradaSalidaService {
 
         usuarioPensionRepository.save(usuarioPension);
 
+        //Ocupar un cajón
+        int tipo = entradaSalida.getVehiculo().getTipoVehiculo().getId();
+        cajonService.cambiarDisponibilidadForPensionados(true,tipo);
+
         // Convertir a DTO de respuesta usando el mapper
         return EntradaSalidaMapper.toResponseDto(savedEntradaSalida);
     }
@@ -183,6 +191,9 @@ public class EntradaSalidaServiceImpl implements EntradaSalidaService {
 
         // Guardar
         EntradaSalida savedEntradaSalida = entradaSalidaRepository.save(entradaSalida);
+
+        //Ocupar un cajón
+        cajonService.cambiarDisponibilidad(true, dto.getTipoVehiculo().getId());
 
         return EntradaSalidaMapper.toResponseDto(savedEntradaSalida);
     }
@@ -341,6 +352,10 @@ public class EntradaSalidaServiceImpl implements EntradaSalidaService {
         responseDto.setHoraSalida(horaSalida);
         responseDto.setCantidadPago(montoPagar);
 
+        //Desocupar un cajón
+        int tipo = entradaSalida.getTipoVehiculo().getId();
+        cajonService.cambiarDisponibilidad(false, tipo);
+
         return responseDto;
     }
 
@@ -402,6 +417,10 @@ public class EntradaSalidaServiceImpl implements EntradaSalidaService {
         EntradaSalidaResponseDto responseDto = EntradaSalidaMapper.toResponseDto(entradaSalida);
         responseDto.setHoraSalida(horaSalida);
         responseDto.setCantidadPago(montoPagar);
+
+        //Desocupar un cajón
+        int tipo = entradaSalida.getVehiculo().getTipoVehiculo().getId();
+        cajonService.cambiarDisponibilidadForPensionados(false,tipo);
 
         return responseDto;
     }

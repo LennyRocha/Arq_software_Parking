@@ -4,17 +4,20 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useTheme, List, Text, Avatar, IconButton } from "react-native-paper";
 import { useCustomThemes } from "../../../context/useCustomColors";
 import { ScrollView } from "react-native-gesture-handler";
+import { useGlobalContext } from "../../../context/GlobalContext";
 
-export default function DetallesPerfil({ navigation }) {
+export default function DetallesPerfil({ navigation, route }) {
+  const { data } = route.params;
+  const { avatar } = useGlobalContext();
   const paper = useTheme();
   const { mode } = useCustomThemes();
   return (
     <LinearGradient style={{ flex: 1 }} colors={[mode === "dark" ? paper.colors.surfaceVariant : paper.colors.olderBack, paper.colors.background]} >
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ backgroundColor: "transparent", padding: 24, justifyContent: "center", alignItems: "center", gap: 16 }}>
-        <Avatar.Text label="XD" size={96} style={{ marginBottom: 8 }} />
+        <Avatar.Text label={avatar} size={96} style={{ marginBottom: 8 }} />
         <List.Item
           title="Nombre (s):"
-          description="Fulano"
+          description={data.nombre}
           titleStyle={{ fontWeight: "600", color: paper.colors.primary }}
           left={props => (
             <IconButton
@@ -28,7 +31,7 @@ export default function DetallesPerfil({ navigation }) {
         />
         <List.Item
           title="Apellido (s):"
-          description="De Tal"
+          description={data.apellidos}
           titleStyle={{ fontWeight: "600", color: paper.colors.primary }}
           left={props => (
             <IconButton
@@ -42,7 +45,7 @@ export default function DetallesPerfil({ navigation }) {
         />
         <List.Item
           title="Teléfono:"
-          description="777-123-45-67"
+          description={data.telefono}
           titleStyle={{ fontWeight: "600", color: paper.colors.primary }}
           left={props => (
             <IconButton
@@ -56,12 +59,12 @@ export default function DetallesPerfil({ navigation }) {
         />
         <List.Item
           title="Correo electrónico:"
-          description="fulanusky@gmail.com"
+          description={data.correo}
           titleStyle={{ fontWeight: "600", color: paper.colors.primary }}
         />
         <List.Item
           title="Estado:"
-          description="Activo"
+          description={data.estatus ? "Activo" : "Inactivo"}
           titleStyle={{ fontWeight: "600", color: paper.colors.primary }}
         />
       </ScrollView>

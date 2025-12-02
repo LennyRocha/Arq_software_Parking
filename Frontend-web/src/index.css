@@ -262,3 +262,38 @@ button:focus-visible {
 #ganamos {
   width: max(300px, 65%) !important;
 }
+
+.parkingCard {
+  position: relative;
+  transition: all .5s ease-in-out;
+  will-change: transform;
+  ;
+}
+
+.parkingCard:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 0 10px var(--primary);
+  cursor: pointer;
+}
+
+.parkingCard::after {
+  content: "";
+  position: absolute;
+  top: -25px;
+  left: -100px;
+  width: 20px;
+  height: 450px;
+  background-color: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(1px);
+  box-shadow: 0 0 4px 1px rgba(255, 255, 255, 0.15);
+  transition: 1.5s ease-in-out;
+  transform: rotate(25deg);
+  animation: moving_out 2.5s linear 6s infinite;
+  border: none;
+}
+
+@keyframes moving_out {
+  to {
+    left: 500px;
+  }
+}

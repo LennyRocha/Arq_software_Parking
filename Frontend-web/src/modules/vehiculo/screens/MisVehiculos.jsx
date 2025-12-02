@@ -21,8 +21,11 @@ import VehiculoCard from "../components/VehiculoCard";
 import { useNavigate } from "react-router-dom";
 import { mdiCarOff } from "@mdi/js";
 import EmptyView from "../../errorPages/EmptyView";
+import useUserIdByEmail from "../../../hooks/getIdByEmail";
+import useVehiculosEstacionados from "../hooks/useVehiculosEstacionados";
 
 export default function MisVehiculos() {
+  const { id, loading, error } = useUserIdByEmail();
   const {
     getVehiculos,
     data,
@@ -38,8 +41,10 @@ export default function MisVehiculos() {
     setActive,
     conPlacas,
     setConPlacas,
-  } = useVehiculos(3);
+  } = useVehiculos(id);
   const { data: list, error: errorTipos, load } = useTiposVehiculos();
+
+  const { getVehiculosActive, activeData, isLoading: activeLoading, errorData: activeError, restartCall: recall } = useVehiculosEstacionados();
 
   const [criterio, setCriterio] = React.useState("none");
 
@@ -72,7 +77,7 @@ export default function MisVehiculos() {
 
   return (
     <Box sx={{ flex: 1, overflow: "auto" }}>
-      <LoadingBackdrop isOpen={isLoading || load} />
+      <LoadingBackdrop isOpen={isLoading || load || loading || activeLoading } />
       <MainHeader
         titulo="Mis vehículos"
         breads={[
@@ -248,6 +253,7 @@ export default function MisVehiculos() {
                     return (
                       <VehiculoCard
                         key={index}
+                        current={activeData.data}
                         types={list}
                         vehic={c}
                         getVehiculos={getVehiculos}

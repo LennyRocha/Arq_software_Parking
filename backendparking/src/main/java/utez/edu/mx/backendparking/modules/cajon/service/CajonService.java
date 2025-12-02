@@ -202,13 +202,13 @@ public class CajonService {
     }
 
     @Transactional(rollbackFor = {Exception.class, BadRequestException.class, ConflictException.class})
-    public ApiResponse<Cajon> cambiarDisponibilidad(boolean paraOcupar){
+    public ApiResponse<Cajon> cambiarDisponibilidad(boolean paraOcupar, int tipo){
         try{
             Cajon cajon;
             if(paraOcupar){
-                cajon = cajonRepository.findRandomCajonToUse().orElseThrow(() -> new ResourceNotFoundException("Cajón no encontrado"));
+                cajon = cajonRepository.findRandomCajonToUse(tipo).orElseThrow(() -> new ResourceNotFoundException("Cajón no encontrado"));
             } else {
-                cajon = cajonRepository.findRandomCajonToUnuse().orElseThrow(() -> new ResourceNotFoundException("Cajón no encontrado"));
+                cajon = cajonRepository.findRandomCajonToUnuse(tipo).orElseThrow(() -> new ResourceNotFoundException("Cajón no encontrado"));
             }
             cajon.setDisponible(!cajon.getDisponible());
             cajon = cajonRepository.save(cajon);
@@ -225,13 +225,13 @@ public class CajonService {
     }
 
     @Transactional(rollbackFor = {Exception.class, BadRequestException.class, ConflictException.class})
-    public ApiResponse<Cajon> cambiarDisponibilidadForPensionados(boolean paraOcupar){
+    public ApiResponse<Cajon> cambiarDisponibilidadForPensionados(boolean paraOcupar, int id){
         try{
             Cajon cajon;
             if(paraOcupar){
-                cajon = cajonRepository.findRandomCajonExclusivoToUse().orElseThrow(() -> new ResourceNotFoundException("Cajón no encontrado"));
+                cajon = cajonRepository.findRandomCajonExclusivoToUse(id).orElseThrow(() -> new ResourceNotFoundException("Cajón no encontrado"));
             } else {
-                cajon = cajonRepository.findRandomCajonExclusivoToUnuse().orElseThrow(() -> new ResourceNotFoundException("Cajón no encontrado"));
+                cajon = cajonRepository.findRandomCajonExclusivoToUnuse(id).orElseThrow(() -> new ResourceNotFoundException("Cajón no encontrado"));
             }
             cajon.setDisponible(!cajon.getDisponible());
             cajon = cajonRepository.save(cajon);

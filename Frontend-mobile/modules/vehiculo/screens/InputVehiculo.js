@@ -7,8 +7,10 @@ import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { CustomAlert } from "../../../utils/customAlert";
 import { useFocusEffect } from "@react-navigation/native";
+import useUserIdByEmail from "../../acceso/hooks/getIdByEmail";
 
 export default function InputVehiculo({ navigation, route }) {
+  const { id, loading, error } = useUserIdByEmail();
   const paper = useTheme();
   const { campo, data, onReturn } = route.params;
 
@@ -47,6 +49,7 @@ export default function InputVehiculo({ navigation, route }) {
     reset,
     watch,
     setValue,
+    trigger,
     formState: { errors, isValid },
   } = useForm({
     defaultValues,
@@ -55,6 +58,12 @@ export default function InputVehiculo({ navigation, route }) {
     reValidateMode: "onChange",
   });
 
+  React.useEffect(() => {
+    if (id !== null) {
+      reset({ ...defaultValues, id_user: id });
+      trigger("id_user");
+    }
+  }, [id]);
 
   // ▶ watch para evitar re-renders que cierran el teclado
   const modelo = watch("modelo") ?? "";

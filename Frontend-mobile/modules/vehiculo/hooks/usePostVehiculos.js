@@ -9,7 +9,6 @@ import { useCustomAlert } from "../../../utils/useCustomAlert";
 export default function usePostVehiculos(navigation) {
     const [isLoading, setLoading] = React.useState(false);
     const [errorData, setErrorData] = React.useState(null);
-
     const { visible, config, showAlert, hideAlert } = useCustomAlert();
 
     const onSubmit = async (data) => {
@@ -62,7 +61,7 @@ export default function usePostVehiculos(navigation) {
     }
 
     const defaultValues = React.useMemo(() => ({
-        id_user: 3,
+        id_user:  0,
         modelo: "",
         id_type: 1,
         placa: "",

@@ -28,6 +28,8 @@ import SalidaQR from "../modules/salidas/screens/SalidaQR";
 import EntradaQR from "../modules/cajon/screens/EntradaQR";
 import { useSnackBar } from "../context/SnackBarContext";
 import DetallesPension from "../modules/pension/screens/DetallesPension";
+import { Session } from "../modules/acceso/hooks/TokenManagement";
+import { useGlobalContext } from "../context/GlobalContext";
 
 const Stack = createNativeStackNavigator();
 
@@ -94,7 +96,7 @@ function HomeWithTabs({ navigation }) {
 }
 
 // ...existing code...
-export default function UserStack({ name = "LO", navigation, route }) {
+export default function UserStack({ navigation, route }) {
   const parent = navigation;
   const ruta = route;
   const mainRoutes = ["home", "cars", "parking", "suscriptions"];
@@ -104,6 +106,8 @@ export default function UserStack({ name = "LO", navigation, route }) {
   function PerfilWrapper(props) {
     return <Perfil {...props} dad={parent} ruta={ruta} />;
   }
+
+  const { avatar } = useGlobalContext();
 
   return (
     <Stack.Navigator
@@ -165,7 +169,7 @@ export default function UserStack({ name = "LO", navigation, route }) {
                 >
                   <Avatar.Text
                     size={42}
-                    label={name}
+                    label={avatar}
                     style={{ backgroundColor: paper.colors.tertiary }}
                   />
                 </TouchableRipple>

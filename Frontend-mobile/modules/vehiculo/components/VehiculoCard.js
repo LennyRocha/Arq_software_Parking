@@ -5,7 +5,7 @@ import BoxStyles from '../../../utils/genericScreenStyles';
 
 const { width, height } = Dimensions.get("screen");
 
-export default function VehiculoCard({ navigation, vehiculo, list }) {
+export default function VehiculoCard({ navigation, vehiculo, list, current, date }) {
     const paper = useTheme();
     const vehiculos = {
         moto: require('../../../img/moto_view_small.png'),
@@ -26,10 +26,10 @@ export default function VehiculoCard({ navigation, vehiculo, list }) {
                 />
                 <Text variant="titleMedium" style={{ fontWeight: "bold" }}>{vehiculo.modelo}</Text>
                 <Text variant='bodySmall'  style={{ color: vehiculo.placa ? paper.colors.secondary : paper.colors.error }} >{vehiculo.placa ? vehiculo.placa : "Sin placa"}</Text>
-                <Text variant='labelSmall' style={{ color: paper.colors.gray }}>{vehiculo.estatus ? "Activo" : "Inactivo"} | En uso</Text>
+                <Text variant='labelSmall' style={{ color: paper.colors.gray }}>{vehiculo.estatus ? "Activo" : "Inactivo"} {current && current.id === vehiculo.id && "| En uso" }</Text>
             </Card.Content>
             <Card.Actions style={{ padding: 0 }}>
-                <Button mode='contained-tonal' buttonColor={paper.colors.cardDark} style={[BoxStyles.ButtonBottomRadius, { width: "100%" }]} labelStyle={[BoxStyles.buttonTextAuto, { color: paper.colors.tertiary }]} onPress={() => navigation.navigate("detallesCar", { vehic: vehiculo, tipo: list[vehiculo.idTipoVehiculo - 1] })} >Ver más</Button>
+                <Button mode='contained-tonal' buttonColor={paper.colors.cardDark} style={[BoxStyles.ButtonBottomRadius, { width: "100%" }]} labelStyle={[BoxStyles.buttonTextAuto, { color: paper.colors.tertiary }]} onPress={() => navigation.navigate("detallesCar", { vehic: vehiculo, tipo: list[vehiculo.idTipoVehiculo - 1], current: current })} >Ver más</Button>
             </Card.Actions>
         </Card>
     )

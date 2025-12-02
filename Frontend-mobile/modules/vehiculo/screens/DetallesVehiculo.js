@@ -10,7 +10,7 @@ import useDeleteVehiculos from "../hooks/useDeleteVehiculos";
 const { width, height } = Dimensions.get("screen")
 
 export default function DetallesVehiculo({ navigation, route }) {
-  const { vehic, tipo } = route.params;
+  const { vehic, tipo, current } = route.params;
   const [vehicle, setVehiculo] = React.useState({});
   React.useEffect(() => {
     setVehiculo(vehic)
@@ -109,24 +109,18 @@ export default function DetallesVehiculo({ navigation, route }) {
         <View style={{ flexDirection: "row", width: "100%" }}>
           <List.Item
             title="En uso"
-            description="Chi"
-            titleStyle={{ fontWeight: "600", color: paper.colors.primary }}
-            style={{ flex: 1 }}
-          />
-          <List.Item
-            title="Último uso"
-            description="20/11/2025"
+            description={(current && current.id === vehic.id) ? "Si" : "No"}
             titleStyle={{ fontWeight: "600", color: paper.colors.primary }}
             style={{ flex: 1 }}
           />
         </View>
         <List.Item
           title="Deshabilitar vehículo:"
-          description="Por el momento ño se puede"
+          description={(current && current.id === vehic.id) ? "Por el momento ño se puede" : ""}
           descriptionStyle={{ color: paper.colors.error }}
           right={props => (
             isLoading ? <ActivityIndicator {...props} size={"small"} /> :
-              <Switch {...props} value={isSwitchOn} onValueChange={onToggleSwitch} color={paper.colors.primary} />
+              <Switch {...props} disabled={current.id === vehic.id} value={isSwitchOn} onValueChange={onToggleSwitch} color={paper.colors.primary} />
           )}
         />
       </ScrollView>
