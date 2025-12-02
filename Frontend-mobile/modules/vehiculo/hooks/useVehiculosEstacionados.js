@@ -4,7 +4,7 @@ import vehiculoInterface from "./vehiculoInterface";
 import api from "../../../utils/api";
 
 export default function useVehiculosEstacionados() {
-    const [isLoading, setLoading] = React.useState(false);
+    const [isLoading, setLoading] = React.useState(true);
     const [activeData, setData] = React.useState(null);
     const [errorData, setErrorData] = React.useState(null);
     const [dependence, setDependence] = React.useState(false);

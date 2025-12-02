@@ -18,6 +18,7 @@ import moto from "../../../img/moto_view_small.png";
 import coche from "../../../img/coche_view_small.png";
 import camioneta from "../../../img/camioneta_view_small.png";
 import NumberField from "../../../components/NumberField";
+import Cajon from "../../../models/Cajon";
 import CajonItem from "../components/CajonItem";
 
 export default function NuevoCajon() {
@@ -152,7 +153,12 @@ export default function NuevoCajon() {
           </Box>
           {cajones.length !== 0 &&
             cajones.map((c, index) => (
-              <CajonItem cajon={c} index={index} remove={removeCajon} />
+              <CajonItem
+                key={index}
+                cajon={c}
+                index={index}
+                remove={removeCajon}
+              />
             ))}
         </Box>
         <Box
@@ -250,9 +256,11 @@ export default function NuevoCajon() {
             <Button
               variant="contained"
               color="secondary"
-              onClick={() => {
-                addCajon(getValues(), list[typeIndex]);
-                reset();
+              onClick={async () => {
+                const ok = await addCajon(getValues(), list[typeIndex]);
+                if (ok) {
+                  reset();
+                }
               }}
               disabled={!isValid}
             >
@@ -263,11 +271,27 @@ export default function NuevoCajon() {
             ) : (
               <Button
                 variant="contained"
-                onClick={() => {
-                  if (cajones.length !== 0) {
-                    addCajon(getValues(), list[typeIndex]);
+                onClick={async () => {
+                  const actual = getValues();
+                  const tipo = list[typeIndex];
+
+                  let cajonesAEnviar = [];
+
+                  const cajonActual = new Cajon({
+                    name: actual.name,
+                    tipoVehiculo: tipo,
+                    ubicacion: actual.ubicacion,
+                    disponible: actual.disponible,
+                    paraPensionados: actual.paraPensionados,
+                    piso: actual.piso,
+                    estatus: actual.estatus,
+                  });
+
+                  if (cajones.length > 0) {
+                    cajonesAEnviar = [...cajones, cajonActual];
                   }
-                  handleSubmit(onSubmit)();
+
+                  handleSubmit((data) => onSubmit(data, cajonesAEnviar))();
                 }}
                 disabled={!isValid}
               >
