@@ -56,6 +56,10 @@ import { useDarkContext } from "../context/DarkContext";
 //Use themes
 import { useTheme } from "@mui/material/styles";
 
+//Obtener usuario
+import { getInfoUser } from "../utils/AuthService";
+import useInitials from "../utils/getInitials";
+
 export default function AdminRouter() {
   const location = useLocation();
   const path = location.pathname;
@@ -66,6 +70,8 @@ export default function AdminRouter() {
   const [selectedIndex, setSelectedIndex] = React.useState(0);
 
   const { isDarkMode, toggleDarkMode } = useDarkContext();
+
+  const { loading, concated } = useInitials();
 
   React.useEffect(() => {
     getToken();
@@ -205,7 +211,7 @@ export default function AdminRouter() {
               }}
               onClick={() => goTo(`/admin/perfil`)}
             >
-              UA
+              {loading ? "UA" : concated}
             </Avatar>
           </Tooltip>
         </Toolbar>
@@ -395,7 +401,7 @@ export default function AdminRouter() {
           <ListItemText primary="Usuarios" />
         </ListItemButton>
 
-        <ListItemButton
+        {/* <ListItemButton
           onClick={() => goTo("/admin/gestion_vehiculos")}
           selected={selectedIndex === 8}
           sx={{
@@ -415,7 +421,7 @@ export default function AdminRouter() {
             />
           </ListItemIcon>
           <ListItemText primary="Vehículos" />
-        </ListItemButton>
+        </ListItemButton> */}
 
         <Box sx={{ py: 1 }}>
           <Divider sx={{ mb: 1 }} />

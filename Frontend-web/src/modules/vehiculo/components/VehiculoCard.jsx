@@ -21,8 +21,10 @@ import useDialogController from "../../../hooks/useDialogController";
 import CustomDialog from "../../../components/CustomDialog";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+import useUserIdByEmail from "../../../hooks/getIdByEmail";
 
-export default function VehiculoCard({ vehic, types, getVehiculos }) {
+export default function VehiculoCard({ vehic, types, getVehiculos, current }) {
+  if (current) console.log(current);
   const {
     open: isDetailsOpen,
     openDialog: openDetails,
@@ -33,6 +35,16 @@ export default function VehiculoCard({ vehic, types, getVehiculos }) {
     openDialog: openPut,
     closeDialog: closePut,
   } = useDialogController();
+
+  const [userId, setUserId] = React.useState(null);
+
+  const { id, loading, error } = useUserIdByEmail();
+
+  React.useEffect(() => {
+    if (id) {
+      setUserId(id);
+    }
+  }, [id]);
 
   const vehiculos = {
     1: coche,
@@ -76,6 +88,7 @@ export default function VehiculoCard({ vehic, types, getVehiculos }) {
             {vehic.placa ? vehic.placa : "Sin placa"}
           </Typography>
           <Switch
+            disabled={current.vehiculo && current.vehiculo.id === vehic.id}
             checked={isSwitchOn}
             onChange={async () => {
               await preSubmit(toggleSwitch);
@@ -97,7 +110,8 @@ export default function VehiculoCard({ vehic, types, getVehiculos }) {
             }}
             style={{ textAlign: "left" }}
           >
-            {vehic.estatus ? "Activo" : "Inactivo"}
+            {vehic.estatus ? "Activo" : "Inactivo"}{" "}
+            {current.vehiculo && current.vehiculo.id === vehic.id && "| En uso"}
           </Typography>
         </Box>
       </Box>
@@ -141,18 +155,20 @@ export default function VehiculoCard({ vehic, types, getVehiculos }) {
         closeDialog={closeDetails}
         vehiculo={vehic}
         types={types}
+        current={current}
       />
       <ModalEditar
         open={isPutOpen}
         closeDialog={closePut}
         vehiculo={vehic}
         getVehiculos={getVehiculos}
+        idUser={userId}
       />
     </Card>
   );
 }
 
-function ModalDetalles({ open, closeDialog, vehiculo, types }) {
+function ModalDetalles({ open, closeDialog, vehiculo, types, current }) {
   const vehiculos = {
     1: coche,
     2: camioneta,
@@ -225,7 +241,12 @@ function ModalDetalles({ open, closeDialog, vehiculo, types }) {
         }}
       >
         <ListItem sx={{ flex: 1 }}>
-          <ListItemText primary="En uso" secondary={"Si"} />
+          <ListItemText
+            primary="En uso"
+            secondary={
+              current.vehiculo && current.vehiculo.id === vehic.id ? "Si" : "No"
+            }
+          />
         </ListItem>
         <ListItem sx={{ flex: 1 }}>
           <ListItemText
@@ -249,20 +270,17 @@ function ModalDetalles({ open, closeDialog, vehiculo, types }) {
             secondary={types[vehiculo.idTipoVehiculo - 1].nombre}
           />
         </ListItem>
-        <ListItem sx={{ flex: 1 }}>
-          <ListItemText
-            primary="Último uso"
-            secondary={vehiculo.estatus ? "Activo" : "Inactivo"}
-          />
+        <ListItem sx={{ flex: 1, display: { xs: "none", md: "flex" } }}>
+          <ListItemText primary="" secondary={""} />
         </ListItem>
       </Box>
     </CustomDialog>
   );
 }
 
-function ModalEditar({ open, closeDialog, vehiculo, getVehiculos }) {
+function ModalEditar({ open, closeDialog, vehiculo, getVehiculos, idUser }) {
   const { isLoading, errorData, preSubmit, defaultValues, vehicleYup } =
-    usePutVehiculos(getVehiculos, vehiculo, 3);
+    usePutVehiculos(getVehiculos, vehiculo, idUser);
   const {
     control,
     handleSubmit,

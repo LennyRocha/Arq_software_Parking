@@ -24,8 +24,7 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import InboxIcon from "@mui/icons-material/MoveToInbox";
-import MailIcon from "@mui/icons-material/Mail";
+import CheckIcon from "@mui/icons-material/Check";
 //
 import MenuIcon from "@mui/icons-material/Menu";
 import {
@@ -67,6 +66,10 @@ export default function LandingPage() {
     setIsOpen((prev) => !prev);
   };
 
+  function redirectTo(id) {
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+  }
+
   const list = () => (
     <Box
       sx={{ width: "auto" }}
@@ -75,19 +78,31 @@ export default function LandingPage() {
       onKeyDown={toggleDrawer}
     >
       <List>
-        {["Inicio", "Tarifas", "Pensiones", "FAQs", "Cambiar tema"].map((text, index) => (
+        {["Inicio", "Tarifas", "Pensiones", "FAQs"].map((text, index) => (
           <ListItem key={text} disablePadding>
-            <ListItemButton>
+            <ListItemButton onClick={() => redirectTo(text.toLowerCase())}>
               <ListItemText primary={text} />
             </ListItemButton>
           </ListItem>
         ))}
+        <ListItem disablePadding>
+          <ListItemButton onClick={toggleDarkMode}>
+            <ListItemText primary={"Cambiar tema"} />
+          </ListItemButton>
+        </ListItem>
       </List>
       <Divider />
       <List>
         {["Ingresar"].map((text, index) => (
           <ListItem key={text}>
-            <Button color="tertiary" variant="contained" sx={{ flex: 1 }} >{text}</Button>
+            <Button
+              color="tertiary"
+              variant="contained"
+              sx={{ flex: 1 }}
+              onClick={() => navigate("/login")}
+            >
+              {text}
+            </Button>
           </ListItem>
         ))}
       </List>
@@ -99,7 +114,7 @@ export default function LandingPage() {
       anchor="top"
       open={isOpen}
       onClose={toggleDrawer}
-      sx={{ zIndex: 1300}}
+      sx={{ zIndex: 1300 }}
       variant="persistent"
     >
       {list()}
@@ -206,7 +221,7 @@ export default function LandingPage() {
           width: "100%",
           flexDirection: "row",
           zIndex: 2,
-          bgcolor: alpha(theme.palette.primary.main, 0.5),
+          bgcolor: alpha(theme.palette.primary.main, 0.75),
           backdropFilter: "blur(4px)",
           WebkitBackdropFilter: "blur(4px)",
           transition: "backdrop-filter 0.3s ease",
@@ -257,7 +272,8 @@ export default function LandingPage() {
           }}
         >
           <Button
-            color="inherit"
+            color="blueBack"
+            variant="text"
             onClick={() =>
               document
                 .getElementById("inicio")
@@ -267,7 +283,8 @@ export default function LandingPage() {
             Inicio
           </Button>
           <Button
-            color="inherit"
+            color="blueBack"
+            variant="text"
             onClick={() =>
               document
                 .getElementById("tarifas")
@@ -277,7 +294,8 @@ export default function LandingPage() {
             Tarifas
           </Button>
           <Button
-            color="inherit"
+            color="blueBack"
+            variant="text"
             onClick={() =>
               document
                 .getElementById("pensiones")
@@ -287,7 +305,8 @@ export default function LandingPage() {
             Pensiones
           </Button>
           <Button
-            color="inherit"
+            color="blueBack"
+            variant="text"
             onClick={() =>
               document
                 .getElementById("faqs")
@@ -303,7 +322,7 @@ export default function LandingPage() {
           >
             INGRESAR
           </Button>
-          <IconButton onClick={toggleDarkMode} color="inherit">
+          <IconButton onClick={toggleDarkMode} color="blueBack">
             {isDarkMode ? <LightModeIcon /> : <DarkModeIcon />}
           </IconButton>
         </Box>
@@ -319,10 +338,10 @@ export default function LandingPage() {
           py: { xs: 18, xl: 54 },
           backgroundImage: {
             xs: `
-          linear-gradient(to bottom, var(--other), rgba(0,0,0,0)), 
+          linear-gradient(to bottom, #1e3a3e, rgba(0,0,0,0)), 
           url(${fondo})`,
             md: `
-          linear-gradient(to right, var(--other), color-mix(in srgb, var(--other) 50%, transparent),  color-mix(in srgb, var(--other) 25%, transparent), rgba(0,0,0,0)), 
+          linear-gradient(to right, #1e3a3e, color-mix(in srgb, #1e3a3e 50%, transparent),  color-mix(in srgb,#1e3a3e 25%, transparent), rgba(0,0,0,0)), 
           url(${fondo})`,
           },
           backgroundSize: "cover",
@@ -416,10 +435,6 @@ export default function LandingPage() {
           </Box>
         </Container>
       </Box>
-
-      <Link href="/admin">Ir al Menu admin</Link>
-      <Link href="/empleado">Ir al Menu Empleado</Link>
-      <Link href="/pensionados">Ir al Menu Pensionados</Link>
 
       {/* Features Section */}
       <Container maxWidth="lg" sx={{ py: 8 }}>
@@ -606,60 +621,94 @@ export default function LandingPage() {
                     sx={{
                       height: "100%",
                       display: "flex",
+                      width: "100%",
                       flexDirection: "column",
                       border: `2px solid ${theme.palette.primary.main}`,
                       borderRadius: 2,
                     }}
+                    className="parkingCard"
                   >
                     <Box
                       sx={{
-                        bgcolor: "primary.main",
+                        background: "linear-gradient(to right, var(--other), var(--primary))",
                         color: "white",
                         py: 2,
+                        px: 8,
                         textAlign: "center",
+                        display: "flex",
+                        flexDirection: "row",
+                        gap: 1,
+                        justifyContent: "center",
+                        alignItems: "center",
                       }}
                     >
-                      <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                        parKing {pension.nombre}
+                      <Icon
+                        fontSize="large"
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <img
+                          src={logo_chiquito}
+                          alt="logo"
+                          style={{ width: "100%", height: "100%" }}
+                        />
+                      </Icon>
+                      <Typography
+                        variant="body1"
+                        sx={{
+                          fontWeight: "bold",
+                        }}
+                      >
+                        Parking
+                      </Typography>
+                      <Typography
+                        variant="body1"
+                        sx={{
+                          fontWeight: "bold",
+                          width: "auto",
+                          border: "2px solid white",
+                          padding: "2px",
+                          color: "white",
+                        }}
+                        className="custom-font"
+                      >
+                        {pension.nombre.substring(7)}
                       </Typography>
                     </Box>
                     <CardContent
-                      sx={{ flexGrow: 1, textAlign: "center", p: 3 }}
+                      sx={{
+                        flexGrow: 1,
+                        textAlign: "center",
+                        p: 3,
+                        gap: 1,
+                        display: "flex",
+                        flexDirection: "column",
+                      }}
                     >
-                      <Typography
-                        variant="h4"
-                        sx={{ fontWeight: "bold", mb: 1 }}
-                      >
+                      <Typography variant="h4" sx={{ fontWeight: "bold" }}>
                         ${pension.costo}
                       </Typography>
-                      <Typography
-                        variant="body2"
-                        color="text.secondary"
-                        sx={{ mb: 3 }}
-                      >
+                      <Typography variant="body2" color="text.secondary">
                         Por un periodo de {pension.duracionDias} días
                       </Typography>
                       <Button
                         fullWidth
                         variant="contained"
-                        sx={{
-                          bgcolor: "text.primary",
-                          color: "background.paper",
-                          mb: 3,
-                          "&:hover": {
-                            bgcolor: "text.secondary",
-                          },
-                        }}
+                        color="tertiary"
                         onClick={() => handleUnirseAhora(pension)}
                       >
                         Unirse ahora
                       </Button>
-                      <Box sx={{ textAlign: "left" }}>
+                      <Box sx={{ textAlign: "left", py: 1 }}>
                         <Box
                           sx={{ display: "flex", alignItems: "center", mb: 1 }}
                         >
-                          <CheckCircleIcon
-                            sx={{ color: "success.main", mr: 1, fontSize: 20 }}
+                          <CheckIcon
+                            sx={{ mr: 1, fontSize: 20 }}
+                            color="tertiary"
                           />
                           <Typography variant="body2">
                             Lugar reservado para ti
@@ -668,8 +717,9 @@ export default function LandingPage() {
                         <Box
                           sx={{ display: "flex", alignItems: "center", mb: 1 }}
                         >
-                          <CheckCircleIcon
-                            sx={{ color: "success.main", mr: 1, fontSize: 20 }}
+                          <CheckIcon
+                            sx={{ mr: 1, fontSize: 20 }}
+                            color="tertiary"
                           />
                           <Typography variant="body2">
                             Sin costos extra
@@ -678,19 +728,21 @@ export default function LandingPage() {
                         <Box
                           sx={{ display: "flex", alignItems: "center", mb: 1 }}
                         >
-                          <CheckCircleIcon
-                            sx={{ color: "success.main", mr: 1, fontSize: 20 }}
+                          <CheckIcon
+                            sx={{ mr: 1, fontSize: 20 }}
+                            color="tertiary"
                           />
                           <Typography variant="body2">
                             Acceso ilimitado
                           </Typography>
                         </Box>
                         <Box sx={{ display: "flex", alignItems: "center" }}>
-                          <CheckCircleIcon
-                            sx={{ color: "success.main", mr: 1, fontSize: 20 }}
+                          <CheckIcon
+                            sx={{ mr: 1, fontSize: 20 }}
+                            color="tertiary"
                           />
                           <Typography variant="body2">
-                            Registra los vehículos que puedes utilizar
+                            Sin límite de vehículos
                           </Typography>
                         </Box>
                       </Box>

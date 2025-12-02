@@ -49,7 +49,7 @@ export default function useVehiculos(idUser) {
 
   React.useEffect(() => {
     getVehiculos();
-  }, [idCar, active, conPlacas]);
+  }, [idCar, active, conPlacas, idUser]);
 
   return { getVehiculos, data, isLoading, errorData, restoreValues, restartCall, query, setQuery, idCar, setIdCar, active, setActive, conPlacas, setConPlacas };
 }

@@ -109,14 +109,14 @@ export default function DetallesVehiculo({ navigation, route }) {
         <View style={{ flexDirection: "row", width: "100%" }}>
           <List.Item
             title="En uso"
-            description={current.id === vehic.id ? "Si" : "No"}
+            description={(current && current.id === vehic.id) ? "Si" : "No"}
             titleStyle={{ fontWeight: "600", color: paper.colors.primary }}
             style={{ flex: 1 }}
           />
         </View>
         <List.Item
           title="Deshabilitar vehículo:"
-          description={current.id === vehic.id ?"Por el momento ño se puede" : ""}
+          description={(current && current.id === vehic.id) ? "Por el momento ño se puede" : ""}
           descriptionStyle={{ color: paper.colors.error }}
           right={props => (
             isLoading ? <ActivityIndicator {...props} size={"small"} /> :
