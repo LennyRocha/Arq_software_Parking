@@ -162,8 +162,26 @@ export default function Perfil() {
 
     const handleSubmit = async () => {
         try {
+            // Validación individual
+            const errors = [];
 
-            const response = await api.post(`/api/auth/actualizarDatosUsuario`, {
+            if (!validateNombre(formData.nombre)) errors.push("Nombre");
+            if (!validateApellido(formData.apellido)) errors.push("Apellido");
+            if (!validateCorreo(formData.correo)) errors.push("Correo");
+            if (!validateTelefono(formData.telefono)) errors.push("Teléfono");
+
+            // Si hay errores, los mostramos
+            if (errors.length > 0) {
+                sweetAlert({
+                    title: "Campos inválidos",
+                    text: `Los siguientes campos son erroneos:\n\n• ${errors.join("\n• ")} `,
+                    icon: "error",
+                });
+                return;
+            }
+
+            // --- ACTUALIZAR DATOS ---
+            await api.post(`/api/auth/actualizarDatosUsuario`, {
                 id: getInfoUser().id,
                 nombre: formData.nombre,
                 apellidos: formData.apellido,
@@ -171,10 +189,38 @@ export default function Perfil() {
                 telefono: formData.telefono,
             });
 
-            if (formData.password.trim() !== "") {
+            // VALIDAR CONTRASEÑA
+            const pass = formData.password?.trim();
+
+            if (editableFields.password) {
+                if (!pass) {
+                    sweetAlert({
+                        title: "Error",
+                        text: "La contraseña no puede estar vacía. Intente nuevamente.",
+                        icon: "error",
+                    });
+                    setEditableFields({
+                        password: false
+                    })
+                    return;
+                }
+
                 await api.post(`/api/auth/actualizarContraUsuario`, {
                     id: getInfoUser().id,
-                    contra: formData.password,
+                    contra: pass,
+                });
+
+                sweetAlert({
+                    title: "Éxito",
+                    text: "Datos y contraseña actualizados correctamente",
+                    icon: "success",
+                });
+
+            } else {
+                sweetAlert({
+                    title: "Éxito",
+                    text: "Datos actualizados correctamente",
+                    icon: "success",
                 });
             }
 
@@ -186,14 +232,15 @@ export default function Perfil() {
                 password: false,
             });
 
+        } catch (error) {
             sweetAlert({
-                title: "¡Éxito!",
-                text: "Datos actualizados correctamente",
-                icon: "success",
+                title: "Error",
+                text: "Ocurrió un error al actualizar. Intente nuevamente.",
+                icon: "error",
             });
-
-        } catch (error) { }
+        }
     };
+
 
     if (loading) {
         return (
@@ -389,7 +436,7 @@ export default function Perfil() {
                     variant="contained"
                     fullWidth
                     onClick={handleSubmit}
-                    disabled={!isAnyFieldEditable}   
+                    disabled={!isAnyFieldEditable}
                     sx={{ padding: 1.5, bgcolor: "#0c4b4b" }}
                 >
                     Guardar cambios
