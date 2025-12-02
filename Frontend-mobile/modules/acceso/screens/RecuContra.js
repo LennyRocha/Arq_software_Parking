@@ -223,7 +223,7 @@ const Vista2 = ({ swiperRef, email, setEmail, showAlert }) => {
               });
 
             } catch (e) {
-              console.log(e)
+              console.error(e)
               showAlert({
                 icon: "error",
                 title: "Error",
@@ -279,7 +279,7 @@ const Vista1 = ({ swiperRef, email, setEmail, showAlert }) => {
         placeholder="Ingresa tu correo electrónico"
         inputMode="email"
         value={email}
-        onChangeText={(text) => { setEmail(text); console.log(text) }}
+        onChangeText={(text) => { setEmail(text)}}
       />
 
       {isLoading ? (
@@ -323,7 +323,7 @@ const Vista1 = ({ swiperRef, email, setEmail, showAlert }) => {
               });
 
             } catch (e) {
-              console.log(e)
+              console.error(e)
               showAlert({
                 icon: "error",
                 title: "Error",

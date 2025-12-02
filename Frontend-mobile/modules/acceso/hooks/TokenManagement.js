@@ -31,7 +31,6 @@ export const Session = {
 
     //Actualizar usuario
     async setUser(user) {
-        console.log(user)
         await AsyncStorage.removeItem("user");
         await AsyncStorage.setItem("user", JSON.stringify(user));
     },

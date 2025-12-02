@@ -60,7 +60,7 @@ export default function EntradaQR({ route }) {
       });
 
     } catch (err) {
-      console.log(err);
+      console.error(err);
       showAlert({
         icon: "error",
         title: "Error",

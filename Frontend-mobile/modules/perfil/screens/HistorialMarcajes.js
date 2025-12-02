@@ -40,7 +40,6 @@ export default function HistorialMarcajes() {
     const [entradaSeleccionada, setEntradaSeleccionada] = React.useState(null);
 
     const handleVerDetalle = (entrada) => {
-        console.log(entrada.folioTicket)
         setEntradaSeleccionada(entrada);
         showModal();
     };

@@ -96,10 +96,6 @@ export default function useMiPension() {
       
       const preferenceData = response.data.data;
       
-      console.log('=== DATOS COMPLETOS DE LA RESPUESTA (RENOVACIÓN) ===');
-      console.log('Response completo:', response);
-      console.log('Preference Data:', preferenceData);
-      
       // Buscar URL de pago
       const paymentUrl = 
         preferenceData.sandboxInitPoint || 
