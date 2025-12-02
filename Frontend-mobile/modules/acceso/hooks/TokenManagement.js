@@ -3,11 +3,12 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const Session = {
     // Guardar todo al iniciar sesión
-    async saveSession({ token, expiration, user }) {
+    async saveSession({ token, expiration, user, pension }) {
         await SecureStore.setItemAsync("token", token);
         await SecureStore.setItemAsync("expiration", expiration.toString());
 
         await AsyncStorage.setItem("user", JSON.stringify(user));
+        await AsyncStorage.setItem("pension", JSON.stringify(pension));
     },
     // Obtener token
     async getToken() {
@@ -33,6 +34,11 @@ export const Session = {
     async setUser(user) {
         await AsyncStorage.removeItem("user");
         await AsyncStorage.setItem("user", JSON.stringify(user));
+    },
+
+    async setPension(pension) {
+        await AsyncStorage.removeItem("pension");
+        await AsyncStorage.setItem("pension", JSON.stringify(pension));
     },
 
     // Saber si el token ya expiró
