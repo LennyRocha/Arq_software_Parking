@@ -15,7 +15,6 @@ export default function usePostVehiculos() {
     const [errorData, setErrorData] = React.useState(null);
 
     async function addCajon(c, tipo) {
-
         try {
             await cajonYup.validate(c, { abortEarly: false });
 
@@ -30,20 +29,22 @@ export default function usePostVehiculos() {
             });
 
             setCajones(prev => [...prev, cajon]);
+            return true;
         } catch (validationError) {
-            return sweetAlert({
+            sweetAlert({
                 icon: "error",
                 title: "Datos inválidos",
                 text: validationError.errors?.join("\n") ?? "Verifique los campos",
             });
+            return false;
         }
     }
 
-    const onSubmit = async (data) => {
+    const onSubmit = async (data, cajonesAEnviar) => {
         if (isLoading) return;
 
         const endpoint =
-            cajones.length === 0 ? cajonInterface.postIt() : cajonInterface.postMany();
+            cajonesAEnviar.length === 0 ? cajonInterface.postIt() : cajonInterface.postMany();
 
         const cajon = new Cajon({
             name: data.name,
@@ -56,7 +57,7 @@ export default function usePostVehiculos() {
         });
 
         const payload =
-            cajones.length === 0 ? cajon : cajones;
+            cajonesAEnviar.length === 0 ? cajon : cajonesAEnviar;
 
         setLoading(true);
         setErrorData(null);

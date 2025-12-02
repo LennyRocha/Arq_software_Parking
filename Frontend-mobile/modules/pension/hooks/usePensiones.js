@@ -3,13 +3,22 @@ import pensionInterface from "./pensionInterface";
 import { getAxiosErrorMessage } from "../../../utils/getAxiosMessage";
 import PensionCard from "../components/PensionCard";
 import api from "../../../utils/api";
+import { useGlobalContext } from "../../../context/GlobalContext";
 
 export default function usePensiones(navigation, pressHanlder) {
-  const [isLoading, setLoading] = React.useState(false);
+  const [isLoading, setLoading] = React.useState(true);
   const [data, setData] = React.useState(null);
   const [error, setError] = React.useState(null);
   const [errorData, setErrorData] = React.useState(null);
   const [dependence, setDependence] = React.useState(false);
+
+  const { pension } = useGlobalContext();
+
+  React.useEffect(() => {
+    async function getUserData() {
+    }
+    getUserData()
+  }, []);
 
   const restartCall = () => setDependence(!dependence);
 
@@ -41,10 +50,10 @@ export default function usePensiones(navigation, pressHanlder) {
     data?.data.map((item) => {
       if (!item.status) return;
       return (
-        <PensionCard key={item.id} pension={item} onPress={() => pressHanlder(item)} />
+        <PensionCard key={item.id} isActive={pension?.id === item.id} pension={item} onPress={() => pressHanlder(item)} myPension={pension} />
       )
     })
-  ), [data]);
+  ), [data, pension]);
 
   return { data, isLoading, error, errorData, renderedList, restartCall };
 }

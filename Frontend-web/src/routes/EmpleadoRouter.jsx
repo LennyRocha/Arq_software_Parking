@@ -40,6 +40,7 @@ import { useDarkContext } from "../context/DarkContext";
 import { useTheme } from "@mui/material/styles";
 
 import logo from "../img/logo_parking_hd_no_titulo.png";
+import useInitials from "../utils/getInitials";
 
 export default function EmpleadoRouter() {
   const location = useLocation();
@@ -52,6 +53,8 @@ export default function EmpleadoRouter() {
 
   const [selectedIndex, setSelectedIndex] = React.useState(0);
   const [drawerOpen, setDrawerOpen] = React.useState(false);
+
+  const { loading, concated } = useInitials();
 
   React.useEffect(() => {
     if (!getToken()) goTo("*");
@@ -157,7 +160,7 @@ export default function EmpleadoRouter() {
             }}
             onClick={() => goTo(`/empleado/perfil`)}
           >
-            UE
+            {loading ? "UE" : concated}
           </Avatar>
         </Tooltip>
       </Toolbar>

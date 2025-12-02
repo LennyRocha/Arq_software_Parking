@@ -19,8 +19,10 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import moto from "../../../img/moto_view_small.png";
 import coche from "../../../img/coche_view_small.png";
 import camioneta from "../../../img/camioneta_view_small.png";
+import useUserIdByEmail from "../../../hooks/getIdByEmail";
 
 export default function NuevoVehiculo() {
+  const { id, loading, error } = useUserIdByEmail();
   const {
     isLoading,
     errorData,
@@ -30,7 +32,7 @@ export default function NuevoVehiculo() {
     visible,
     hideAlert,
     config,
-  } = usePostVehiculos(3);
+  } = usePostVehiculos(id);
   const { data: list, error: errorTipos, load } = useTiposVehiculos();
   const [idCar, setIdCar] = React.useState(1);
   const vehiculos = {
@@ -43,6 +45,7 @@ export default function NuevoVehiculo() {
     handleSubmit,
     reset,
     resetField,
+    trigger,
     setValue,
     formState: { errors, isValid },
   } = useForm({
@@ -55,6 +58,12 @@ export default function NuevoVehiculo() {
   React.useEffect(() => {
     setValue("id_type", idCar);
   }, [idCar]);
+  React.useEffect(() => {
+    if (id !== null) {
+      reset({ ...defaultValues, id_user: id });
+      trigger("id_user");
+    }
+  }, [id]);
   return (
     <Box sx={{ flex: 1, overflow: "auto" }}>
       <LoadingBackdrop isOpen={load} />

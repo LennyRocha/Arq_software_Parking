@@ -8,6 +8,7 @@ import {
 } from "react-native-paper";
 import { ThemeProvider } from "./context/useCustomColors";
 import SnackBarProvider from "./context/SnackBarContext";
+import { GlobalProvider } from "./context/GlobalContext";
 import PaperContext from "./context/paperContext";
 import { useCustomThemes } from "./context/useCustomColors";
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
@@ -491,7 +492,9 @@ export default function App() {
           <ThemeProvider>
             <PaperContext>
               <SnackBarProvider>
-                <AppWrapper />
+                <GlobalProvider>
+                  <AppWrapper />
+                </GlobalProvider>
               </SnackBarProvider>
             </PaperContext>
           </ThemeProvider>

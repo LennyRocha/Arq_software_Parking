@@ -91,7 +91,45 @@ export default function SalidaQR({ route }) {
   };
   */
 
-  const { folio } = route.params;
+  const parseDate = (fecha) => {
+    const ano = fecha.substring(0, 4);
+    const mes = fecha.substring(5, 7);
+    const dia = fecha.substring(8, 10);
+
+    let mesString = "";
+    switch (mes) {
+      case "01": mesString = "Enero"; break;
+      case "02": mesString = "Febrero"; break;
+      case "03": mesString = "Marzo"; break;
+      case "04": mesString = "Abril"; break;
+      case "05": mesString = "Mayo"; break;
+      case "06": mesString = "Junio"; break;
+      case "07": mesString = "Julio"; break;
+      case "08": mesString = "Agosto"; break;
+      case "09": mesString = "Septiembre"; break;
+      case "10": mesString = "Octubre"; break;
+      case "11": mesString = "Noviembre"; break;
+      case "12": mesString = "Diciembre"; break;
+      default: mesString = "Mes inválido";
+    }
+
+    return `${mesString} ${dia}, ${ano}`;
+  }
+
+  const formatHour = (hora24) => {
+    // Separar horas y minutos
+    const [horaStr, minStr] = hora24.split(":");
+    let hora = parseInt(horaStr, 10);
+    const ampm = hora >= 12 ? "PM" : "AM";
+
+    // Convertir hora a formato 12h
+    hora = hora % 12;
+    if (hora === 0) hora = 12;
+
+    return `${hora}:${minStr} ${ampm}`;
+  }
+
+  const { folio, salida } = route.params;
   const paper = useTheme();
   const { mode } = useCustomThemes();
   return (
@@ -121,14 +159,14 @@ export default function SalidaQR({ route }) {
             <View style={{ flexDirection: "row", width: "100%" }}>
               <List.Item
                 title="Nombre"
-                description="Usuario DAO"
+                description={`${salida.usuario.nombre} ${salida.usuario.apellidos}`}
                 titleStyle={{ fontWeight: "bold", color: paper.colors.primary }}
                 style={{ flex: 1 }}
                 contentStyle={{ paddingLeft: 0 }}
               />
               <List.Item
                 title="Fecha"
-                description="Noviembre 22, 2025"
+                description={parseDate(salida.fecha)}
                 titleStyle={{ fontWeight: "bold", color: paper.colors.primary }}
                 style={{ flex: 1 }}
                 contentStyle={{ paddingLeft: 0 }}
@@ -137,14 +175,14 @@ export default function SalidaQR({ route }) {
             <View style={{ flexDirection: "row", width: "100%" }}>
               <List.Item
                 title="Hora de entrada"
-                description="03:00 PM"
+                description={formatHour(salida.horaEntrada)}
                 titleStyle={{ fontWeight: "bold", color: paper.colors.primary }}
                 style={{ flex: 1 }}
                 contentStyle={{ paddingLeft: 0 }}
               />
               <List.Item
                 title="Hora de salida"
-                description="04:00 PM"
+                description={formatHour(salida.horaSalida)}
                 titleStyle={{ fontWeight: "bold", color: paper.colors.primary }}
                 style={{ flex: 1 }}
                 contentStyle={{ paddingLeft: 0 }}
@@ -153,14 +191,14 @@ export default function SalidaQR({ route }) {
             <View style={{ flexDirection: "row", width: "100%" }}>
               <List.Item
                 title="Vehículo"
-                description="Camaro 1999"
+                description={salida.vehiculo.modelo}
                 titleStyle={{ fontWeight: "bold", color: paper.colors.primary }}
                 style={{ flex: 1 }}
                 contentStyle={{ paddingLeft: 0 }}
               />
               <List.Item
-                title="Tipo de vehículo"
-                description="Coche"
+                title="Tipo vehículo"
+                description={salida.tipoVehiculo.nombre}
                 titleStyle={{ fontWeight: "bold", color: paper.colors.primary }}
                 style={{ flex: 1 }}
                 contentStyle={{ paddingLeft: 0 }}
@@ -169,14 +207,14 @@ export default function SalidaQR({ route }) {
             <View style={{ flexDirection: "row", width: "100%" }}>
               <List.Item
                 title="Teléfono"
-                description="777 123 4567"
+                description={salida.usuario.telefono}
                 titleStyle={{ fontWeight: "bold", color: paper.colors.primary }}
                 style={{ flex: 1 }}
                 contentStyle={{ paddingLeft: 0 }}
               />
               <List.Item
                 title="Folio"
-                description={folio}
+                description={salida.folioTicket}
                 titleStyle={{ fontWeight: "bold", color: paper.colors.primary }}
                 style={{ flex: 1 }}
                 contentStyle={{ paddingLeft: 0 }}
@@ -184,7 +222,7 @@ export default function SalidaQR({ route }) {
             </View>
           </Card.Content>
           <Card.Actions style={{ backgroundColor: paper.colors.cardSurface, alignItems: "center", justifyContent: "center", paddingVertical: 18 }}>
-            <Text variant="bodyMedium" style={{ color: paper.colors.tertiary }}>Total a pagar: <Text style={{ color: paper.colors.primary }} >Pago cubierto por pensión</Text></Text>
+            <Text variant="bodyMedium" style={{ color: paper.colors.tertiary }}>Total a pagar: <Text style={{ color: paper.colors.primary }} >{salida.cantidadPago === 0 ? "Pago cubierto por pensión" : `$${salida.cantidadPago} MXN`}</Text></Text>
           </Card.Actions>
         </Card>
         {

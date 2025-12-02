@@ -24,31 +24,31 @@ export default function useVehiculos(idUser) {
   const restartCall = () => setDependence(!dependence);
 
   const getVehiculos = React.useCallback(async () => {
-    let errorObject = {}
+      let errorObject = {}
 
-    setLoading(true);
-    setErrorData(null);
+      setLoading(true);
+      setErrorData(null);
 
-    try {
-      const res = await api.get(
-        vehiculoInterface.getAllByUser(idUser, query, idCar, active, conPlacas)
-      );
-      setData(res.data);
-    } catch (err) {
-      errorObject = {
-        tipo: err.response ? "Error de la API" : "Error de Axios",
-        texto: getAxiosErrorMessage(err),
-        detalles: err
+      try {
+        const res = await api.get(
+          vehiculoInterface.getAllByUser(idUser, query, idCar, active, conPlacas)
+        );
+        setData(res.data);
+      } catch (err) {
+        errorObject = {
+          tipo: err.response ? "Error de la API" : "Error de Axios",
+          texto: getAxiosErrorMessage(err),
+          detalles: err
+        }
+        setErrorData(errorObject);
+      } finally {
+        setLoading(false);
       }
-      setErrorData(errorObject);
-    } finally {
-      setLoading(false);
-    }
-  }, [idUser, query, idCar, active, conPlacas, dependence]);
+  }, [ query, idCar, active, conPlacas, dependence, idUser]);
 
   React.useEffect(() => {
     getVehiculos();
-  }, []);
+  }, [idUser]);
 
   return { getVehiculos, data, isLoading, errorData, restoreValues, restartCall, query, setQuery, idCar, setIdCar, active, setActive, conPlacas, setConPlacas };
 }

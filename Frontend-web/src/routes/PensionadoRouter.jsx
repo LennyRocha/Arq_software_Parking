@@ -52,6 +52,7 @@ import { useDarkContext } from "../context/DarkContext";
 
 //Use themes
 import { useTheme } from "@mui/material/styles";
+import useInitials from "../utils/getInitials";
 
 export default function AdminRouter() {
   const location = useLocation();
@@ -64,6 +65,8 @@ export default function AdminRouter() {
   const [selectedIndex, setSelectedIndex] = React.useState(0);
 
   const { isDarkMode, toggleDarkMode } = useDarkContext();
+
+  const { loading, concated } = useInitials();
 
   React.useEffect(() => {
     getToken();
@@ -208,7 +211,7 @@ export default function AdminRouter() {
               }}
               onClick={() => goTo(`/pensionados/perfil`)}
             >
-              UP
+              {loading ? "UP" : concated}
             </Avatar>
           </Tooltip>
         </Toolbar>

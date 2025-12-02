@@ -29,7 +29,11 @@ const vehiculoInterface = {
 
     myVehics: function () {
         return `${prefix}/mis-vehiculos`
-    }
+    },
+
+    check: function () {
+        return `${prefix}/estacionado/verificar`;
+    },
 };
 
 export default vehiculoInterface;

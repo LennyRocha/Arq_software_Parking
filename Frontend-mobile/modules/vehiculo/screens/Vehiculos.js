@@ -9,13 +9,17 @@ import LoadingView from '../../../components/LoadingView'
 import ErrorAxios from '../../errores/screens/ErroresScreens';
 import useTiposVehiculos from '../hooks/useTiposVehiculos';
 import { useFocusEffect } from '@react-navigation/native';
+import useUserIdByEmail from '../../acceso/hooks/getIdByEmail';
+import useVehiculosEstacionados from '../hooks/useVehiculosEstacionados';
 
 export default function Vehiculos({ navigation }) {
   const paper = useTheme();
   const [isFocused, setIsFocused] = React.useState(false);
+  const { id, loading, error } = useUserIdByEmail();
 
-  const { getVehiculos, data, isLoading, errorData, restoreValues, restartCall, query, setQuery, idCar, setIdCar, active, setActive, conPlacas, setConPlacas } = useVehiculos(3);
+  const { getVehiculos, data, isLoading, errorData, restoreValues, restartCall, query, setQuery, idCar, setIdCar, active, setActive, conPlacas, setConPlacas } = useVehiculos(id);
   const { data: list, error: errorTipos, load } = useTiposVehiculos();
+  const {  activeData, isLoading: loadingUsed} = useVehiculosEstacionados();
 
   //Control del dialog de filtros
   const [visible, setVisible] = React.useState(false);
@@ -49,7 +53,7 @@ export default function Vehiculos({ navigation }) {
 
   if (errorData?.tipo === "Error de Axios") return <ErrorAxios error={errorData.detalles} callback={restartCall} />
 
-  if (!data || isLoading || load) return <LoadingView />;
+  if (!data || isLoading || load || loading || loadingUsed) return <LoadingView />;
 
   return (
     <View style={{ flex: 1 }}>
@@ -62,7 +66,7 @@ export default function Vehiculos({ navigation }) {
         keyExtractor={(item) => item.id.toString()}
         numColumns={2}
         renderItem={({ item }) => (
-          <VehiculoCard navigation={navigation} vehiculo={item} list={list} />
+          <VehiculoCard navigation={navigation} vehiculo={item} list={list} current={activeData.data.vehiculo} date={activeData.data.fechaEntrada} />
         )}
         ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
         columnWrapperStyle={{ gap: 8 }}

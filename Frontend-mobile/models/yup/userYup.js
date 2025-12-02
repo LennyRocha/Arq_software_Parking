@@ -2,16 +2,15 @@ import * as yup from "yup";
 import roleYup from "./roleYup";
 
 const userYup = yup.object({
-  id: yup.number(),
+  id: yup.number().required("El id del usuario es obligatorio"),
   nombre: yup.string(),
-  apellido_p: yup.string(),
-  apellido_m: yup.string(),
-  correo: yup.string().email("Correo inválido"),
+  apellidos: yup.string(),
+  correo: yup
+    .string()
+    .required("El correo no puede ser nulo.")
+    .min(3, "El correo debe tener entre 3 y 50 caracteres.")
+    .max(50, "El correo debe tener entre 3 y 50 caracteres."),
   telefono: yup.string(),
-  contra: yup.string(),
-  rol: roleYup.required(),
-  estatus: yup.boolean(),
-  pensionado: yup.boolean(),
 });
 
 export default userYup;

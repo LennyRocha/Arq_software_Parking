@@ -14,7 +14,7 @@ export default function sweetAlert({
   html = undefined,
   showCloseButton = false,
   showLoaderOnConfirm = false,
-  reverseButtons = false,
+  reverseButtons = true,
   preConfirm = undefined,
   zIndex = undefined, // Nueva prop opcional para z-index personalizado
 }) {
