@@ -64,6 +64,25 @@ public class TarifaController {
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(HttpStatus.OK, TarifaMessages.ENDPOINT_TARIFA_SEARCH, tarifas));
     }
 
+
+    @GetMapping("/public/search/paginated")
+    @Operation(summary = "Buscar tarifas con filtros, ordenamiento y paginación",
+            description = "Buscar tarifas por tiempo y/o costo con ordenamiento personalizable y paginación. " +
+                    "Por defecto ordena por tipo de vehículo y tiempo ascendente. " +
+                    "Parámetros: tiempo (opcional), costo (opcional), sortBy (tipoVehiculo|tiempo|costo), " +
+                    "sortOrder (asc|desc), page (número de página, inicia en 0), size (tamaño de página)")
+    public ResponseEntity<ApiResponse<org.springframework.data.domain.Page<TarifaResponseDto>>> publicsearchAndSortPaginated(
+            @RequestParam(required = false) Double search,
+            @RequestParam(required = false, defaultValue = "tipoVehiculo") String sortBy,
+            @RequestParam(required = false, defaultValue = "asc") String sortOrder,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Page<TarifaResponseDto> tarifas = tarifaService.searchAndSortPaginated(search, sortBy, sortOrder, page, size);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(HttpStatus.OK, TarifaMessages.ENDPOINT_TARIFA_SEARCH, tarifas));
+    }
+
+
     @PostMapping
     @Operation(summary = "Crear tipo de tarifa",description="Crear un nuevo tipo de tarifa en el sistema")
     public ResponseEntity<ApiResponse<TarifaResponseDto>> create(@RequestBody @Valid TarifaRequestDto dto) {

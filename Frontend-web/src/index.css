@@ -73,6 +73,10 @@ html {
   background-color: var(--mui_back);
 }
 
+body{
+  transition: all .25s ease-in-out; 
+}
+
 .bukon {
   background-color: var(--other);
   color: white;
@@ -265,7 +269,7 @@ button:focus-visible {
 
 .parkingCard {
   position: relative;
-  transition: all .5s ease-in-out;
+  transition: all .25s ease-in-out !important; 
   will-change: transform;
   ;
 }
