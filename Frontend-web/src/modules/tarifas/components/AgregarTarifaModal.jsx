@@ -40,7 +40,6 @@ export default function AgregarTarifaModal({
 
     const handleAgregar = async (e) => {
         e.preventDefault();
-        console.log("handleAgregar llamado");
         
         // Limpiar errores previos
         setErrors({
@@ -61,26 +60,50 @@ export default function AgregarTarifaModal({
             tarifaData.id = data.id;
         }
 
-        console.log("Datos de tarifa:", tarifaData);
-
         try {
             // Validar con Yup
             await tarifaYup.validate(tarifaData, { abortEarly: false });
             
-            console.log("Validación exitosa");
+            // Cerrar modal temporalmente
+            onClose();
             
-            // Llamar a la función correspondiente según el modo
-            const resultado = esEdicion 
-                ? await onActualizar(tarifaData)
-                : await onAgregar(tarifaData);
-            
-            console.log("Resultado:", resultado);
-            
-            if (resultado.success) {
-                // Cerrar modal primero
-                handleCancelar();
-                // Mostrar alert después de cerrar
-                setTimeout(() => {
+            // Esperar un momento y mostrar confirmación
+            setTimeout(async () => {
+                const confirmResult = await sweetAlert({
+                    title: "Confirmar " + (esEdicion ? "actualización" : "registro"),
+                    text: esEdicion 
+                        ? "¿Está seguro de actualizar esta tarifa?"
+                        : "¿Está seguro de agregar esta nueva tarifa?",
+                    icon: "question",
+                    showDenyButton: true,
+                    denyText: "Cancelar",
+                    confirmText: esEdicion ? "Sí, actualizar" : "Sí, agregar",
+                    showCloseButton: true,
+                    reverseButtons: true,
+                });
+
+                if (!confirmResult.isConfirmed) {
+                    // Si cancela, no hacer nada (el modal ya está cerrado)
+                    return;
+                }
+                
+                // Si confirmó, llamar a la función correspondiente
+                const resultado = esEdicion 
+                    ? await onActualizar(tarifaData)
+                    : await onAgregar(tarifaData);
+                
+                if (resultado.success) {
+                    // Limpiar campos después del éxito
+                    setTipoVehiculo("");
+                    setTiempo("");
+                    setCosto("");
+                    setErrors({
+                        tipoVehiculo: "",
+                        tiempo: "",
+                        costo: ""
+                    });
+                    
+                    // Mostrar alert de éxito
                     sweetAlert({
                         title: "¡Éxito!",
                         text: esEdicion 
@@ -89,11 +112,8 @@ export default function AgregarTarifaModal({
                         icon: "success",
                         confirmText: "Aceptar",
                     });
-                }, 300);
-            } else {
-                // Cerrar modal primero también en error
-                handleCancelar();
-                setTimeout(() => {
+                } else {
+                    // Mostrar error
                     sweetAlert({
                         title: "Error",
                         text: resultado.error || (esEdicion 
@@ -101,10 +121,10 @@ export default function AgregarTarifaModal({
                             : "No se pudo agregar la tarifa"),
                         icon: "error"
                     });
-                }, 300);
-            }
+                }
+            }, 300);
+            
         } catch (err) {
-            console.log("Error capturado:", err);
             // Si hay errores de validación de Yup
             if (err.name === "ValidationError") {
                 const validationErrors = {};
@@ -115,7 +135,6 @@ export default function AgregarTarifaModal({
                         validationErrors[error.path] = error.message;
                     }
                 });
-                console.log("Errores de validación:", validationErrors);
                 setErrors(validationErrors);
             } else {
                 // Cerrar modal antes de mostrar error inesperado

@@ -115,7 +115,7 @@ public class EntradaSalidaController {
                 .body(ApiResponse.success(HttpStatus.OK, EntradaSalidaMessages.ENDPOINT_ENTRADA_SALIDA_REGISTRAR_SALIDA, entradaSalida));
     }
 
-    @GetMapping("/pensionado/salida-datos/{folioTicket}")
+    @GetMapping("/pensionado/salida-datos/{uuidCodigoQR}")
     @Operation(summary = "Obtener datos de salida de pensionado",
             description = "Obtiene los datos de salida de un visitante incluyendo la hora de salida actual y el monto a pagar " +
                     "calculado según las tarifas configuradas para el tipo de vehículo. " +
