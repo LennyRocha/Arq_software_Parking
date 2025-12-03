@@ -131,7 +131,7 @@ export default function PensionCard({ isActive = false, pension, onPress, myPens
             <Card.Actions>
                 <LinearGradient style={{ width: "100%", borderRadius: 5 }} colors={[paper.colors.secondary, paper.colors.primary]} start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 1 }}>
-                    <Button mode='outlined' style={[BoxStyles.ButtonRadius, { width: "100%", backgroundColor: "transparent", borderColor: "transparent" }]} labelStyle={[BoxStyles.buttonTextAuto, { color: "white" }]} onPress={onPress}>{isActive ? "Administrar" : "Unirme"}</Button>
+                    <Button mode='outlined' style={[BoxStyles.ButtonRadius, { width: "100%", backgroundColor: "transparent", borderColor: "transparent" }]} labelStyle={[BoxStyles.buttonTextAuto, { color: "white" }]} onPress={onPress}>{isActive ? "Renovar" : "Unirme"}</Button>
                 </LinearGradient>
             </Card.Actions>
         </Card>

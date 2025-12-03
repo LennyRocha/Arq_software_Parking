@@ -25,7 +25,7 @@ export default function DetallesPerfil({ navigation, route }) {
               icon="pencil"
               iconColor={paper.colors.primary}
               style={{ margin: 0, padding: 0 }}
-              onPress={() => navigation.navigate("inputPerfilScreen", { campo: "Modificar nombre", label: "Nuevo nombre (s) de usuario:" })}
+              onPress={() => navigation.navigate("inputPerfilScreen", { campo: "Modificar nombre", label: "Nuevo nombre (s) de usuario:", data: data })}
             />
           )}
         />
@@ -39,7 +39,7 @@ export default function DetallesPerfil({ navigation, route }) {
               icon="pencil"
               iconColor={paper.colors.primary}
               style={{ margin: 0, padding: 0 }}
-              onPress={() => navigation.navigate("inputPerfilScreen", { campo: "Modificar apellido", label: "Nuevo apellido (s):" })}
+              onPress={() => navigation.navigate("inputPerfilScreen", { campo: "Modificar apellido", label: "Nuevo apellido (s):", data: data })}
             />
           )}
         />
@@ -53,7 +53,7 @@ export default function DetallesPerfil({ navigation, route }) {
               icon="pencil"
               iconColor={paper.colors.primary}
               style={{ margin: 0, padding: 0 }}
-              onPress={() => navigation.navigate("inputPerfilScreen", { campo: "Modificar teléfono", label: "Nuevo número de teléfono:" })}
+              onPress={() => navigation.navigate("inputPerfilScreen", { campo: "Modificar teléfono", label: "Nuevo número de teléfono:", data: data })}
             />
           )}
         />

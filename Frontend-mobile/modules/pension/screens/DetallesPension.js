@@ -5,8 +5,39 @@ import { Button, Chip, Divider, Icon, List, Text, useTheme } from "react-native-
 import logo from '../../../img/logo_parking_sin_fondo.png';
 import mercadoPago from '../../../img/mercado_pago.png';
 import dinero from '../../../img/dinero.png';
+import { Linking } from "react-native";
+import { FRONT_URL } from '@env';
+import useMiPension from "../hooks/useMiPension";
+import RenovarMiPensionModal from "../../../components/RenovarPensionModal";
 
 export default function DetallesPension({ route, naviagtion, pensionObject = null }) {
+  const {
+    pension: myPension,
+    loadingPension,
+    errorPension,
+    cargarMiPension,
+    historial,
+    loadingHistorial,
+    errorHistorial,
+    cargarMiHistorial,
+    page,
+    rowsPerPage,
+    totalElements,
+    ordenarPor,
+    ordenDireccion,
+    buscarTexto,
+    setOrdenarPor,
+    setOrdenDireccion,
+    setBuscarTexto,
+    handleChangePage,
+    handleChangeRowsPerPage,
+    renovarModalOpen,
+    handleAbrirRenovar,
+    handleCerrarRenovar,
+    iniciarPagoRenovacion,
+    confirmarRenovacion,
+  } = useMiPension();
+
   const [pension, setPension] = React.useState({});
   React.useEffect(() => {
     if (pensionObject) {
@@ -16,7 +47,10 @@ export default function DetallesPension({ route, naviagtion, pensionObject = nul
       const { pension } = route.params;
       setPension(pension);
     }
-  }, [])
+  }, []);
+  React.useEffect(() => {
+    cargarMiPension();
+  }, [cargarMiPension]);
   const paper = useTheme();
   const obtenerPeriodo = (dias) => {
     switch (dias) {
@@ -37,7 +71,7 @@ export default function DetallesPension({ route, naviagtion, pensionObject = nul
     }
   }
   return (
-    <View style={!pensionObject ? BoxStyles.container: {flex: 1}}>
+    <View style={!pensionObject ? BoxStyles.container : { flex: 1 }}>
       <View style={{ flexDirection: "row", width: "100%", gap: 4, height: "25%" }}>
         <View style={{ width: "35%", backgroundColor: paper.colors.tertiary, borderRadius: 5, alignItems: "center", justifyContent: "center" }}>
           <Icon source={logo} size={72} />
@@ -69,9 +103,17 @@ export default function DetallesPension({ route, naviagtion, pensionObject = nul
         Al seleccionar Pagar, te comprometes a realizar el pago de MXN${pension.costo},00 IVA incluido al periodo {obtenerPeriodo(pension.duracionDias)} en efecto en el estacionamiento. Al seleccionar pagar con Mercado Pago se te aplicará la facturación periódica, la puedes cancelar en cualquier momento y realizar el pago manualmente.
       </Text>
       <View style={{ flexGrow: 1 }} />
-      <Button mode="contained" theme={{ colors: { primary: paper.colors.tertiary } }} style={BoxStyles.ButtonRadius} labelStyle={BoxStyles.buttonText} onPress={() => { }} >
+      <Button mode="contained" theme={{ colors: { primary: paper.colors.tertiary } }} style={BoxStyles.ButtonRadius} labelStyle={BoxStyles.buttonText} onPress={() => handleAbrirRenovar()} >
         Pagar
       </Button>
-    </View>
+      <RenovarMiPensionModal
+        visible={renovarModalOpen}           // ← Cambio: open → visible
+        onDismiss={handleCerrarRenovar}      // ← Cambio: onClose → onDismiss
+        pension={pension}
+        onIniciarPago={iniciarPagoRenovacion}
+        onConfirmarRenovacion={confirmarRenovacion}
+        setLoading={setLoading}
+      />
+    </View >
   );
 }

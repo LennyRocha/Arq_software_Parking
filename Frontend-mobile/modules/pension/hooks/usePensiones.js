@@ -5,7 +5,7 @@ import PensionCard from "../components/PensionCard";
 import api from "../../../utils/api";
 import { useGlobalContext } from "../../../context/GlobalContext";
 
-export default function usePensiones(navigation, pressHanlder) {
+export default function usePensiones(navigation, pressHanlder, renovar) {
   const [isLoading, setLoading] = React.useState(true);
   const [data, setData] = React.useState(null);
   const [error, setError] = React.useState(null);
@@ -50,7 +50,7 @@ export default function usePensiones(navigation, pressHanlder) {
     data?.data.map((item) => {
       if (!item.status) return;
       return (
-        <PensionCard key={item.id} isActive={pension?.id === item.id} pension={item} onPress={() => pressHanlder(item)} myPension={pension} />
+        <PensionCard key={item.id} isActive={pension?.id === item.id} pension={item} onPress={() => pension.id  = item.id ? renovar() : pressHanlder(item)} myPension={pension} />
       )
     })
   ), [data, pension]);

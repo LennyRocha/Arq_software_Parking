@@ -107,6 +107,7 @@ export default function useLogin() {
                 token: token,
                 expiration: expiration,
                 user: userJson,
+                pension: pensionJson,
             })
 
             return true;

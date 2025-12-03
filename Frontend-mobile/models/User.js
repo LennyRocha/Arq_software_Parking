@@ -3,25 +3,15 @@ export default class User {
   constructor({
     id,
     nombre,
-    apellido_p,
-    apellido_m,
+    apellidos,
     correo,
     telefono,
-    contra,
-    rol,
-    estatus,
-    pensionado,
   }) {
     this.id = id;
     this.nombre = nombre;
-    this.apellido_p = apellido_p;
-    this.apellido_m = apellido_m;
+    this.apellidos = apellidos;
     this.correo = correo;
     this.telefono = telefono;
-    this.contra = contra;
-    this.rol = rol;
-    this.estatus = estatus;
-    this.pensionado = pensionado;
   }
 
   static getYup() {
@@ -40,13 +30,9 @@ export default class User {
     return {
       id: this.id || null,
       nombre: this.nombre,
-      apellido_paterno: this.apellido_p,
-      apellido_materno: this.apellido_m,
+      apellidos: this.apellidos,
       correo: this.correo,
       telefono: this.telefono,
-      id_rol: this.rol?.toJson() || null,
-      estatus: this.estatus,
-      es_pensionado: this.pensionado,
     };
   }
 
