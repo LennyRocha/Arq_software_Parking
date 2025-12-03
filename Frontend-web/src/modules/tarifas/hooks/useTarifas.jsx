@@ -1,6 +1,13 @@
 import { useEffect, useState } from "react";
-import { fetchTarifas, searchTarifasPaginated, toggleTarifaStatus, fetchTiposVehiculos, 
-  createTarifa, updateTarifa } from "./../api/TarifasApi";
+import {
+  fetchTarifas,
+  searchTarifasPaginated,
+  toggleTarifaStatus,
+  fetchTiposVehiculos,
+  createTarifa,
+  updateTarifa,
+  searchPublicTarifasPaginated
+} from "./../api/TarifasApi";
 import { getAxiosErrorMessage } from "../../../utils/getAxiosMessage";
 
 export const useTarifas = () => {
@@ -18,7 +25,6 @@ export const useTarifas = () => {
   const [ordenDireccion, setOrdenDireccion] = useState("asc");
   const [buscarTexto, setBuscarTexto] = useState("");
 
-
   const cargarTarifas = async () => {
     setLoading(true);
     setError("");
@@ -30,7 +36,7 @@ export const useTarifas = () => {
       // Solo marcar como vacío si la petición fue exitosa Y no hay datos
       data.length === 0 ? setVacio(true) : setVacio(false);
     } catch (err) {
-      setError(getAxiosErrorMessage(err));//Aqui get axios error message retornaria el "No se recibió respuesta del servidor" 
+      setError(getAxiosErrorMessage(err)); //Aqui get axios error message retornaria el "No se recibió respuesta del servidor"
       setTarifas(null); // Mantener como null en caso de error
       setVacio(false); // No marcar como vacío si hay error
     } finally {
@@ -51,7 +57,34 @@ export const useTarifas = () => {
         sortBy: ordenarPor,
         sortOrder: ordenDireccion,
         page: page,
-        size: rowsPerPage
+        size: rowsPerPage,
+      });
+
+      const data = response.data.data;
+      setTarifas(data.content || []);
+      setTotalElements(data.totalElements || 0);
+    } catch (err) {
+      setError(getAxiosErrorMessage(err));
+      setTarifas([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Cargar tarifas con paginación para la landing
+  const cargarTarifasPaginadoPublic = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      // Determinar si es búsqueda por tiempo o costo
+      const valorBusqueda = buscarTexto.trim();
+
+      const response = await searchPublicTarifasPaginated({
+        search: valorBusqueda,
+        sortBy: ordenarPor,
+        sortOrder: ordenDireccion,
+        page: page,
+        size: rowsPerPage,
       });
 
       const data = response.data.data;
@@ -140,18 +173,36 @@ export const useTarifas = () => {
   }, [retry]);
 
   return {
-    tarifas, setTarifas,
-    tiposVehiculos, setTiposVehiculos,
-    loading, setLoading,
-    error, setError,
-    retry, setRetry,
-    vacio, setVacio,
-    page, setPage,
-    rowsPerPage, setRowsPerPage,
-    totalElements, setTotalElements,
-    ordenarPor, setOrdenarPor,
-    ordenDireccion, setOrdenDireccion,
-    buscarTexto, setBuscarTexto,
-    cargarTarifas, cargarTarifasPaginado, actualizarEstadoTarifa, cargarTiposVehiculos, agregarNuevaTarifa, actualizarTarifaExistente
+    tarifas,
+    setTarifas,
+    tiposVehiculos,
+    setTiposVehiculos,
+    loading,
+    setLoading,
+    error,
+    setError,
+    retry,
+    setRetry,
+    vacio,
+    setVacio,
+    page,
+    setPage,
+    rowsPerPage,
+    setRowsPerPage,
+    totalElements,
+    setTotalElements,
+    ordenarPor,
+    setOrdenarPor,
+    ordenDireccion,
+    setOrdenDireccion,
+    buscarTexto,
+    setBuscarTexto,
+    cargarTarifas,
+    cargarTarifasPaginado,
+    cargarTarifasPaginadoPublic,
+    actualizarEstadoTarifa,
+    cargarTiposVehiculos,
+    agregarNuevaTarifa,
+    actualizarTarifaExistente,
   };
 };

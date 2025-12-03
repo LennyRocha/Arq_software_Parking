@@ -44,6 +44,7 @@ import ParkingGrid from "./cajon/components/ParkingGrid";
 import fondo from "../img/parking_back.jpg";
 import logo_chiquito from "../img/logo_parking_hd_no_titulo.png";
 import ganamos from "../img/ganamos_pose_coches.png";
+import VerTarifas from "./tarifas/pages/VerTarifas";
 
 export default function LandingPage() {
   const { isDarkMode, toggleDarkMode } = useDarkContext();
@@ -546,6 +547,7 @@ export default function LandingPage() {
           ingresarán nuestros visitantes
         </Typography>
         {/*Tabla de tarifas */}
+        <VerTarifas />
         <Box sx={{ display: "flex", justifyContent: "center", mb: 2 }}>
           <Button variant="contained" sx={{ mx: 1 }}>
             ENTRAR AL ESTACIONAMIENTO
@@ -630,7 +632,8 @@ export default function LandingPage() {
                   >
                     <Box
                       sx={{
-                        background: "linear-gradient(to right, var(--other), var(--primary))",
+                        background:
+                          "linear-gradient(to right, var(--other), var(--primary))",
                         color: "white",
                         py: 2,
                         px: 8,

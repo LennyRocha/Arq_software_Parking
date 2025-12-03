@@ -50,7 +50,9 @@ public class WebSecurityConfig {
                         .requestMatchers("/api/users/private/**").hasRole("ADMINISTRADOR")
 
                         //--- GESTION DE TARIFAS
+                        .requestMatchers("/api/tarifa/public/search/paginated").permitAll()
                         .requestMatchers("/api/tarifa/**").hasRole("ADMINISTRADOR")
+
                         //--- GESTION DE ENTRADAS Y SALIDAS
                         .requestMatchers("/api/entrada-salida/search/paginated").hasAnyRole("ADMINISTRADOR","EMPLEADO")
                         .requestMatchers("/api/entrada-salida/pensionado/search/paginated").hasRole("CLIENTE_PENSIONADO")
