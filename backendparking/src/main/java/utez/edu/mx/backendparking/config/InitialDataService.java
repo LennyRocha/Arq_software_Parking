@@ -466,6 +466,24 @@ public class InitialDataService {
         Cajon c18 = new Cajon(null, "D2", "Zona premium piso 2", true, true, 2, true, coche);
         c18.setTipoVehiculo(coche);
 
+        Cajon c19 = new Cajon(null, "E1", "Cerca de ascensor piso 1", true, false, 1, true, coche);
+        c19.setTipoVehiculo(coche);
+
+        Cajon c20 = new Cajon(null, "E2", "Zona media piso 2", true, false, 2, true, coche);
+        c20.setTipoVehiculo(coche);
+
+        Cajon c21 = new Cajon(null, "M5", "Zona lateral piso 3", true, false, 3, true, moto);
+        c21.setTipoVehiculo(moto);
+
+        Cajon c22 = new Cajon(null, "M6", "Cerca de escalera piso 3", true, false, 3, true, moto);
+        c22.setTipoVehiculo(moto);
+
+        Cajon c23 = new Cajon(null, "C6", "Zona amplia piso 2", true, false, 2, true, camioneta);
+        c23.setTipoVehiculo(camioneta);
+
+        Cajon c24 = new Cajon(null, "C7", "Cerca de entrada piso 1", true, true, 1, true, camioneta);
+        c24.setTipoVehiculo(camioneta);
+
 
         // Guardar
         cajonRepository.save(c1);
@@ -486,6 +504,12 @@ public class InitialDataService {
         cajonRepository.save(c16);
         cajonRepository.save(c17);
         cajonRepository.save(c18);
+        cajonRepository.save(c19);
+        cajonRepository.save(c20);
+        cajonRepository.save(c21);
+        cajonRepository.save(c22);
+        cajonRepository.save(c23);
+        cajonRepository.save(c24);
 
 
         System.out.println("Cajones inicializados exitosamente");
