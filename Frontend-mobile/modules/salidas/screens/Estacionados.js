@@ -17,7 +17,7 @@ export default function Estacionados({ navigation }) {
     camioneta: require('../../../img/camioneta.png'),
   }
   const { activeData, isLoading: loadingActive, errorData: errData, restartCall: recall } = useVehiculosEstacionados();
-  const [ salida, setSalida ] = React.useState({});
+  const [salida, setSalida] = React.useState({});
 
   const parseDate = (fecha) => {
     const ano = fecha.substring(0, 4);
@@ -202,7 +202,8 @@ export default function Estacionados({ navigation }) {
               }
             }}
             mode="contained" style={[BoxStyles.ButtonRadius, { width: "100%" }]} labelStyle={BoxStyles.buttonTextAuto} onPress={onSubmit} >Marcar Salida</Button>
-      }    </View>
+      }
+    </View>
   );
   const MotoView = () => (
     <View

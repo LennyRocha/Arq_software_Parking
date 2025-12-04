@@ -24,10 +24,12 @@ export default function useVehiculos(idUser) {
 
   // Función real para traer vehículos
   const fetchVehicles = React.useCallback(async () => {
+    console.log(idUser);
     if (!idUser) return;
 
     setLoading(true);
     setErrorData(null);
+    console.log(idUser);
 
     try {
       const res = await api.get(

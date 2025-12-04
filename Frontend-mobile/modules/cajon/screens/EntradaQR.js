@@ -26,7 +26,6 @@ export default function EntradaQR({ route, navigation }) {
   const { recall } = setPension();
 
   React.useEffect(() => {
-    console.log(idUsuario)
     if (!isConnected) return;
 
     on("uuid", (data) => {

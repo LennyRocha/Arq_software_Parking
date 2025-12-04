@@ -247,7 +247,7 @@ export default function SalidaQR({ route, navigation }) {
             </View>
           </Card.Content>
           <Card.Actions style={{ backgroundColor: paper.colors.cardSurface, alignItems: "center", justifyContent: "center", paddingVertical: 18 }}>
-            <Text variant="bodyMedium" style={{ color: paper.colors.tertiary }}>Total a pagar: <Text style={{ color: paper.colors.primary }} >{salida.cantidadPago === 0 ? "Pago cubierto por pensión" : `$${salida.cantidadPago} MXN`}</Text></Text>
+            <Text variant="bodyMedium" style={{ color: paper.colors.tertiary }}>Total a pagar: <Text style={{ color: paper.colors.primary }} >{salida.cantidadPago  ? "Pago cubierto por pensión" : `$${salida.cantidadPago} MXN`}</Text></Text>
           </Card.Actions>
         </Card>
         {
