@@ -98,7 +98,7 @@ export default function VerTarifas() {
                     key={row.id || index}
                     sx={{
                       "&:last-child td, &:last-child th": { border: 0 },
-                      "&:hover": { backgroundColor: "var(--surface)" },
+                      "&:hover": { backgroundColor: "var(--card)" },
                     }}
                   >
                     <TableCell>

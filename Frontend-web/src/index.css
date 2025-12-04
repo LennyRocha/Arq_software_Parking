@@ -68,6 +68,11 @@ body.dark {
   --mui_back: #121212;
 }
 
+*::selection{
+  background-color: var(--surface);
+  color: var(--other);
+}
+
 html {
   scroll-behavior: smooth;
   background-color: var(--mui_back);

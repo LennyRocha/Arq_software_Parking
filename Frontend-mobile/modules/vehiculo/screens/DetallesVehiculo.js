@@ -120,7 +120,7 @@ export default function DetallesVehiculo({ navigation, route }) {
           descriptionStyle={{ color: paper.colors.error }}
           right={props => (
             isLoading ? <ActivityIndicator {...props} size={"small"} /> :
-              <Switch {...props} disabled={current.id === vehic.id} value={isSwitchOn} onValueChange={onToggleSwitch} color={paper.colors.primary} />
+              <Switch {...props} disabled={current && current.id === vehic.id} value={isSwitchOn} onValueChange={onToggleSwitch} color={paper.colors.primary} />
           )}
         />
       </ScrollView>

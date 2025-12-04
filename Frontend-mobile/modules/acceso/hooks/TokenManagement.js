@@ -51,6 +51,10 @@ export const Session = {
         return id ? Number(id) : null;
     },
 
+    async deleteId() {
+        await SecureStore.deleteItemAsync("id");
+    },
+
     // Saber si el token ya expiró
     async isExpired() {
         const exp = await SecureStore.getItemAsync("expiration");

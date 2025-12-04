@@ -40,7 +40,7 @@ export const GlobalProvider = ({ children }) => {
             }
         }
         setBySecureStorage();
-    }, []);
+    }, [idUsuario]);
 
     const showExpiredAlert = () => {
         showAlert({

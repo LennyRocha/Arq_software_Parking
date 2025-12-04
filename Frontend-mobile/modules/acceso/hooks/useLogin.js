@@ -110,7 +110,9 @@ export default function useLogin() {
                 pension: pensionJson,
             })
 
+            await Session.deleteId();
             await Session.setId(String(user.id));
+            setIdUsuario(user.id);
 
             return true;
 
