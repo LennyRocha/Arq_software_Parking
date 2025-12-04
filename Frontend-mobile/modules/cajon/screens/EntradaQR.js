@@ -9,9 +9,35 @@ import ViewShot from "react-native-view-shot";
 import { CustomAlert } from "../../../utils/customAlert";
 import * as MediaLibrary from "expo-media-library";
 import { useCustomAlert } from "../../../utils/useCustomAlert";
+import { useWebSocket } from "../hooks/useWebSocket";
+import { useGlobalContext } from '../../../context/GlobalContext';
+import setPension from "../../acceso/hooks/setPension";
+import { useSnackBar } from "../../../context/SnackBarContext";
 
-export default function EntradaQR({ route }) {
+export default function EntradaQR({ route, navigation }) {
   const { visible, config, showAlert, hideAlert } = useCustomAlert();
+
+  const { idUsuario } = useGlobalContext();
+
+  const { showSnack} = useSnackBar();
+
+  const { on, isConnected } = useWebSocket();
+
+  const { recall } = setPension();
+
+  React.useEffect(() => {
+    console.log(idUsuario)
+    if (!isConnected) return;
+
+    on("uuid", (data) => {
+      if (data.id === idUsuario) {
+        showSnack("Entrada marcada", "Cerrar");
+        navigation.goBack();
+        recall();
+      }
+    });
+
+  }, [isConnected]);
 
   const [loadingSafe, setLoadingSafe] = React.useState(false);
 
@@ -135,6 +161,7 @@ export default function EntradaQR({ route }) {
   }
 
   const { folio, entrada } = route.params;
+  console.log(entrada);
   const paper = useTheme();
   const { mode } = useCustomThemes();
   return (

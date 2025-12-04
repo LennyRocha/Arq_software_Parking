@@ -34,6 +34,10 @@ export const GlobalProvider = ({ children }) => {
         async function setBySecureStorage() {
             const id = await Session.getId();
             setIdUsuario(id);
+            const user = await Session.getUser();
+            if (user) {
+                setCorreo(user.correo);
+            }
         }
         setBySecureStorage();
     }, []);

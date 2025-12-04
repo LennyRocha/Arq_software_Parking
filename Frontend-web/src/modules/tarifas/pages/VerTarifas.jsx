@@ -14,7 +14,6 @@ import {
 import { useTarifas } from "../hooks/useTarifas";
 
 export default function VerTarifas() {
-
   const {
     tarifas,
     loading,
@@ -44,28 +43,34 @@ export default function VerTarifas() {
     setPage(0);
   };
 
-
   return (
     <>
-
       <Box
         sx={{
           padding: { xs: 2, sm: 3, md: 4 },
           paddingTop: { xs: 3, sm: 4, md: 6 },
-          width: "auto",
+          width: "100%",
           margin: "0 auto",
         }}
       >
         {/* Tabla */}
-        <TableContainer component={Paper} elevation={3}>
+        <TableContainer
+          component={Paper}
+          elevation={3}
+          sx={{ scrollbarWidth: "none" }}
+        >
           <Table sx={{ minWidth: 650 }}>
             <TableHead>
-              <TableRow sx={{ backgroundColor: "var(--other)"}}>
-                <TableCell sx={{ fontWeight: "bold",  color: "white"  }}>
+              <TableRow sx={{ backgroundColor: "var(--other)" }}>
+                <TableCell sx={{ fontWeight: "bold", color: "white" }}>
                   Tipo de vehículo
                 </TableCell>
-                <TableCell sx={{ fontWeight: "bold",  color: "white"  }}>Tiempo</TableCell>
-                <TableCell sx={{ fontWeight: "bold",  color: "white"  }}>Costo</TableCell>
+                <TableCell sx={{ fontWeight: "bold", color: "white" }}>
+                  Tiempo
+                </TableCell>
+                <TableCell sx={{ fontWeight: "bold", color: "white" }}>
+                  Costo
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -111,6 +116,7 @@ export default function VerTarifas() {
 
           {/* Paginación */}
           <TablePagination
+            sx={{ scrollbarWidth: "none" }}
             component="div"
             count={totalElements}
             page={page}

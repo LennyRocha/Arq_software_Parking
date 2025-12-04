@@ -10,7 +10,6 @@ import EmptyListView from "../../errores/screens/EmptyListView";
 import useVehiculos from "../../vehiculo/hooks/useVehículos";
 import useTiposVehiculos from "../../vehiculo/hooks/useTiposVehiculos";
 import VehiculoSheetCard from "../components/VehiculoSheetCard";
-import { ScrollView } from "react-native-gesture-handler";
 import useCajones from "../hooks/useCajones";
 import { CustomAlert } from "../../../utils/customAlert";
 import { Portal, Dialog } from "react-native-paper";
@@ -412,7 +411,6 @@ export default function Inicio({ navigation }) {
         style={[BoxStyles.ButtonRadius, { width: "100%" }]}
         labelStyle={BoxStyles.buttonTextAuto}
         onPress={() => openSheet()}
-        disabled={load}
       >
         Marcar entrada
       </Button>
