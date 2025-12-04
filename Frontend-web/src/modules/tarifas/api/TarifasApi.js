@@ -1,4 +1,6 @@
 import apiToken from "../../../utils/apiToken";
+const API_URL = import.meta.env.VITE_API_URL;
+import axios from 'axios';
 
 // Obtener todas las tarifas
 export const fetchTarifas = () => apiToken.get("/api/tarifa");
@@ -16,7 +18,7 @@ export const createTarifa = (tarifa) => apiToken.post("/api/tarifa", tarifa);
 export const updateTarifa = (tarifa) => apiToken.put(`/api/tarifa`, tarifa);
 
 // Cambiar estado de una tarifa (activar/desactivar)
-export const toggleTarifaStatus = (id) => 
+export const toggleTarifaStatus = (id) =>
   apiToken.put(`/api/tarifa/${id}/status`);
 
 // Buscar tarifas con filtros, ordenamiento y paginación
@@ -53,7 +55,7 @@ export const searchPublicTarifasPaginated = ({
     size
   };
 
-  return apiToken.get("/api/tarifa/public/search/paginated", { params });
+  return axios.get(`${API_URL}/api/tarifa/public/search/paginated`, { params });
 };
 
 // Obtener todos los tipos de vehiculos
