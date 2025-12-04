@@ -37,6 +37,8 @@ export default function HistorialMarcajes() {
 
     const { modalVisible, showModal, hideModal } = useModalController();
 
+    const [isFocused, setIsFocused] = React.useState(false);
+
     const [entradaSeleccionada, setEntradaSeleccionada] = React.useState(null);
 
     const handleVerDetalle = (entrada) => {
@@ -71,8 +73,10 @@ export default function HistorialMarcajes() {
             <TextInput
                 label="Buscar por folio"
                 mode="outlined"
-                left={<TextInput.Icon icon="tag-search" />}
+                left={<TextInput.Icon icon="tag-search" color={isFocused ? theme.colors.primary : theme.colors.onSurfaceVariant} />}
                 value={buscarTexto}
+                onFocus={() => setIsFocused(true)}
+                onBlur={() => setIsFocused(false)}
                 onChangeText={(text) => setBuscarTexto(text)}
             />
 

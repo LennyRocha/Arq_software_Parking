@@ -28,7 +28,8 @@ import SalidaQR from "../modules/salidas/screens/SalidaQR";
 import EntradaQR from "../modules/cajon/screens/EntradaQR";
 import { useSnackBar } from "../context/SnackBarContext";
 import DetallesPension from "../modules/pension/screens/DetallesPension";
-import { Session } from "../modules/acceso/hooks/TokenManagement";
+import setPension from "../modules/acceso/hooks/setPension";
+import LoadingView from "../components/LoadingView";
 import { useGlobalContext } from "../context/GlobalContext";
 import HistorialMarcajes from "../modules/perfil/screens/HistorialMarcajes";
 
@@ -109,6 +110,11 @@ export default function UserStack({ navigation, route }) {
   }
 
   const { avatar } = useGlobalContext();
+
+  const { loading } = setPension();
+
+  if (loading) return <LoadingView />;
+
 
   return (
     <Stack.Navigator

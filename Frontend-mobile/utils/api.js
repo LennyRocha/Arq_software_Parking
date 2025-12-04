@@ -8,6 +8,8 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  timeout: 5000,
+  timeoutErrorMessage: "Se agotó el tiempo de respuesta"
 });
 
 api.interceptors.request.use(async (config) => {

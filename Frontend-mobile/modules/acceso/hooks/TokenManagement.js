@@ -41,6 +41,16 @@ export const Session = {
         await AsyncStorage.setItem("pension", JSON.stringify(pension));
     },
 
+    //Guardar id
+    async setId(id) {
+        await SecureStore.setItemAsync("id", id);
+    },
+
+    async getId() {
+        const id = await SecureStore.getItemAsync("id");
+        return id ? Number(id) : null;
+    },
+
     // Saber si el token ya expiró
     async isExpired() {
         const exp = await SecureStore.getItemAsync("expiration");
@@ -55,5 +65,6 @@ export const Session = {
         await SecureStore.deleteItemAsync("expiration");
         await AsyncStorage.removeItem("user");
         await AsyncStorage.removeItem("pension");
+        await SecureStore.deleteItemAsync("id");
     }
 };

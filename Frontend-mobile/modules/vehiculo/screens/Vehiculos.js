@@ -11,62 +11,68 @@ import useTiposVehiculos from '../hooks/useTiposVehiculos';
 import { useFocusEffect } from '@react-navigation/native';
 import useUserIdByEmail from '../../acceso/hooks/getIdByEmail';
 import useVehiculosEstacionados from '../hooks/useVehiculosEstacionados';
+import { useGlobalContext } from '../../../context/GlobalContext';
 
 export default function Vehiculos({ navigation }) {
   const paper = useTheme();
-  const [isFocused, setIsFocused] = React.useState(false);
-  const { id, loading, error } = useUserIdByEmail();
+  const { idUsuario: id } = useGlobalContext();
 
-  const { getVehiculos, data, isLoading, errorData, restoreValues, restartCall, query, setQuery, idCar, setIdCar, active, setActive, conPlacas, setConPlacas } = useVehiculos(id);
-  const { data: list, error: errorTipos, load } = useTiposVehiculos();
-  const {  activeData, isLoading: loadingUsed} = useVehiculosEstacionados();
+  const {
+    data,
+    isLoading,
+    errorData,
+    query, setQuery,
+    idCar, setIdCar,
+    active, setActive,
+    conPlacas, setConPlacas,
+    applyFilters,
+    restoreValues,
+    refetch
+  } = useVehiculos(id);
 
-  //Control del dialog de filtros
+  const { data: list, load, error: errorTipos } = useTiposVehiculos();
+  const { activeData, isLoading: loadingUsed } = useVehiculosEstacionados();
+
   const [visible, setVisible] = React.useState(false);
-  const showDialog = () => {
-    setVisible(true);
-    Keyboard.isVisible && Keyboard.dismiss();
-  };
-  const hideDialog = () => {
-    setVisible(false);
-    Keyboard.isVisible && Keyboard.dismiss();
-  };
-
   const [refreshing, setRefreshing] = React.useState(false);
-
+  const [isFocused, setIsFocused] = React.useState(false);
 
   useFocusEffect(
     React.useCallback(() => {
-      getVehiculos();
-
-      return () => {
-        // opcional: cleanup cuando la pantalla pierde foco
-      };
+      refetch();
     }, [])
   );
 
   const onRefresh = async () => {
     setRefreshing(true);
-    await getVehiculos();
+    await refetch();
     setRefreshing(false);
   };
 
-  if (errorData?.tipo === "Error de Axios") return <ErrorAxios error={errorData.detalles} callback={restartCall} />
+  if (errorData?.tipo === "Error de Axios") {
+    return <ErrorAxios error={errorData.detalles} callback={refetch} />;
+  }
 
-  if (!data || isLoading || load || loading || loadingUsed) return <LoadingView />;
+  if (!data || isLoading || load || loadingUsed) {
+    return <LoadingView />;
+  }
 
   return (
     <View style={{ flex: 1 }}>
       <FlatList
         data={data.data}
         keyboardShouldPersistTaps="handled"
-        ListEmptyComponent={() => (
-          <EmptyListView message={data.message} icon={"car-off"} />
-        )}
+        ListEmptyComponent={<EmptyListView message={data.message} icon="car-off" />}
         keyExtractor={(item) => item.id.toString()}
         numColumns={2}
         renderItem={({ item }) => (
-          <VehiculoCard navigation={navigation} vehiculo={item} list={list} current={activeData.data.vehiculo} date={activeData.data.fechaEntrada} />
+          <VehiculoCard
+            navigation={navigation}
+            vehiculo={item}
+            list={list}
+            current={activeData?.data?.vehiculo}
+            date={activeData?.data?.fechaEntrada}
+          />
         )}
         ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
         columnWrapperStyle={{ gap: 8 }}
@@ -80,49 +86,44 @@ export default function Vehiculos({ navigation }) {
         }
         ListHeaderComponent={
           <>
-            <Text variant='titleLarge' style={{ fontWeight: "bold", color: paper.colors.primary }} >
+            <Text variant="titleLarge" style={{ fontWeight: "bold", color: paper.colors.primary }}>
               Mis vehículos
             </Text>
 
             <View style={{ flexDirection: "row", width: "100%", alignItems: "center", gap: 4 }}>
               <TextInput
-                label={"Modelo o descripción"}
-                mode='outlined'
+                label="Modelo o descripción"
+                mode="outlined"
                 style={{ flex: 1, height: 50 }}
                 value={query}
-                onChangeText={(text) => setQuery(text)}
-                contentStyle={{ padding: 0, marginVertical: 0, alignSelf: "flex-start" }}
+                onChangeText={setQuery}
+                contentStyle={{ padding: 0 }}
                 onFocus={() => setIsFocused(true)}
                 onBlur={() => setIsFocused(false)}
                 left={
                   <TextInput.Icon
                     icon="car-search"
                     color={isFocused ? paper.colors.primary : paper.colors.onSurfaceVariant}
-                    onPress={async () => {
-                      await getVehiculos();
+                    onPress={() => {
                       setQuery("");
                       setIsFocused(false);
-                    }
-                    }
+                    }}
                   />
                 }
               />
+
               <TouchableRipple
                 style={{
                   height: 50,
                   width: 50,
                   borderRadius: 5,
                   borderWidth: 2,
-                  marginTop: 6,
                   borderColor: paper.colors.primary,
                   justifyContent: "center",
-                  alignItems: "center",
-                  margin: 0,
-                  padding: 0,
-                  backgroundColor: "transparent"
+                  alignItems: "center"
                 }}
                 rippleColor={paper.colors.primary}
-                onPress={showDialog}
+                onPress={() => setVisible(true)}
               >
                 <Icon source="filter-variant" size={24} color={paper.colors.primary} />
               </TouchableRipple>
@@ -130,88 +131,99 @@ export default function Vehiculos({ navigation }) {
           </>
         }
       />
+
       <FAB
         icon="plus"
-        color='white'
+        color="white"
         style={[styles.fab, { backgroundColor: paper.colors.tertiary }]}
         onPress={() => navigation.navigate("newCar")}
       />
+
       <DialogFilter
         visible={visible}
-        hideDialog={hideDialog}
-        active={active}
-        setActive={setActive}
-        conPlacas={conPlacas}
-        setConPlacas={setConPlacas}
+        hideDialog={() => setVisible(false)}
         idCar={idCar}
+        active={active}
+        conPlacas={conPlacas}
         setIdCar={setIdCar}
+        setActive={setActive}
+        setConPlacas={setConPlacas}
+        applyFilters={applyFilters}
         restoreValues={restoreValues}
-        onApply={getVehiculos} />
+      />
     </View>
-  )
+  );
 }
 
-const DialogFilter = ({ visible, hideDialog, restoreValues, active, setActive, setConPlacas, conPlacas, idCar, setIdCar, onApply }) => {
-  async function sendFilter() {
-    await onApply();
+const DialogFilter = ({
+  visible,
+  hideDialog,
+  idCar, setIdCar,
+  active, setActive,
+  conPlacas, setConPlacas,
+  applyFilters,
+  restoreValues
+}) => {
+
+  const aplicar = () => {
+    applyFilters(idCar, active, conPlacas);
     hideDialog();
-  }
+  };
+
+  const limpiar = () => {
+    restoreValues();
+    hideDialog();
+  };
 
   return (
     <Portal>
       <Dialog visible={visible} onDismiss={hideDialog}>
         <Dialog.Title>Filtros</Dialog.Title>
+
         <Dialog.Content style={{ gap: 12 }}>
-          <Text variant='labelLarge'>Tipo de vehículo</Text>
+          <Text variant="labelLarge">Tipo de vehículo</Text>
+
           <RadioButton.Group onValueChange={setIdCar} value={idCar}>
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <RadioButton value={0} />
-              <Text>Todos</Text>
-            </View>
-
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <RadioButton value={1} />
-              <Text>Coche</Text>
-            </View>
-
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <RadioButton value={2} />
-              <Text>Camioneta</Text>
-            </View>
-
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <RadioButton value={3} />
-              <Text>Moto</Text>
-            </View>
+            <List.Item style={{ paddingVertical: 0, marginVertical: 0 }} contentStyle={{ paddingVertical: 0, marginVertical: 0 }} title="Todos" left={() => <RadioButton value={0} />} />
+            <List.Item style={{ paddingVertical: 0, marginVertical: 0 }} contentStyle={{ paddingVertical: 0, marginVertical: 0 }} title="Coche" left={() => <RadioButton value={1} />} />
+            <List.Item style={{ paddingVertical: 0, marginVertical: 0 }} contentStyle={{ paddingVertical: 0, marginVertical: 0 }} title="Camioneta" left={() => <RadioButton value={2} />} />
+            <List.Item style={{ paddingVertical: 0, marginVertical: 0 }} contentStyle={{ paddingVertical: 0, marginVertical: 0 }} title="Moto" left={() => <RadioButton value={3} />} />
           </RadioButton.Group>
-          <View style={{ flexDirection: "row", width: "100%", justifyContent: "space-between", alignItems: "center" }}>
-            <Text variant='labelLarge'>Vehículos activos</Text>
-            <Checkbox
-              status={active ? "checked" : "unchecked"}
-              onPress={() => setActive(!active)}
-            />
-          </View>
-          <View style={{ flexDirection: "row", width: "100%", justifyContent: "space-between", alignItems: "center" }}>
-            <Text variant='labelLarge'>Vehículos con placa</Text>
-            <Checkbox
-              status={conPlacas ? "checked" : "unchecked"}
-              onPress={() => setConPlacas(!conPlacas)}
-            />
-          </View>
+
+          <List.Item
+            title="Vehículos activos"
+            style={{ paddingVertical: 0, marginVertical: 0 }}
+            contentStyle={{ paddingVertical: 0, marginVertical: 0 }}
+            right={() => (
+              <Checkbox
+                status={active ? "checked" : "unchecked"}
+                onPress={() => setActive(!active)}
+              />
+            )}
+          />
+
+          <List.Item
+            title="Vehículos con placa"
+            style={{ paddingVertical: 0, marginVertical: 0 }}
+            contentStyle={{ paddingVertical: 0, marginVertical: 0 }}
+            right={() => (
+              <Checkbox
+                status={conPlacas ? "checked" : "unchecked"}
+                onPress={() => setConPlacas(!conPlacas)}
+              />
+            )}
+          />
         </Dialog.Content>
+
         <Dialog.Actions>
-          <Button onPress={hideDialog} style={{ borderRadius: 5 }}>Cerrar</Button>
-          <Button onPress={async () => {
-            restoreValues();
-            await onApply();
-            hideDialog();
-          }} style={{ borderRadius: 5 }}>Limpiar filtros</Button>
-          <Button onPress={async () => sendFilter()} style={{ borderRadius: 5 }} >Aplicar</Button>
+          <Button onPress={hideDialog}>Cerrar</Button>
+          <Button onPress={limpiar}>Limpiar</Button>
+          <Button onPress={aplicar}>Aplicar</Button>
         </Dialog.Actions>
       </Dialog>
     </Portal>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   fab: {

@@ -3,16 +3,16 @@ import React from "react";
 import { Text, TextInput, HelperText, useTheme, Button, ActivityIndicator } from "react-native-paper";
 import { MaskedTextInput } from "react-native-mask-text";
 import BoxStyles from "../../../utils/genericScreenStyles";
-import useUserIdByEmail from "../../acceso/hooks/getIdByEmail";
 import usePutUsuario from "../config/usePutUser";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { CustomAlert } from "../../../utils/customAlert";
 import { useFocusEffect } from "@react-navigation/native";
+import { useGlobalContext } from "../../../context/GlobalContext";
 
 export default function InputPerfil({ navigation, route }) {
   const paper = useTheme();
-  const { id, loading: loadingId, error } = useUserIdByEmail();
+  const { idUsuario: id } =  useGlobalContext();
   const { campo, data, onReturn } = route.params;
   
   const { 

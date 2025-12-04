@@ -20,7 +20,6 @@ export default function MainNavigator() {
       try {
         const storedUser = await Session.getUser();
         const isTokenExpired = await Session.isExpired();
-        console.log("¿Expiró el token?: ", isTokenExpired);
         setUser(storedUser);
         setIsExpired(isTokenExpired);
       } catch (err) {

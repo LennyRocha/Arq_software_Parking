@@ -9,7 +9,7 @@ import axios from 'axios';
 
 export default function useLogin() {
     const { showSnack } = useSnackBar();
-    const { setAvatar, setCorreo, setPension } = useGlobalContext();
+    const { setAvatar, setCorreo, setPension, setIdUsuario } = useGlobalContext();
     const [loading, setLoading] = React.useState(false);
     const [errorData, setErrorData] = React.useState(null);
 
@@ -101,7 +101,7 @@ export default function useLogin() {
 
             setAvatar(getInitials(nombre, apellidos));
 
-            setPension(pensionJson)
+            setPension(pensionJson);
 
             await Session.saveSession({
                 token: token,
@@ -109,6 +109,8 @@ export default function useLogin() {
                 user: userJson,
                 pension: pensionJson,
             })
+
+            await Session.setId(String(user.id));
 
             return true;
 
