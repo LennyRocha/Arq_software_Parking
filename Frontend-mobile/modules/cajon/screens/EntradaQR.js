@@ -12,11 +12,14 @@ import { useCustomAlert } from "../../../utils/useCustomAlert";
 import { useWebSocket } from "../hooks/useWebSocket";
 import { useGlobalContext } from '../../../context/GlobalContext';
 import setPension from "../../acceso/hooks/setPension";
+import { useSnackBar } from "../../../context/SnackBarContext";
 
 export default function EntradaQR({ route, navigation }) {
   const { visible, config, showAlert, hideAlert } = useCustomAlert();
 
-  const { idUsuario, showSnack } = useGlobalContext();
+  const { idUsuario } = useGlobalContext();
+
+  const { showSnack} = useSnackBar();
 
   const { on, isConnected } = useWebSocket();
 
@@ -27,9 +30,7 @@ export default function EntradaQR({ route, navigation }) {
     if (!isConnected) return;
 
     on("uuid", (data) => {
-      console.log(data)
       if (data.id === idUsuario) {
-        console.log("Si")
         showSnack("Entrada marcada", "Cerrar");
         navigation.goBack();
         recall();

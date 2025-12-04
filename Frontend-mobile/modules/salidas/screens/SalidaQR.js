@@ -12,11 +12,14 @@ import { useCustomAlert } from "../../../utils/useCustomAlert";
 import { useWebSocket } from "../../cajon/hooks/useWebSocket";
 import { useGlobalContext } from "../../../context/GlobalContext";
 import setPension from "../../acceso/hooks/setPension";
+import { useSnackBar } from "../../../context/SnackBarContext";
 
 export default function SalidaQR({ route, navigation }) {
   const { visible, config, showAlert, hideAlert } = useCustomAlert();
 
-  const { idUsuario, showSnack } = useGlobalContext();
+  const { idUsuario } = useGlobalContext();
+
+  const { showSnack } = useSnackBar();
 
   const { on, isConnected } = useWebSocket();
 
