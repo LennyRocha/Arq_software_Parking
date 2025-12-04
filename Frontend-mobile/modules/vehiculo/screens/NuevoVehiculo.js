@@ -11,10 +11,10 @@ import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import useTiposVehiculos from "../hooks/useTiposVehiculos";
 import { CustomAlert } from "../../../utils/customAlert";
-import useUserIdByEmail from "../../acceso/hooks/getIdByEmail";
+import { useGlobalContext } from "../../../context/GlobalContext";
 
 export default function NuevoVehiculo({ navigation }) {
-  const { id, loading, error } = useUserIdByEmail();
+  const { idUsuario: id } = useGlobalContext();
   const { data: tipos } = useTiposVehiculos();
   const paper = useTheme();
   const [valueId, setValueId] = React.useState(1);

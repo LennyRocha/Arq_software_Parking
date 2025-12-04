@@ -33,7 +33,7 @@ export default function useCajones() {
             await soundRef.current.replayAsync();
 
         } catch (error) {
-            console.log("Error al reproducir sonido:", error);
+            console.error("Error al reproducir sonido:", error);
         }
     }
 

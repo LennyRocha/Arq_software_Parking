@@ -16,7 +16,32 @@ import useModalController from '../../../hooks/useModalController';
 import CustomModal from '../../../components/CustomModal'
 import DetallesPension from "../../pension/screens/DetallesPension";
 
+import useRegistroPension from "../hooks/useRegistroPension";
+
 export default function Signup({ navigation }) {
+  const {
+    activeStep,
+    handleNext,
+    handleBack,
+    tiposPension,
+    loadingTiposPension,
+    errorTiposPension,
+    cargarMasTiposPension,
+    paginationInfo,
+    formData,
+    updateFormData,
+    seleccionarTipoPension,
+    agregarVehiculo,
+    removerVehiculo,
+    editarVehiculo,
+    iniciarPago,
+    handleSubmit,
+    loadingRegistro,
+    errorRegistro,
+    registroExitoso,
+    datosRegistro,
+  } = useRegistroPension(null);
+
   const paper = useTheme();
   const { modalVisible, showModal, hideModal } = useModalController();
 
@@ -36,8 +61,8 @@ export default function Signup({ navigation }) {
   const [noPlaca, setNoPlaca] = React.useState(false);
 
   //Datos de la pensión
-
-  const Vista1 = () => (
+  const Vista1 = () => {
+    return (
     <View
       style={[
         {
@@ -84,7 +109,7 @@ export default function Signup({ navigation }) {
         0/10
       </HelperText>
     </View>
-  );
+  )};
   const Vista2 = () => (
     <View
       style={[

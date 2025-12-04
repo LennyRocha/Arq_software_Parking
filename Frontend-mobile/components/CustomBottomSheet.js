@@ -1,5 +1,5 @@
 import React, { forwardRef, useRef, useImperativeHandle } from "react";
-import {  StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 import { useTheme } from "react-native-paper";
 import { useCustomThemes } from "../context/useCustomColors";
@@ -8,6 +8,8 @@ const CustomBottomSheet = forwardRef(
   ({ children, snapPoints = ["30%", "60%"] }, ref) => {
     const bottomSheetRef = useRef(null);
 
+    const memoSnapPoints = React.useMemo(() => snapPoints, [snapPoints]);
+
     // Exponer los métodos al padre
     useImperativeHandle(ref, () => ({
       open: () => bottomSheetRef.current?.expand(),
@@ -15,25 +17,23 @@ const CustomBottomSheet = forwardRef(
     }));
 
     const themes = useTheme();
-    const { theme, mode } = useCustomThemes();
     return (
       <BottomSheet
         ref={bottomSheetRef}
         index={-1} // empieza cerrado
-        snapPoints={snapPoints}
+        snapPoints={memoSnapPoints}
         enablePanDownToClose={true} // swipe hacia abajo para cerrar
         backgroundStyle={{ backgroundColor: themes.colors.surface }}
       >
-        <BottomSheetView style={styles.content}>{children}</BottomSheetView>
+        {children}
       </BottomSheet>
     );
   }
 );
 
-const styles = StyleSheet.create({
+export const BottomSheetContainerStyles = StyleSheet.create({
   content: {
-    flex: 1,
-    padding: 20,
+    padding: 24,
     borderTopLeftRadius: 12,
     borderTopRightRadius: 12,
   },

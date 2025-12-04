@@ -15,12 +15,17 @@ import useCajones from "../hooks/useCajones";
 import { CustomAlert } from "../../../utils/customAlert";
 import { Portal, Dialog } from "react-native-paper";
 import useMarcarEntrada from "../hooks/useMarcarEntrada";
+import { useGlobalContext } from "../../../context/GlobalContext";
+import { useFocusEffect } from "@react-navigation/native";
+import { BottomSheetScrollView } from "@gorhom/bottom-sheet";
+import { BottomSheetContainerStyles } from "../../../components/CustomBottomSheet";
 
 const { width, height } = Dimensions.get("screen")
 
 export default function Inicio({ navigation }) {
+  const { idUsuario: id } = useGlobalContext();
   const { data: list, load: loadTypes } = useTiposVehiculos();
-  const { data: cars, isLoading: load } = useVehiculos(3);
+  const { data: cars, isLoading: load } = useVehiculos(id);
   const { setSnapPoints, openSheet, closeSheet, setSheetChild } = useSnackBar();
   const paper = useTheme();
   const { setVehiculo, vehiculo, errorData, visible, config, hideAlert, data: entrada, onSubmit, isLoading: loadingPost } = useMarcarEntrada(navigation);
@@ -33,6 +38,14 @@ export default function Inicio({ navigation }) {
   const hideDialog = () => {
     setVisible(false);
   };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      return () => {
+        closeSheet();
+      };
+    }, [])
+  );
 
   const {
     data,
@@ -82,7 +95,9 @@ export default function Inicio({ navigation }) {
       }
 
       setSheetChild(
-        <ScrollView style={{ flex: 1 }} contentContainerStyle={{ gap: 12 }}>
+        <BottomSheetScrollView
+          contentContainerStyle={BottomSheetContainerStyles.content}
+        >
           <Text variant="titleMedium">Selecciona un vehículo</Text>
           <RadioButton.Group onValueChange={setIdEnter} value={idEnter}>
             <View style={{ gap: 8, padding: 2 }}>
@@ -116,7 +131,7 @@ export default function Inicio({ navigation }) {
                 Continuar
               </Button>
           }
-        </ScrollView >
+        </BottomSheetScrollView>
       );
     }
   }, [cars, activeData, idEnter, loadingPost, setVehiculo, vehiculo]);
@@ -248,13 +263,18 @@ export default function Inicio({ navigation }) {
   if (loading || !data || load || loadTypes || loadingActive) return <LoadingView />;
 
   return (
-    <View style={[BoxStyles.container, BoxStyles.flexCentered]}>
+    <View style={[{
+      paddingBottom: 0, flex: 1,
+      backgroundColor: "transparent",
+      padding: 24,
+      gap: 0,
+    }, BoxStyles.flexCentered]}>
       <Text variant='titleLarge' style={{ fontWeight: "bold", color: paper.colors.primary, width: "100%" }}>
         Cajones disponibles
       </Text>
 
       {data.length !== 0 && (
-        <View style={{ width: "100%", gap: 1, flexDirection: "column" }}>
+        <View style={{ width: "100%", gap: 1, flexDirection: "column", gap: 4, marginTop: 4 }}>
           <HelperText type="info" variant="labelSmall" style={{ textAlign: "left", paddingHorizontal: 0 }}>Tipo de vehículo</HelperText>
           <SegmentedButtons
             value={idCar}
@@ -389,9 +409,10 @@ export default function Inicio({ navigation }) {
       <Button
         theme={{ colors: { primary: paper.colors.tertiary } }}
         mode="contained"
-        style={[BoxStyles.ButtonRadius]}
-        labelStyle={BoxStyles.buttonText}
+        style={[BoxStyles.ButtonRadius, { width: "100%" }]}
+        labelStyle={BoxStyles.buttonTextAuto}
         onPress={() => openSheet()}
+        disabled={load}
       >
         Marcar entrada
       </Button>

@@ -3,6 +3,7 @@ import { Session } from "../modules/acceso/hooks/TokenManagement";
 import { useNavigation } from "@react-navigation/native";
 import { useCustomAlert } from "../utils/useCustomAlert";
 import { CustomAlert } from "../utils/customAlert";
+import useUserIdByEmail from "../modules/acceso/hooks/getIdByEmail";
 
 const GlobalContext = createContext();
 
@@ -12,7 +13,8 @@ export const GlobalProvider = ({ children }) => {
     const navigation = useNavigation();
     const [avatar, setAvatar] = useState("UP");
     const [correo, setCorreo] = useState("");
-    const [ pension, setPension ] = useState({});
+    const [pension, setPension] = useState({});
+    const [idUsuario, setIdUsuario] = React.useState(null);
     const { visible, config, showAlert, hideAlert } = useCustomAlert();
 
     function getInitials(nombre, apellidos) {
@@ -21,6 +23,20 @@ export const GlobalProvider = ({ children }) => {
 
         return inicialNombre + inicialApellido;
     }
+
+    React.useEffect(() => {
+        return () => {
+            setIdUsuario(null);
+        };
+    }, [])
+
+    React.useEffect(() => {
+        async function setBySecureStorage() {
+            const id = await Session.getId();
+            setIdUsuario(id);
+        }
+        setBySecureStorage();
+    }, []);
 
     const showExpiredAlert = () => {
         showAlert({
@@ -56,7 +72,7 @@ export const GlobalProvider = ({ children }) => {
     }, [])
 
     return (
-        <GlobalContext.Provider value={{ avatar, setAvatar, showExpiredAlert , correo, setCorreo, pension, setPension}}>
+        <GlobalContext.Provider value={{ avatar, setAvatar, showExpiredAlert, correo, setCorreo, pension, setPension, idUsuario, setIdUsuario }}>
             {children}
             <CustomAlert visible={visible} hideAlert={hideAlert} config={config} />
         </GlobalContext.Provider>

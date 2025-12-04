@@ -7,10 +7,10 @@ import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { CustomAlert } from "../../../utils/customAlert";
 import { useFocusEffect } from "@react-navigation/native";
-import useUserIdByEmail from "../../acceso/hooks/getIdByEmail";
+import { useGlobalContext } from "../../../context/GlobalContext";
 
 export default function InputVehiculo({ navigation, route }) {
-  const { id, loading, error } = useUserIdByEmail();
+  const { id} = useGlobalContext();
   const paper = useTheme();
   const { campo, data, onReturn } = route.params;
 
