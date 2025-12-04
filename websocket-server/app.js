@@ -37,6 +37,17 @@ app.post('/notify', cors(notifyCorseOptions), (req, res) => {
     res.json({ success: true });
 });
 
+app.post('/marcarje', cors(notifyCorseOptions), (req, res) => {
+    const { accion, id } = req.body;
+    const data = {
+        accion: accion,
+        id: id
+    }
+    console.log('Notificación recibida de Spring');
+    io.emit('uuid', data);
+    res.json({ success: true });
+});
+
 const activeSessions = new Map();
 
 io.on('connection', (socket) => {

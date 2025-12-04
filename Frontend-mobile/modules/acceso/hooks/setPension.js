@@ -11,6 +11,10 @@ export default function setPension() {
 
     const [loading, setLoading] = React.useState(false);
 
+    const [ dependence, setDependence ] = React.useState(false);
+
+    const recall = () => setDependence(!dependence);
+
     async function savePension() {
         try {
             const response = await api.get(`/pensionado/cliente/mi-pension`)
@@ -39,7 +43,7 @@ export default function setPension() {
 
     React.useEffect(() => {
         savePension();
-    }, []);
+    }, [dependence]);
 
-    return { loading };
+    return { loading, savePension, recall };
 }

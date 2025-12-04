@@ -1,6 +1,8 @@
 package utez.edu.mx.backendparking.modules.entradasalida;
 
 import jakarta.validation.ConstraintViolationException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -9,6 +11,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import utez.edu.mx.backendparking.modules.cajon.model.Cajon;
 import utez.edu.mx.backendparking.modules.cajon.repository.CajonRepository;
 import utez.edu.mx.backendparking.modules.cajon.service.CajonService;
 import utez.edu.mx.backendparking.modules.entradasalida.dto.EntradaSalidaCreatePensionadoRequestDto;
@@ -35,15 +38,13 @@ import utez.edu.mx.backendparking.security.SecurityUtils;
 import utez.edu.mx.backendparking.shared.api.ApiResponse;
 import utez.edu.mx.backendparking.shared.exception.BadRequestException;
 import utez.edu.mx.backendparking.shared.exception.ResourceNotFoundException;
+import utez.edu.mx.backendparking.shared.webClient.WebClientConfig;
 
 import java.sql.SQLException;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -69,6 +70,23 @@ public class EntradaSalidaServiceImpl implements EntradaSalidaService {
         this.cajonService = cajonService;
     }
 
+    @Value("${websocket.server.url}")
+    private String websocketServerUrl;
+
+    @Autowired
+    private WebClientConfig webClientConfig;
+
+    private void updateNodeServer(String accion, Long userId) {
+        EntradaSalidaSocket socket = new EntradaSalidaSocket(userId, accion);
+
+        webClientConfig.createClient(websocketServerUrl).post()
+                .uri("/marcarje")
+                .bodyValue(socket)
+                .retrieve()
+                .bodyToMono(String.class)
+                .doOnError(error -> System.err.println("Error: " + error.getMessage()))
+                .subscribe();
+    }
 
     @Override
     @Transactional(readOnly = true)
@@ -152,6 +170,8 @@ public class EntradaSalidaServiceImpl implements EntradaSalidaService {
         //Ocupar un cajón
         int tipo = entradaSalida.getVehiculo().getTipoVehiculo().getId();
         cajonService.cambiarDisponibilidadForPensionados(true,tipo);
+
+        updateNodeServer("entrada",usuarioPension.getUsuario().getId());
 
         // Convertir a DTO de respuesta usando el mapper
         return EntradaSalidaMapper.toResponseDto(savedEntradaSalida);
@@ -421,6 +441,8 @@ public class EntradaSalidaServiceImpl implements EntradaSalidaService {
         //Desocupar un cajón
         int tipo = entradaSalida.getVehiculo().getTipoVehiculo().getId();
         cajonService.cambiarDisponibilidadForPensionados(false,tipo);
+
+        updateNodeServer("salida",usuarioPension.getUsuario().getId());
 
         return responseDto;
     }

@@ -34,6 +34,7 @@ const CustomBottomSheet = forwardRef(
 export const BottomSheetContainerStyles = StyleSheet.create({
   content: {
     padding: 24,
+    gap: 12,
     borderTopLeftRadius: 12,
     borderTopRightRadius: 12,
   },

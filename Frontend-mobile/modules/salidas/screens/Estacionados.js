@@ -17,6 +17,7 @@ export default function Estacionados({ navigation }) {
     camioneta: require('../../../img/camioneta.png'),
   }
   const { activeData, isLoading: loadingActive, errorData: errData, restartCall: recall } = useVehiculosEstacionados();
+  const [ salida, setSalida ] = React.useState({});
 
   const parseDate = (fecha) => {
     const ano = fecha.substring(0, 4);
@@ -95,11 +96,12 @@ export default function Estacionados({ navigation }) {
 
   React.useEffect(() => {
     if (activeData) {
+      setSalida(activeData.data);
       setFolio(activeData.data.folio)
     }
   }, [activeData])
 
-  const { setVehiculo, isLoading, vehiculo, errorData, visible, config, hideAlert, data, onSubmit } = useMarcarSalida(navigation, folio, recall);
+  const { setVehiculo, isLoading, vehiculo, errorData, visible, config, hideAlert, data, onSubmit } = useMarcarSalida(navigation, folio, recall, salida);
 
   const LoaderAct = () => {
     return <View style={{ width: "100%", justifyContent: "center", alignItems: "center" }}>

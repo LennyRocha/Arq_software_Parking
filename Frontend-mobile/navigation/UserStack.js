@@ -29,7 +29,6 @@ import EntradaQR from "../modules/cajon/screens/EntradaQR";
 import { useSnackBar } from "../context/SnackBarContext";
 import DetallesPension from "../modules/pension/screens/DetallesPension";
 import setPension from "../modules/acceso/hooks/setPension";
-import LoadingView from "../components/LoadingView";
 import { useGlobalContext } from "../context/GlobalContext";
 import HistorialMarcajes from "../modules/perfil/screens/HistorialMarcajes";
 

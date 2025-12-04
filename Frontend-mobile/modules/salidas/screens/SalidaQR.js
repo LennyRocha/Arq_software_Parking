@@ -9,9 +9,31 @@ import ViewShot from "react-native-view-shot";
 import { CustomAlert } from "../../../utils/customAlert";
 import * as MediaLibrary from "expo-media-library";
 import { useCustomAlert } from "../../../utils/useCustomAlert";
+import { useWebSocket } from "../../cajon/hooks/useWebSocket";
+import { useGlobalContext } from "../../../context/GlobalContext";
+import setPension from "../../acceso/hooks/setPension";
 
-export default function SalidaQR({ route }) {
+export default function SalidaQR({ route, navigation }) {
   const { visible, config, showAlert, hideAlert } = useCustomAlert();
+
+  const { idUsuario, showSnack } = useGlobalContext();
+
+  const { on, isConnected } = useWebSocket();
+
+  const { recall } = setPension();
+
+  React.useEffect(() => {
+    if (!isConnected) return;
+
+    on("uuid", async (data) => {
+      if (data.id === idUsuario) {
+        showSnack("Salida marcada", "Cerrar");
+        navigation.goBack();
+        recall();
+      }
+    });
+
+  }, [isConnected]);
 
   const [loadingSafe, setLoadingSafe] = React.useState(false);
 

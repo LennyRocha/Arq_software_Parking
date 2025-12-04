@@ -4,7 +4,7 @@ import { getAxiosErrorMessage } from '../../../utils/getAxiosMessage';
 import TipoVehiculo from '../../../models/TipoVehiculo';
 import api from '../../../utils/api';
 
-export default function useGetTiposVehiculos(id) {
+export default async function useGetTipoVehiculo(id) {
     const [data, setData] = React.useState([]);
     const [error, setError] = React.useState([]);
 
