@@ -31,7 +31,7 @@ export default function SalidaQR({ route, navigation }) {
     on("uuid", async (data) => {
       if (data.id === idUsuario) {
         showSnack("Salida marcada", "Cerrar");
-        navigation.goBack();
+        navigation.popToTop();
         recall();
       }
     });
