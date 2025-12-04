@@ -29,8 +29,7 @@ import MisVehiculos from "../modules/vehiculo/screens/MisVehiculos";
 import NuevoVehiculo from "../modules/vehiculo/screens/NuevoVehiculo";
 import CajonesTabla from "../modules/cajon/pages/CajonesTabla";
 import NuevoCajon from "../modules/cajon/pages/NuevoCajon";
-
-const Err = () => <h1>404 - Not Found!</h1>;
+import NotFound from "../modules/errorPages/NotFound";
 
 export default function Rutas() {
   return (
@@ -89,7 +88,7 @@ export default function Rutas() {
 
         </Route>
         {/* Perfil y otros */}
-        <Route path="*" element={<Err />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>
   );
