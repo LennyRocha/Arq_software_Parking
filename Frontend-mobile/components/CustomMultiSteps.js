@@ -68,6 +68,11 @@ export default function CustomMultiSteps({
                   style={[BoxStyles.ButtonRadius, { flex: 1 }]}
                   labelStyle={BoxStyles.buttonText}
                   mode="contained"
+                  disabled={
+                    index === steps.length - 1
+                      ? step.props?.nextBtnDisabled
+                      : step.props?.nextBtnDisabled
+                  }
                   onPress={
                     index === steps.length - 1
                       ? step.onFinish || (() => alert("Finalizado"))

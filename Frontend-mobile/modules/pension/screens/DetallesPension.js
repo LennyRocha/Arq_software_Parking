@@ -6,7 +6,6 @@ import logo from '../../../img/logo_parking_sin_fondo.png';
 import mercadoPago from '../../../img/mercado_pago.png';
 import dinero from '../../../img/dinero.png';
 import { Linking } from "react-native";
-import { FRONT_URL } from '@env';
 import useMiPension from "../hooks/useMiPension";
 import RenovarMiPensionModal from "../../../components/RenovarPensionModal";
 
@@ -72,7 +71,7 @@ export default function DetallesPension({ route, naviagtion, pensionObject = nul
   }
   return (
     <View style={!pensionObject ? BoxStyles.container : { flex: 1 }}>
-      <View style={{ flexDirection: "row", width: "100%", gap: 4, height: "25%" }}>
+      <View style={{ flexDirection: "row", width: "100%", gap: 8, height: "25%" }}>
         <View style={{ width: "35%", backgroundColor: paper.colors.tertiary, borderRadius: 5, alignItems: "center", justifyContent: "center" }}>
           <Icon source={logo} size={72} />
         </View>
@@ -107,12 +106,11 @@ export default function DetallesPension({ route, naviagtion, pensionObject = nul
         Pagar
       </Button>
       <RenovarMiPensionModal
-        visible={renovarModalOpen}           // ← Cambio: open → visible
-        onDismiss={handleCerrarRenovar}      // ← Cambio: onClose → onDismiss
-        pension={pension}
+        visible={renovarModalOpen}
+        onDismiss={handleCerrarRenovar}
+        pension={myPension}
         onIniciarPago={iniciarPagoRenovacion}
         onConfirmarRenovacion={confirmarRenovacion}
-        setLoading={setLoading}
       />
     </View >
   );

@@ -50,7 +50,7 @@ export default function usePensiones(navigation, pressHanlder, renovar) {
     data?.data.map((item) => {
       if (!item.status) return;
       return (
-        <PensionCard key={item.id} isActive={pension?.id === item.id} pension={item} onPress={() => pension.id  = item.id ? renovar() : pressHanlder(item)} myPension={pension} />
+        <PensionCard key={item.id} isActive={pension?.id === item.id} pension={item} onPress={() => pension.id  === item.id ? renovar() : pressHanlder(item)} myPension={pension} />
       )
     })
   ), [data, pension]);

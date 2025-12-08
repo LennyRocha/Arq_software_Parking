@@ -42,11 +42,13 @@ export default function Cajoncito({ cajon, index }) {
   const getOrientation = () => {
     switch (index) {
       case 1:
-      case 3:
-        return "90deg";
-      case 2:
       case 4:
+        return "90deg";
+      case 0:
+      case 3:
         return "-90deg";
+      default:
+        return "0deg";
     }
   }
 
@@ -70,7 +72,7 @@ export default function Cajoncito({ cajon, index }) {
             width: "100%",
             height: undefined,
             aspectRatio: 1,
-            transform: [{ rotate: index ? getOrientation() : "90deg" }],
+            transform: [{ rotate: getOrientation() }],
             resizeMode: "contain",
           }}
         />

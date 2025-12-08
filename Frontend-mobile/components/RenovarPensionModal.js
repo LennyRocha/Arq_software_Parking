@@ -25,6 +25,7 @@ import { CustomAlert } from "../utils/customAlert";
 import CustomMultiSteps from './CustomMultiSteps'
 import { renovarPensionSchema, renovarPensionInitialValues } from "../modules/pension/config/renovarYup";
 import { fetchTiposPension } from "../modules/pension/api/TiposPensionApi";
+import { useCustomThemes } from "../context/useCustomColors";
 export default function RenovarMiPensionModal({
     visible,
     onDismiss,
@@ -34,6 +35,7 @@ export default function RenovarMiPensionModal({
     setLoading,
 }) {
     const theme = useTheme();
+    const { mode } = useCustomThemes();
     const [tiposPension, setTiposPension] = useState([]);
     const [loadingTipos, setLoadingTipos] = useState(false);
     const [tipoPensionSeleccionado, setTipoPensionSeleccionado] = useState(null);
@@ -249,6 +251,7 @@ export default function RenovarMiPensionModal({
             <View style={styles.faqContainer}>
                 <List.Accordion
                     title="¿Qué pasa si renuevo antes de que termine?"
+                    titleNumberOfLines={2}
                     expanded={faq1Expanded}
                     onPress={() => setFaq1Expanded(!faq1Expanded)}
                     titleStyle={styles.faqTitle}
@@ -261,6 +264,7 @@ export default function RenovarMiPensionModal({
 
                 <List.Accordion
                     title="¿Qué pasa si renuevo cuando ya terminó?"
+                    titleNumberOfLines={2}
                     expanded={faq2Expanded}
                     onPress={() => setFaq2Expanded(!faq2Expanded)}
                     titleStyle={styles.faqTitle}
@@ -327,7 +331,7 @@ export default function RenovarMiPensionModal({
 
             {/* Información de renovación */}
             {tipoPensionSeleccionado && (
-                <Card style={styles.successCard}>
+                <Card style={[styles.successCard, { borderColor: theme.colors.success, backgroundColor: mode === "dark" ? "#4caf50" : "#e8f5e9" }]}>
                     <Card.Content>
                         <Text variant="titleMedium" style={styles.bold}>
                             Con la pensión seleccionada, la renovación tendría:
@@ -353,7 +357,7 @@ export default function RenovarMiPensionModal({
     const renderStep2 = () => (
         <ScrollView showsVerticalScrollIndicator={false}>
             {/* Resumen de la pensión seleccionada */}
-            <Card style={styles.summaryCard}>
+            <Card style={[styles.summaryCard, { borderColor: theme.colors.info, backgroundColor: mode === "dark" ? "#2196f0" : "#e3f2fd" }]}>
                 <Card.Content>
                     <Text variant="headlineSmall" style={styles.bold}>
                         Resumen de renovación
@@ -380,7 +384,7 @@ export default function RenovarMiPensionModal({
             </Card>
 
             {/* Instrucciones */}
-            <Card style={styles.infoAlert}>
+            <Card style={[styles.infoAlert, { borderColor: theme.colors.info, backgroundColor: mode === "dark" ? "#2196f0" : "#e3f2fd" }]}>
                 <Card.Content>
                     <Text variant="bodyMedium">
                         💳 Serás redirigido a Mercado Pago. Después de pagar, regresa aquí y haz clic en
@@ -448,11 +452,10 @@ export default function RenovarMiPensionModal({
 
     return (
         <Portal>
-            <Modal visible={visible} onDismiss={handleClose} contentContainerStyle={styles.modal}>
+            <Modal visible={visible} onDismiss={handleClose} contentContainerStyle={[styles.modal, { backgroundColor: theme.colors.surface }]}>
                 <View
                     style={{
                         width: "100%",
-                        paddingVertical: 4,
                         flexDirection: "row",
                         justifyContent: "flex-end"
                     }}
@@ -490,19 +493,17 @@ export default function RenovarMiPensionModal({
 
 const styles = StyleSheet.create({
     modal: {
-        backgroundColor: "white",
         margin: 10,
         borderRadius: 8,
         maxHeight: "90%",
         flex: 1,
-        paddingVertical: 20,
+        paddingBottom: 20,
     },
     header: {
         paddingHorizontal: 20
     },
     title: {
         fontWeight: "bold",
-        marginBottom: 8,
     },
     faqContainer: {
         marginBottom: 16,
@@ -524,32 +525,25 @@ const styles = StyleSheet.create({
         marginBottom: 8,
     },
     infoCard: {
+        margin: 1,
         marginTop: 16,
-        backgroundColor: "#f5f5f5",
     },
     successCard: {
         marginTop: 16,
-        backgroundColor: "#e8f5e9",
         borderWidth: 1,
-        borderColor: "#4caf50",
     },
     summaryCard: {
         marginBottom: 16,
-        backgroundColor: "#e3f2fd",
         borderWidth: 2,
-        borderColor: "#2196f3",
     },
     infoAlert: {
         marginVertical: 16,
-        backgroundColor: "#e3f2fd",
     },
     payButton: {
         marginTop: 16,
-        paddingVertical: 8,
     },
     verifyButton: {
         marginTop: 12,
-        paddingVertical: 8,
         borderWidth: 2,
     },
     paymentMethods: {
