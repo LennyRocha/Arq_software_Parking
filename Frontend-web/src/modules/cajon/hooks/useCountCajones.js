@@ -20,7 +20,7 @@ export default function useCountCajones() {
 
     try {
       const res = await api.get(
-        cajonInterface.contar()
+        cajonInterface.getStatus()
       );
       return res.data;
     } catch (err) {

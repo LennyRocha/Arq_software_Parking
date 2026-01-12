@@ -32,5 +32,6 @@ public interface CajonRepository extends JpaRepository<Cajon, Long> {
     Optional<Cajon> findRandomCajonExclusivoToUnuse(@Param("id") int id);
     Page<Cajon> findAllByNameContainingIgnoreCaseOrUbicacionContainingIgnoreCase(String name, String ubicacion, Pageable pageable);
     Integer countAllByParaPensionadosIsFalse();
+    Integer countAllByParaPensionadosIsTrue();
 
 }

@@ -59,6 +59,13 @@ public class CajonController {
         return cajonService.getCajonPorIdentificador(name);
     }
 
+    @GetMapping("/status_parking")
+    @Operation(summary = "Obtener estadisticas de los cajones respecto al número de usuarios",
+            description = "Este endpoint es utilizado para obtener un cajón en especifico por su identificador")
+    public ApiResponse<Map<String, Object>> getCajonStatus() {
+        return cajonService.getParkingStatus();
+    }
+
     @GetMapping("/location/{ubi}")
     @Operation(summary = "Obtener un cajón por su id",
             description = "Este endpoint es utilizado para obtener un cajón en especifico por su ubicación")
@@ -94,10 +101,10 @@ public class CajonController {
         return cajonService.updateCajon(id, cajon);
     }
 
-    @PutMapping("/reservar")
+    @PutMapping("/reservar/{conteo}")
     @Operation(summary = "Reservar cajones para su uso de pensionados",
             description = "Este endpoint es utilizado para reservar un cierto número de cajones para que los usuarios pensionados los utilicen")
-    public ApiResponse<List<Cajon>> reservarCajones(@RequestBody int conteo) {
+    public ApiResponse<List<Cajon>> reservarCajones(@PathVariable int conteo) {
         return cajonService.setCajonesExclusivos(conteo);
     }
 

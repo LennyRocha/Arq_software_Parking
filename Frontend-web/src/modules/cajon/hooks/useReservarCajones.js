@@ -18,7 +18,7 @@ export default function useReservarCajones(restart, openList, close) {
         setErrorData(null);
 
         try {
-            const res = await api.put(cajonInterface.reservar(), data.conteo);
+            const res = await api.put(cajonInterface.reservar(data.conteo));
 
             close();
 

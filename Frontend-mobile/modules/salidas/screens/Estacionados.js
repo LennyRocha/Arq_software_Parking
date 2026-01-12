@@ -8,6 +8,7 @@ import LoadingView from "../../../components/LoadingView";
 import useMarcarSalida from "../hooks/useMarcarSalida";
 import EmptyListView from "../../errores/screens/EmptyListView";
 import { CustomAlert } from "../../../utils/customAlert";
+import { useFocusEffect } from "@react-navigation/native";
 
 export default function Estacionados({ navigation }) {
   const paper = useTheme();
@@ -91,6 +92,12 @@ export default function Estacionados({ navigation }) {
 
     return `${hora}:${minStr} ${ampm}`;
   }
+
+  useFocusEffect(
+    React.useCallback(() => {
+      recall();
+    }, [])
+  );
 
   const [folio, setFolio] = React.useState("");
 

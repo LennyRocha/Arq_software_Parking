@@ -478,7 +478,7 @@ public class InitialDataService {
         Cajon c22 = new Cajon(null, "M6", "Cerca de escalera piso 3", true, false, 3, true, moto);
         c22.setTipoVehiculo(moto);
 
-        Cajon c23 = new Cajon(null, "C6", "Zona amplia piso 2", true, false, 2, true, camioneta);
+        Cajon c23 = new Cajon(null, "C6", "Zona amplia piso 2", true, true, 2, true, camioneta);
         c23.setTipoVehiculo(camioneta);
 
         Cajon c24 = new Cajon(null, "C7", "Cerca de entrada piso 1", true, true, 1, true, camioneta);

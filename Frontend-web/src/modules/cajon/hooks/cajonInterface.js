@@ -29,8 +29,12 @@ const cajonInterface = {
         return `${prefix}/contar`
     },
 
-    reservar: function () {
-        return `${prefix}/reservar`
+    reservar: function (count) {
+        return `${prefix}/reservar/${count}`
+    },
+
+    getStatus: function(){
+        return`${prefix}/status_parking`
     }
 };
 

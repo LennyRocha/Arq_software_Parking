@@ -43,10 +43,10 @@ import useCountCajones from "../hooks/useCountCajones";
 
 export default function CajonesTabla() {
   const {
-    data:countData,
+    data: countData,
     isLoading: loadingCount,
     errorData: errorCount,
-    restartCall: callCount,
+    restartCall: restartCount,
   } = useCountCajones();
   const [reservedList, setReservedList] = React.useState([]);
   const navigate = useNavigate();
@@ -116,6 +116,11 @@ export default function CajonesTabla() {
     openDialog: openGet,
     closeDialog: closeGet,
   } = useDialogController();
+
+  function recallAll(){
+    restartCall();
+    restartCount();
+  }
 
   return (
     <Box sx={{ flex: 1, overflow: "auto" }}>
@@ -425,10 +430,13 @@ export default function CajonesTabla() {
       <ModalReservar
         open={isSetOpen}
         closeDialog={closeSet}
-        count={countData ? countData.data : 0 }
+        count={countData ? countData.data.count : 0}
+        max={countData ? countData.data.max : 0}
+        min={countData ? countData.data.min : 0}
         setList={setReservedList}
         openGet={openGet}
-        restart={restartCall}
+        restart={recallAll}
+        data={countData}
       />
 
       <ModalLista
@@ -630,11 +638,14 @@ function ModalEditar({ open, closeDialog, cajon, restart, setCajon, list }) {
 
 function ModalReservar({
   count,
+  min,
+  max,
   open,
   closeDialog,
   setList,
   openGet,
   restart,
+  data
 }) {
   const {
     isLoading,
@@ -662,6 +673,9 @@ function ModalReservar({
     reset();
     closeDialog();
   }
+  React.useEffect(() => {
+    reset({ conteo: min });
+  }, [data]);
   return (
     <CustomDialog
       isOpen={open}
@@ -675,9 +689,13 @@ function ModalReservar({
       onCancel={closeAndClear}
       valid={isValid && isDirty}
     >
-      <Typography variant="subtitle1">
+      <Typography variant="subtitle1" sx={{ textAlign: "justify" }} >
         Reserva un cierto número de cajones para su uso exclusivo de usuarios
-        pensionados. Los cajones se seleccionaran al azar.
+        pensionados. Los cajones se seleccionaran al azar. El mínimo de cajones a reservar se calcula
+        en proporcion a cuantos usuarios pensionados hay. Actualmente se tiene { min === 1 ? `${min} usuario` : `${min} usuarios` }
+      </Typography>
+      <Typography variant="caption">
+        Cajones reservados actualmente: {count}
       </Typography>
       <Controller
         control={control}
@@ -689,13 +707,13 @@ function ModalReservar({
             label="Cajones a reservar"
             size="small"
             fullWidth
-            inputProps={{ min: 0, max: count }}
-            error={!!fieldState.error || field.value > count}
+            inputProps={{ min: min, max: max }}
+            error={!!fieldState.error || field.value > max}
             helperText={
               fieldState.error?.message ||
-              (field.value > count
+              (field.value > max
                 ? "No puedes elegir un valor mayor al total"
-                : "Límite: todos los cajones no exclusivos")
+                : `Límite: todos los cajones no exclusivos (${max} cajones)`)
             }
             disabled={isLoading}
           />

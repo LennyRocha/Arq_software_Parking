@@ -14,6 +14,7 @@ import utez.edu.mx.backendparking.config.MessagesInterface;
 import utez.edu.mx.backendparking.modules.cajon.model.Cajon;
 import utez.edu.mx.backendparking.modules.cajon.model.CajonDto;
 import utez.edu.mx.backendparking.modules.cajon.repository.CajonRepository;
+import utez.edu.mx.backendparking.modules.usuariopension.UsuarioPensionRepository;
 import utez.edu.mx.backendparking.shared.api.ApiResponse;
 import utez.edu.mx.backendparking.shared.exception.BadRequestException;
 import utez.edu.mx.backendparking.shared.exception.ConflictException;
@@ -39,6 +40,9 @@ public class CajonService {
 
     @Autowired
     private WebClientConfig webClientConfig;
+
+    @Autowired
+    private UsuarioPensionRepository usuarioPensionRepository;
 
     private void refresh(){
         List<Cajon> cajones = cajonRepository.findAll();
@@ -136,6 +140,18 @@ public class CajonService {
         return ApiResponse.success(HttpStatus.OK,"Cajón obtenido",
                 cajonRepository.findByUbicacion(ubic).orElseThrow(() -> new ResourceNotFoundException("Cajón no encontrado") )
         );
+    }
+
+    @Transactional(readOnly = true)
+    public ApiResponse<Map<String, Object>> getParkingStatus(){
+        Map<String, Object> status = new HashMap<>();
+        Long min = usuarioPensionRepository.count();
+        Integer max = cajonRepository.countAllByParaPensionadosIsFalse();
+        Integer count = cajonRepository.countAllByParaPensionadosIsTrue();
+        status.put("min", min);
+        status.put("max", max);
+        status.put("count", count);
+        return ApiResponse.success(HttpStatus.OK, "Parking status", status);
     }
 
     @Transactional(rollbackFor = {Exception.class, BadRequestException.class, ConflictException.class})
@@ -273,7 +289,7 @@ public class CajonService {
             if(cajones.isEmpty()){
                 return ApiResponse.error(HttpStatus.NOT_FOUND, "Ya no hay más cajones disponibles para reservar", null);
             }
-            cajones.forEach(cajon -> cajon.setDisponible(!cajon.getDisponible()));
+            cajones.forEach(cajon -> cajon.setParaPensionados(!cajon.getParaPensionados()));
             List<Cajon> saved = cajonRepository.saveAll(cajones);
             refresh();
             updateNodeServer();
